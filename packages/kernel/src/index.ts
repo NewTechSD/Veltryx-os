@@ -2,6 +2,8 @@
 export * from "./core/status/index.js";
 export * from "./core/services/index.js";
 export * from "./core/configuration/index.js";
+export * from "./core/di/index.js";
+export * from "./core/runtime/index.js";
 export * from "./module-system/status/index.js";
 export {
   KernelLoadedModule,

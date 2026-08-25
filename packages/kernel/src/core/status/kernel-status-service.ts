@@ -26,6 +26,7 @@ export interface KernelStatusServiceDependencies {
   readonly modules: IModuleLoader;
   readonly metadata: IMetadataRegistry;
   readonly runtime: IRuntime;
+  readonly container?: import("@veltryx/contracts").IDependencyInjectionContainer;
 }
 
 export interface KernelStatusServiceOptions {
@@ -33,6 +34,8 @@ export interface KernelStatusServiceOptions {
   readonly bootTimestamp: () => Date | undefined;
   readonly environment?: string;
   readonly includeTechnicalDetails?: boolean;
+  readonly runtimeBootstrapStatus?: () =>
+    import("@veltryx/contracts").RuntimeLifecycleStatus | undefined;
 }
 
 export class KernelStatusService implements IKernelStatusService {
@@ -56,6 +59,7 @@ export class KernelStatusService implements IKernelStatusService {
     const moduleSnapshot = await this.collectModuleSnapshot(errors);
     const services = this.collectServices(errors);
     const runtimeStatus = this.collectRuntimeStatus(errors);
+    const dependencyInjection = this.dependencies.container?.snapshot();
     const moduleMetrics = this.createModuleMetrics(moduleSnapshot);
     const configuration = this.collectConfiguration(errors);
 
@@ -80,6 +84,10 @@ export class KernelStatusService implements IKernelStatusService {
       },
       metadataRegistryStatus: this.collectMetadataRegistryStatus(),
       runtimeStatus,
+      dependencyInjectionStatus: dependencyInjection?.status,
+      providersRegistered: dependencyInjection?.providersRegistered,
+      providersResolved: dependencyInjection?.providersResolved,
+      runtimeBootstrapStatus: this.options.runtimeBootstrapStatus?.(),
       warnings,
       errors,
       diagnostics: [...warnings, ...errors]

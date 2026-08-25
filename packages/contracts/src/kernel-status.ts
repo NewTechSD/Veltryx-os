@@ -54,6 +54,10 @@ export interface KernelStatusSnapshot {
   readonly moduleSystemStatus: KernelModuleSystemStatus;
   readonly metadataRegistryStatus: KernelRegistryStatus;
   readonly runtimeStatus: RuntimeState | KernelSnapshotAvailability;
+  readonly dependencyInjectionStatus?: import("./dependency-injection.js").DependencyInjectionStatus;
+  readonly providersRegistered?: number;
+  readonly providersResolved?: number;
+  readonly runtimeBootstrapStatus?: import("./runtime.js").RuntimeLifecycleStatus;
   readonly warnings: readonly KernelDiagnosticEntry[];
   readonly errors: readonly KernelDiagnosticEntry[];
   readonly diagnostics: readonly KernelDiagnosticEntry[];

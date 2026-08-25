@@ -304,6 +304,8 @@ Se qualquer resposta for "nao", a implementacao nao deve comecar.
 - [Admin Modules Screen](ADMIN-MODULES-SCREEN.md)
 - [Configuration Provider](CONFIGURATION-PROVIDER.md)
 - [Service Registry](SERVICE-REGISTRY.md)
+- [Dependency Injection Container](DEPENDENCY-INJECTION-CONTAINER.md)
+- [Runtime Bootstrap v1](RUNTIME-BOOTSTRAP.md)
 
 ## Documentos Oficiais
 

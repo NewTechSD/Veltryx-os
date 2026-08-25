@@ -23,6 +23,8 @@ Service Registry = registra e localiza serviços
 DI Container     = resolve dependências e cria instâncias
 ```
 
+O container estrutural que consome este catálogo está documentado em [DEPENDENCY-INJECTION-CONTAINER.md](DEPENDENCY-INJECTION-CONTAINER.md).
+
 O método legado `resolve()` permanece por compatibilidade com providers simples existentes. A nova API direta `get()` não executa factories, não resolve dependências, não faz autowiring e não materializa scopes.
 
 ## Tokens oficiais

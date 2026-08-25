@@ -7,7 +7,10 @@ export const KERNEL_SERVICE_TOKENS = Object.freeze({
   executionContextFactory: "kernel.executionContextFactory",
   status: "kernel.status",
   metadataRegistry: "kernel.metadataRegistry",
-  runtime: "kernel.runtime"
+  runtime: "kernel.runtime",
+  serviceRegistry: "kernel.serviceRegistry",
+  dependencyInjection: "kernel.dependencyInjection",
+  runtimeBootstrap: "kernel.runtimeBootstrap"
 } as const);
 
 const TOKEN_PATTERN = /^[a-z][a-z0-9]*(?:[._-][A-Za-z0-9]+)+$/;

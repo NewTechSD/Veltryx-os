@@ -141,6 +141,31 @@ export type {
 } from "./module-system-status.js";
 export type { IRuntime, RuntimeBootstrapResult, RuntimeSession, RuntimeState } from "./runtime.js";
 export type {
+  IRuntimeBootstrapService,
+  RuntimeBootstrapDependencies,
+  RuntimeBootstrapStatus,
+  RuntimeDiagnosticEntry,
+  RuntimeError,
+  RuntimeLifecycleStatus,
+  RuntimeStructuralBootstrapResult,
+  RuntimeWarning
+} from "./runtime.js";
+export { CircularDependencyError } from "./dependency-injection.js";
+export type {
+  DependencyInjectionDiagnosticEntry,
+  DependencyInjectionError,
+  DependencyInjectionSnapshot,
+  DependencyInjectionStatus,
+  DependencyInjectionWarning,
+  IDependencyInjectionContainer,
+  IProviderResolver,
+  ProviderDefinition,
+  ProviderDescriptorSnapshot,
+  ProviderKind,
+  ProviderLifecycle,
+  ProviderRegistrationOptions
+} from "./dependency-injection.js";
+export type {
   IServiceRegistry,
   ServiceCategory,
   ServiceDescriptor,

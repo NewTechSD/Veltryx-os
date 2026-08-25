@@ -56,7 +56,11 @@ describe("Kernel public status snapshot", () => {
     expect(snapshot.bootStatus).toBe("ready");
     expect(snapshot.bootTimestamp).toEqual(expect.any(String));
     expect(snapshot.environment).toBe("test");
-    expect(snapshot.servicesRegistered).toMatchObject({ status: "available", value: 7 });
+    expect(snapshot.servicesRegistered).toMatchObject({ status: "available", value: 10 });
+    expect(snapshot.dependencyInjectionStatus).toBe("ready");
+    expect(snapshot.providersRegistered).toBe(6);
+    expect(snapshot.providersResolved).toBe(4);
+    expect(snapshot.runtimeBootstrapStatus).toBe("warning");
     expect(snapshot.modulesDiscovered).toMatchObject({ status: "available", value: 1 });
     expect(snapshot.modulesResolved).toMatchObject({ status: "available", value: 1 });
     expect(snapshot.modulesLoaded).toMatchObject({ status: "available", value: 1 });

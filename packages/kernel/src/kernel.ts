@@ -2,11 +2,13 @@
   EventMetadata,
   IExecutionContext,
   IConfigurationProvider,
+  IDependencyInjectionContainer,
   IEventBus,
   IKernelStatusService,
   IMetadataRegistry,
   IModuleLoader,
   IRuntime,
+  IRuntimeBootstrapService,
   IServiceRegistry,
   IStructuralEventPublisher
 } from "@veltryx/contracts";
@@ -26,6 +28,8 @@ import { KernelModuleLoader } from "./module-loader.js";
 import { KernelRuntime } from "./runtime.js";
 import { KernelServiceRegistry } from "./service-registry.js";
 import { KERNEL_SERVICE_TOKENS } from "./core/services/index.js";
+import { DependencyInjectionContainer } from "./core/di/index.js";
+import { RuntimeBootstrapService } from "./core/runtime/index.js";
 
 export type KernelState = "created" | "bootstrapped" | "initialized" | "ready";
 
@@ -36,6 +40,7 @@ export interface VeltryxKernelDependencies {
   readonly services: IServiceRegistry;
   readonly metadata: IMetadataRegistry;
   readonly runtime: IRuntime;
+  readonly container?: IDependencyInjectionContainer;
   readonly structuralEvents?: IStructuralEventPublisher;
 }
 
@@ -53,12 +58,16 @@ export class VeltryxKernel {
   private currentState: KernelState = "created";
   private bootedAt: Date | undefined;
   private readonly structuralEvents: IStructuralEventPublisher;
+  private readonly dependencyContainer: IDependencyInjectionContainer;
+  private runtimeBootstrapService: IRuntimeBootstrapService | undefined;
 
   constructor(
     private readonly dependencies: VeltryxKernelDependencies = createKernelDependencies()
   ) {
     this.structuralEvents =
       dependencies.structuralEvents ?? new KernelStructuralEventPublisher(dependencies.events);
+    this.dependencyContainer =
+      dependencies.container ?? new DependencyInjectionContainer(dependencies.services);
   }
 
   async bootstrap(context: IExecutionContext): Promise<void> {
@@ -121,6 +130,16 @@ export class VeltryxKernel {
     }
 
     await this.dependencies.modules.discover();
+    if (!this.dependencyContainer.has(KERNEL_SERVICE_TOKENS.runtimeBootstrap)) {
+      await this.dependencies.runtime.bootstrap(context);
+      this.currentState = "initialized";
+      return;
+    }
+    this.runtimeBootstrapService = await this.dependencyContainer.resolve<IRuntimeBootstrapService>(
+      KERNEL_SERVICE_TOKENS.runtimeBootstrap
+    );
+    const structuralResult = await this.runtimeBootstrapService.bootstrap();
+    if (!structuralResult.success) throw new Error("Runtime structural bootstrap failed");
     await this.dependencies.runtime.bootstrap(context);
 
     this.currentState = "initialized";
@@ -172,6 +191,14 @@ export class VeltryxKernel {
     return this.dependencies.runtime;
   }
 
+  container(): IDependencyInjectionContainer {
+    return this.dependencyContainer;
+  }
+
+  runtimeBootstrap(): IRuntimeBootstrapService | undefined {
+    return this.runtimeBootstrapService;
+  }
+
   configuration(): IConfigurationProvider {
     return this.dependencies.configuration;
   }
@@ -190,7 +217,8 @@ export class VeltryxKernel {
       kernelState: () => this.currentState,
       bootTimestamp: () => this.bootedAt,
       environment: options.environment,
-      includeTechnicalDetails: options.includeTechnicalDetails
+      includeTechnicalDetails: options.includeTechnicalDetails,
+      runtimeBootstrapStatus: () => this.runtimeBootstrapService?.status().status
     });
   }
 }
@@ -203,6 +231,7 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
   const services = new KernelServiceRegistry();
   const metadata = new InMemoryMetadataRegistry();
   const runtime = new KernelRuntime();
+  const container = new DependencyInjectionContainer(services);
   const executionContextFactory = new KernelExecutionContextFactory();
   const version = configuration.getString(CONFIGURATION_KEYS.appVersion) ?? "0.1.0";
 
@@ -214,6 +243,79 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
     "configuration",
     version
   );
+  registerStructuralService(
+    services,
+    KERNEL_SERVICE_TOKENS.serviceRegistry,
+    services,
+    "Service Registry",
+    "system",
+    version
+  );
+  registerStructuralService(
+    services,
+    KERNEL_SERVICE_TOKENS.dependencyInjection,
+    container,
+    "Dependency Injection Container",
+    "system",
+    version
+  );
+
+  container.registerProvider({
+    token: KERNEL_SERVICE_TOKENS.configuration,
+    kind: "value",
+    lifecycle: "singleton",
+    useValue: configuration
+  });
+  container.registerProvider({
+    token: KERNEL_SERVICE_TOKENS.eventBus,
+    kind: "value",
+    lifecycle: "singleton",
+    useValue: events
+  });
+  container.registerProvider({
+    token: KERNEL_SERVICE_TOKENS.moduleSystem,
+    kind: "value",
+    lifecycle: "singleton",
+    useValue: modules
+  });
+  container.registerProvider({
+    token: KERNEL_SERVICE_TOKENS.serviceRegistry,
+    kind: "value",
+    lifecycle: "singleton",
+    useValue: services
+  });
+  container.registerProvider({
+    token: KERNEL_SERVICE_TOKENS.runtime,
+    kind: "value",
+    lifecycle: "singleton",
+    useValue: runtime
+  });
+  container.registerProvider({
+    token: KERNEL_SERVICE_TOKENS.runtimeBootstrap,
+    kind: "factory",
+    lifecycle: "singleton",
+    dependencies: [
+      KERNEL_SERVICE_TOKENS.configuration,
+      KERNEL_SERVICE_TOKENS.serviceRegistry,
+      KERNEL_SERVICE_TOKENS.moduleSystem
+    ],
+    useFactory: (resolvedConfiguration, resolvedServices, resolvedModules) =>
+      new RuntimeBootstrapService({
+        configuration: resolvedConfiguration as IConfigurationProvider,
+        services: resolvedServices as IServiceRegistry,
+        modules: resolvedModules as IModuleLoader
+      }),
+    descriptor: {
+      name: "Runtime Bootstrap",
+      category: "runtime",
+      lifecycle: "available",
+      scope: "singleton",
+      status: "ok",
+      source: "kernel",
+      version,
+      tags: ["kernel", "structural"]
+    }
+  });
   registerStructuralService(
     services,
     KERNEL_SERVICE_TOKENS.eventBus,
@@ -262,6 +364,7 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
     services,
     metadata,
     runtime,
+    container,
     structuralEvents
   };
 }
@@ -271,7 +374,8 @@ function registerStructuralService(
   id: string,
   service: unknown,
   name: string,
-  category: "configuration" | "events" | "modules" | "execution" | "metadata" | "runtime",
+  category:
+    "configuration" | "events" | "modules" | "execution" | "metadata" | "runtime" | "system",
   version: string
 ): void {
   void registry.register(id, service, {

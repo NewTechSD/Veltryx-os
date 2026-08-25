@@ -51,6 +51,10 @@ export function createKernelStatusSnapshot(input: {
   readonly moduleSystemStatus: KernelModuleSystemStatus;
   readonly metadataRegistryStatus: KernelRegistryStatus;
   readonly runtimeStatus: KernelStatusSnapshot["runtimeStatus"];
+  readonly dependencyInjectionStatus?: KernelStatusSnapshot["dependencyInjectionStatus"];
+  readonly providersRegistered?: number;
+  readonly providersResolved?: number;
+  readonly runtimeBootstrapStatus?: KernelStatusSnapshot["runtimeBootstrapStatus"];
   readonly warnings?: readonly KernelDiagnosticEntry[];
   readonly errors?: readonly KernelDiagnosticEntry[];
   readonly diagnostics?: readonly KernelDiagnosticEntry[];
@@ -75,6 +79,10 @@ export function createKernelStatusSnapshot(input: {
     moduleSystemStatus: input.moduleSystemStatus,
     metadataRegistryStatus: input.metadataRegistryStatus,
     runtimeStatus: input.runtimeStatus,
+    dependencyInjectionStatus: input.dependencyInjectionStatus,
+    providersRegistered: input.providersRegistered,
+    providersResolved: input.providersResolved,
+    runtimeBootstrapStatus: input.runtimeBootstrapStatus,
     warnings,
     errors,
     diagnostics
