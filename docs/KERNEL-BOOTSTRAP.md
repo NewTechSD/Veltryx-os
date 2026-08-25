@@ -1,0 +1,129 @@
+﻿# Kernel Bootstrap
+
+## Objetivo
+
+Documentar o bootstrap do Kernel e os contratos iniciais adicionados nas sprints de Kernel Core Services e First Online Shell.
+
+O kernel inicializa a infraestrutura tecnica minima do Veltryx OS e entra no estado `Kernel Ready` sem regras de negocio, UI, API, Auth ou persistencia.
+
+## Pacotes
+
+- `@veltryx/contracts`: contratos publicos do kernel, registries, Event Bus e status snapshot.
+- `@veltryx/kernel`: implementacao tecnica inicial do kernel, registries in-memory, Event Bus em memoria, Execution Context, Module Manifest, Module Discovery, Runtime bootstrap e Kernel Public Status Snapshot.
+- `@veltryx/kernel-cli`: app minimo para executar o bootstrap e emitir `Kernel Ready`.
+
+## Interfaces
+
+- `IServiceRegistry`
+- `IModuleLoader`
+- `IModuleManifest`
+- `IModuleManifestParser`
+- `IModuleManifestValidator`
+- `IModuleDiscovery`
+- `IModuleDiscoveryValidator`
+- `IModuleCatalog`
+- `IMetadataRegistry`
+- `IRuntime`
+- `IExecutionContext`
+- `IExecutionContextFactory`
+- `IExecutionContextValidator`
+- `ExecutionContextSnapshot`
+- `IConfigurationProvider`
+- `IEventBus`
+- `IEventPublisher`
+- `IEventDispatcher`
+- `EventEnvelope`
+- `EventDispatchResult`
+- `IKernelStatusService`
+- `KernelStatusSnapshot`
+
+## Servicos e Registries
+
+- `KernelExecutionContext`
+- `KernelExecutionContextFactory`
+- `KernelExecutionContextValidator`
+- `KernelTenantContext`
+- `KernelWorkspaceContext`
+- `KernelUserContext`
+- `KernelRequestContext`
+- `KernelServiceRegistry`
+- `KernelModuleLoader`
+- `KernelModuleManifestParser`
+- `KernelModuleManifestValidator`
+- `KernelModuleVersion`
+- `KernelModuleDiscovery`
+- `KernelModuleDiscoveryValidator`
+- `KernelModuleCatalog`
+- `KernelModuleDescriptor`
+- `InMemoryMetadataRegistry`
+- `InMemoryConfigurationProvider`
+- `InMemoryEventBus`
+- `KernelEventPublisher`
+- `KernelEventDispatcher`
+- `KernelRuntime`
+- `KernelStatusService`
+- `VeltryxKernel`
+
+## Fluxo de Bootstrap
+
+```text
+VeltryxKernel
+      |
+      v
+Bootstrap
+      |
+      v
+Module Loader
+      |
+      v
+Service Registry
+      |
+      v
+Metadata Registry
+      |
+      v
+Runtime Bootstrap
+      |
+      v
+Kernel Ready
+      |
+      v
+VeltryxKernel.status().snapshot()
+```
+
+## Snapshot publico
+
+Apos ou durante o lifecycle, consumidores podem chamar `VeltryxKernel.status().snapshot()` para obter estado estruturado do Kernel sem depender de Next.js, HTTP, banco, auth ou Runtime Renderer.
+
+## Fora do Escopo
+
+- Auth.
+- Users.
+- Prisma.
+- PostgreSQL.
+- Redis.
+- Builder.
+- CRUD.
+- API.
+- Frontend.
+- Dashboard.
+- Workflows.
+- Modulos de negocio.
+
+## Validacao
+
+Comandos esperados:
+
+- `pnpm install`
+- `pnpm build`
+- `pnpm lint`
+- `pnpm typecheck`
+- `pnpm test`
+- `pnpm --filter @veltryx/kernel-cli dev`
+
+
+## Eventos Estruturais
+
+O Kernel publica eventos estruturais de bootstrap e readiness via Event Bus em memoria: kernel.bootstrap.started, kernel.bootstrap.completed, kernel.bootstrap.failed e kernel.ready. O catalogo completo esta em docs/KERNEL-STRUCTURAL-EVENTS.md.
+
+`r`n## Module System Public Snapshot`r`n`r`nO Kernel expoe `kernel.modules().snapshot()` como read model publico do Module System. Gerar o snapshot nao executa bootstrap, discovery, resolution, loading ou Runtime.`r`n
