@@ -1,10 +1,13 @@
 ﻿import type { RuntimeState } from "./runtime.js";
 
-export type KernelStatus = "created" | "bootstrapped" | "initialized" | "ready" | "degraded" | "error";
+export type KernelStatus =
+  "created" | "bootstrapped" | "initialized" | "ready" | "degraded" | "error";
 
-export type KernelBootStatus = "notBootstrapped" | "bootstrapped" | "initialized" | "ready" | "failed";
+export type KernelBootStatus =
+  "notBootstrapped" | "bootstrapped" | "initialized" | "ready" | "failed";
 
-export type KernelSnapshotAvailability = "available" | "notBootstrapped" | "notImplemented" | "unavailable";
+export type KernelSnapshotAvailability =
+  "available" | "notBootstrapped" | "notImplemented" | "unavailable";
 
 export interface KernelStatusMetric {
   readonly status: KernelSnapshotAvailability;
@@ -40,7 +43,11 @@ export interface KernelStatusSnapshot {
   readonly bootStatus: KernelBootStatus;
   readonly bootTimestamp?: string;
   readonly environment: string;
+  readonly appName?: string;
+  readonly appVersion?: string;
+  readonly runtimeMode?: string;
   readonly servicesRegistered: KernelStatusMetric;
+  readonly serviceRegistryStatus?: KernelRegistryStatus;
   readonly modulesDiscovered: KernelStatusMetric;
   readonly modulesResolved: KernelStatusMetric;
   readonly modulesLoaded: KernelStatusMetric;

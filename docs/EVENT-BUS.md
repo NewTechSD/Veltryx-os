@@ -192,6 +192,8 @@ O `InMemoryEventBus` aceita envelopes legados usados pelo Kernel inicial (`name`
 
 ## Limitacoes Conhecidas
 
+O Service Registry evoluído não publica eventos diretamente nesta fase, pois ele registra o próprio Event Bus e uma dependência direta criaria acoplamento circular no bootstrap. Eventos de observabilidade do registry exigem uma porta aprovada futura.
+
 - O barramento e local ao processo Node.js.
 - Eventos nao sao persistidos.
 - Nao ha retry, DLQ, scheduler ou distribuicao.
@@ -212,4 +214,3 @@ Possiveis evolucoes futuras, somente com RFC/IMP apropriada:
 ## Kernel Structural Events
 
 O Kernel e o Module System publicam eventos estruturais internos usando KernelStructuralEventPublisher. O catalogo e os payloads estao documentados em docs/KERNEL-STRUCTURAL-EVENTS.md. Esses eventos nao sao eventos de negocio e nao controlam o fluxo funcional das operacoes.
-

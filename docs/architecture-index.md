@@ -302,6 +302,8 @@ Se qualquer resposta for "nao", a implementacao nao deve comecar.
 - [Module System Public Snapshot](MODULE-SYSTEM-SNAPSHOT.md)
 - [Admin Module System Adapter](ADMIN-MODULE-SYSTEM-ADAPTER.md)
 - [Admin Modules Screen](ADMIN-MODULES-SCREEN.md)
+- [Configuration Provider](CONFIGURATION-PROVIDER.md)
+- [Service Registry](SERVICE-REGISTRY.md)
 
 ## Documentos Oficiais
 

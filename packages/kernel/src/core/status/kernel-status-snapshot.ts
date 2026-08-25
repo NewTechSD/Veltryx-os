@@ -40,7 +40,11 @@ export function createKernelStatusSnapshot(input: {
   readonly bootStatus: KernelBootStatus;
   readonly bootTimestamp?: string;
   readonly environment: string;
+  readonly appName?: string;
+  readonly appVersion?: string;
+  readonly runtimeMode?: string;
   readonly servicesRegistered: KernelStatusMetric;
+  readonly serviceRegistryStatus?: KernelRegistryStatus;
   readonly modulesDiscovered: KernelStatusMetric;
   readonly modulesResolved: KernelStatusMetric;
   readonly modulesLoaded: KernelStatusMetric;
@@ -60,7 +64,11 @@ export function createKernelStatusSnapshot(input: {
     bootStatus: input.bootStatus,
     bootTimestamp: input.bootTimestamp,
     environment: input.environment,
+    appName: input.appName,
+    appVersion: input.appVersion,
+    runtimeMode: input.runtimeMode,
     servicesRegistered: input.servicesRegistered,
+    serviceRegistryStatus: input.serviceRegistryStatus,
     modulesDiscovered: input.modulesDiscovered,
     modulesResolved: input.modulesResolved,
     modulesLoaded: input.modulesLoaded,

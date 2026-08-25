@@ -10,6 +10,8 @@ O kernel inicializa a infraestrutura tecnica minima do Veltryx OS e entra no est
 
 - `@veltryx/contracts`: contratos publicos do kernel, registries, Event Bus e status snapshot.
 - `@veltryx/kernel`: implementacao tecnica inicial do kernel, registries in-memory, Event Bus em memoria, Execution Context, Module Manifest, Module Discovery, Runtime bootstrap e Kernel Public Status Snapshot.
+- `Configuration Provider`: fonte oficial e segura para configuracao estrutural do Kernel, exposta por `kernel.configuration()`.
+- `Service Registry`: catálogo oficial dos serviços estruturais existentes, com tokens, descriptors e snapshot público seguro.
 - `@veltryx/kernel-cli`: app minimo para executar o bootstrap e emitir `Kernel Ready`.
 
 ## Interfaces
@@ -120,7 +122,6 @@ Comandos esperados:
 - `pnpm typecheck`
 - `pnpm test`
 - `pnpm --filter @veltryx/kernel-cli dev`
-
 
 ## Eventos Estruturais
 

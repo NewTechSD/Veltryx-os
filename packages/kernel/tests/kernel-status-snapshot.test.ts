@@ -56,7 +56,7 @@ describe("Kernel public status snapshot", () => {
     expect(snapshot.bootStatus).toBe("ready");
     expect(snapshot.bootTimestamp).toEqual(expect.any(String));
     expect(snapshot.environment).toBe("test");
-    expect(snapshot.servicesRegistered).toMatchObject({ status: "available", value: 1 });
+    expect(snapshot.servicesRegistered).toMatchObject({ status: "available", value: 7 });
     expect(snapshot.modulesDiscovered).toMatchObject({ status: "available", value: 1 });
     expect(snapshot.modulesResolved).toMatchObject({ status: "available", value: 1 });
     expect(snapshot.modulesLoaded).toMatchObject({ status: "available", value: 1 });
@@ -65,7 +65,10 @@ describe("Kernel public status snapshot", () => {
     expect(snapshot.runtimeStatus).toBe("ready");
     expect(snapshot.errors).toEqual([]);
     expect(snapshot.warnings).toEqual([
-      expect.objectContaining({ code: "KERNEL_METADATA_GLOBAL_SUMMARY_NOT_IMPLEMENTED", severity: "warning" })
+      expect.objectContaining({
+        code: "KERNEL_METADATA_GLOBAL_SUMMARY_NOT_IMPLEMENTED",
+        severity: "warning"
+      })
     ]);
     expect(snapshot.diagnostics).toEqual(snapshot.warnings);
   });
@@ -115,7 +118,9 @@ describe("Kernel public status snapshot", () => {
       } as never
     });
 
-    const snapshot = await kernel.status({ environment: "test", includeTechnicalDetails: false }).snapshot();
+    const snapshot = await kernel
+      .status({ environment: "test", includeTechnicalDetails: false })
+      .snapshot();
 
     expect(snapshot.kernelStatus).toBe("error");
     expect(snapshot.bootStatus).toBe("failed");
@@ -160,7 +165,9 @@ describe("Kernel public status snapshot", () => {
       runtime: { state: () => "created" } as never
     });
 
-    const snapshot = await kernel.status({ environment: "test", includeTechnicalDetails: true }).snapshot();
+    const snapshot = await kernel
+      .status({ environment: "test", includeTechnicalDetails: true })
+      .snapshot();
 
     expect(snapshot.errors[0]).toMatchObject({
       code: "KERNEL_MODULE_SNAPSHOT_FAILED",

@@ -1,4 +1,5 @@
 ﻿import type {
+  IConfigurationProvider,
   IKernelStatusService,
   IMetadataRegistry,
   IModuleLoader,
@@ -20,6 +21,7 @@ import {
 } from "./kernel-status-snapshot.js";
 
 export interface KernelStatusServiceDependencies {
+  readonly configuration: IConfigurationProvider;
   readonly services: IServiceRegistry;
   readonly modules: IModuleLoader;
   readonly metadata: IMetadataRegistry;
@@ -55,13 +57,18 @@ export class KernelStatusService implements IKernelStatusService {
     const services = this.collectServices(errors);
     const runtimeStatus = this.collectRuntimeStatus(errors);
     const moduleMetrics = this.createModuleMetrics(moduleSnapshot);
+    const configuration = this.collectConfiguration(errors);
 
     return createKernelStatusSnapshot({
       kernelStatus: errors.length > 0 ? "error" : this.options.kernelState(),
       bootStatus: this.toBootStatus(errors.length > 0),
       bootTimestamp: this.options.bootTimestamp()?.toISOString(),
-      environment: this.options.environment ?? process.env.NODE_ENV ?? "development",
-      servicesRegistered: services,
+      environment: this.options.environment ?? configuration.environment,
+      appName: configuration.appName,
+      appVersion: configuration.appVersion,
+      runtimeMode: configuration.runtimeMode,
+      servicesRegistered: services.metric,
+      serviceRegistryStatus: services.status,
       modulesDiscovered: moduleMetrics.discovered,
       modulesResolved: moduleMetrics.resolved,
       modulesLoaded: moduleMetrics.loaded,
@@ -79,7 +86,9 @@ export class KernelStatusService implements IKernelStatusService {
     });
   }
 
-  private async collectModuleSnapshot(errors: KernelDiagnosticEntry[]): Promise<ModuleSystemSnapshot | undefined> {
+  private async collectModuleSnapshot(
+    errors: KernelDiagnosticEntry[]
+  ): Promise<ModuleSystemSnapshot | undefined> {
     try {
       return await this.dependencies.modules.snapshot();
     } catch (error) {
@@ -95,9 +104,18 @@ export class KernelStatusService implements IKernelStatusService {
   } {
     if (!moduleSnapshot) {
       return {
-        discovered: createKernelStatusMetric("unavailable", "Module System public snapshot is unavailable."),
-        resolved: createKernelStatusMetric("unavailable", "Module System public snapshot is unavailable."),
-        loaded: createKernelStatusMetric("unavailable", "Module System public snapshot is unavailable.")
+        discovered: createKernelStatusMetric(
+          "unavailable",
+          "Module System public snapshot is unavailable."
+        ),
+        resolved: createKernelStatusMetric(
+          "unavailable",
+          "Module System public snapshot is unavailable."
+        ),
+        loaded: createKernelStatusMetric(
+          "unavailable",
+          "Module System public snapshot is unavailable."
+        )
       };
     }
 
@@ -120,34 +138,95 @@ export class KernelStatusService implements IKernelStatusService {
     };
   }
 
-  private collectServices(errors: KernelDiagnosticEntry[]): KernelStatusMetric {
+  private collectServices(errors: KernelDiagnosticEntry[]): {
+    readonly metric: KernelStatusMetric;
+    readonly status: KernelRegistryStatus;
+  } {
     try {
-      return createKernelStatusMetric(
-        "available",
-        "Service tokens exposed by the Kernel service registry public contract.",
-        this.dependencies.services.list().length
-      );
+      if (typeof this.dependencies.services.snapshot === "function") {
+        const snapshot = this.dependencies.services.snapshot();
+        if (snapshot.status === "error") {
+          errors.push(
+            createKernelDiagnosticEntry(
+              "KERNEL_SERVICE_REGISTRY_DEGRADED",
+              "Service Registry public snapshot reports errors.",
+              "error",
+              "services"
+            )
+          );
+        }
+        const availability = snapshot.status === "error" ? "unavailable" : "available";
+        return {
+          metric: createKernelStatusMetric(
+            availability,
+            "Services reported by the Service Registry public snapshot.",
+            snapshot.servicesRegistered
+          ),
+          status: {
+            status: availability,
+            detail: `Service Registry snapshot status: ${snapshot.status}.`
+          }
+        };
+      }
+      return {
+        metric: createKernelStatusMetric(
+          "available",
+          "Service tokens exposed by the legacy Kernel service registry contract.",
+          this.dependencies.services.list().length
+        ),
+        status: { status: "available", detail: "Legacy Service Registry contract is available." }
+      };
     } catch (error) {
       errors.push(this.toDiagnostic(error, "KERNEL_SERVICE_REGISTRY_FAILED", "services"));
-
-      return createKernelStatusMetric("unavailable", "Kernel service registry is unavailable.");
+      return {
+        metric: createKernelStatusMetric("unavailable", "Kernel service registry is unavailable."),
+        status: {
+          status: "unavailable",
+          detail: "Service Registry public snapshot is unavailable."
+        }
+      };
     }
   }
 
   private collectMetadataRegistryStatus(): KernelRegistryStatus {
     return {
       status: "available",
-      detail: "Metadata registry public contract is available. Global registry counts are not part of the contract."
+      detail:
+        "Metadata registry public contract is available. Global registry counts are not part of the contract."
     };
   }
 
-  private collectRuntimeStatus(errors: KernelDiagnosticEntry[]): KernelStatusSnapshot["runtimeStatus"] {
+  private collectRuntimeStatus(
+    errors: KernelDiagnosticEntry[]
+  ): KernelStatusSnapshot["runtimeStatus"] {
     try {
       return this.dependencies.runtime.state();
     } catch (error) {
       errors.push(this.toDiagnostic(error, "KERNEL_RUNTIME_STATUS_FAILED", "runtime"));
 
       return "unavailable";
+    }
+  }
+
+  private collectConfiguration(errors: KernelDiagnosticEntry[]): {
+    readonly environment: string;
+    readonly appName?: string;
+    readonly appVersion?: string;
+    readonly runtimeMode?: string;
+  } {
+    try {
+      if (typeof this.dependencies.configuration.getString !== "function") {
+        return { environment: "development" };
+      }
+      return {
+        environment: this.dependencies.configuration.getString("environment") ?? "development",
+        appName: this.dependencies.configuration.getString("app.name"),
+        appVersion: this.dependencies.configuration.getString("app.version"),
+        runtimeMode: this.dependencies.configuration.getString("runtime.mode")
+      };
+    } catch (error) {
+      errors.push(this.toDiagnostic(error, "KERNEL_CONFIGURATION_SNAPSHOT_FAILED", "kernel"));
+      return { environment: "development" };
     }
   }
 
@@ -189,7 +268,11 @@ export class KernelStatusService implements IKernelStatusService {
       );
     }
 
-    return createKernelDiagnosticEntry(code, "Unknown Kernel status snapshot failure", "error", source);
+    return createKernelDiagnosticEntry(
+      code,
+      "Unknown Kernel status snapshot failure",
+      "error",
+      source
+    );
   }
 }
-

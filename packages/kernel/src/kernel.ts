@@ -11,7 +11,7 @@
   IStructuralEventPublisher
 } from "@veltryx/contracts";
 
-import { InMemoryConfigurationProvider } from "./configuration-provider.js";
+import { CONFIGURATION_KEYS, ConfigurationProvider } from "./core/configuration/index.js";
 import {
   KERNEL_STRUCTURAL_EVENTS,
   KernelStructuralEventPublisher,
@@ -20,10 +20,12 @@ import {
 import { KernelStatusService } from "./core/status/index.js";
 import { InMemoryEventBus } from "./event-bus.js";
 import { createExecutionContext } from "./execution-context.js";
+import { KernelExecutionContextFactory } from "./core/execution-context/index.js";
 import { InMemoryMetadataRegistry } from "./metadata-registry.js";
 import { KernelModuleLoader } from "./module-loader.js";
 import { KernelRuntime } from "./runtime.js";
 import { KernelServiceRegistry } from "./service-registry.js";
+import { KERNEL_SERVICE_TOKENS } from "./core/services/index.js";
 
 export type KernelState = "created" | "bootstrapped" | "initialized" | "ready";
 
@@ -52,13 +54,17 @@ export class VeltryxKernel {
   private bootedAt: Date | undefined;
   private readonly structuralEvents: IStructuralEventPublisher;
 
-  constructor(private readonly dependencies: VeltryxKernelDependencies = createKernelDependencies()) {
-    this.structuralEvents = dependencies.structuralEvents ?? new KernelStructuralEventPublisher(dependencies.events);
+  constructor(
+    private readonly dependencies: VeltryxKernelDependencies = createKernelDependencies()
+  ) {
+    this.structuralEvents =
+      dependencies.structuralEvents ?? new KernelStructuralEventPublisher(dependencies.events);
   }
 
   async bootstrap(context: IExecutionContext): Promise<void> {
     const startedAt = new Date();
-    const environment = process.env.NODE_ENV ?? "development";
+    const environment =
+      this.dependencies.configuration.getString(CONFIGURATION_KEYS.environment) ?? "development";
     const contextSnapshot = context.snapshot();
 
     await this.publishStructuralEvent({
@@ -166,6 +172,9 @@ export class VeltryxKernel {
     return this.dependencies.runtime;
   }
 
+  configuration(): IConfigurationProvider {
+    return this.dependencies.configuration;
+  }
 
   private async publishStructuralEvent(
     event: Parameters<IStructuralEventPublisher["publish"]>[0]
@@ -187,18 +196,94 @@ export class VeltryxKernel {
 }
 
 export function createKernelDependencies(): VeltryxKernelDependencies {
+  const configuration = new ConfigurationProvider();
   const events = new InMemoryEventBus();
   const structuralEvents = new KernelStructuralEventPublisher(events);
+  const modules = new KernelModuleLoader(undefined, structuralEvents);
+  const services = new KernelServiceRegistry();
+  const metadata = new InMemoryMetadataRegistry();
+  const runtime = new KernelRuntime();
+  const executionContextFactory = new KernelExecutionContextFactory();
+  const version = configuration.getString(CONFIGURATION_KEYS.appVersion) ?? "0.1.0";
+
+  registerStructuralService(
+    services,
+    KERNEL_SERVICE_TOKENS.configuration,
+    configuration,
+    "Configuration Provider",
+    "configuration",
+    version
+  );
+  registerStructuralService(
+    services,
+    KERNEL_SERVICE_TOKENS.eventBus,
+    events,
+    "Event Bus",
+    "events",
+    version
+  );
+  registerStructuralService(
+    services,
+    KERNEL_SERVICE_TOKENS.moduleSystem,
+    modules,
+    "Module System",
+    "modules",
+    version
+  );
+  registerStructuralService(
+    services,
+    KERNEL_SERVICE_TOKENS.executionContextFactory,
+    executionContextFactory,
+    "Execution Context Factory",
+    "execution",
+    version
+  );
+  registerStructuralService(
+    services,
+    KERNEL_SERVICE_TOKENS.metadataRegistry,
+    metadata,
+    "Metadata Registry",
+    "metadata",
+    version
+  );
+  registerStructuralService(
+    services,
+    KERNEL_SERVICE_TOKENS.runtime,
+    runtime,
+    "Runtime",
+    "runtime",
+    version
+  );
 
   return {
-    configuration: new InMemoryConfigurationProvider(),
+    configuration,
     events,
-    modules: new KernelModuleLoader(undefined, structuralEvents),
-    services: new KernelServiceRegistry(),
-    metadata: new InMemoryMetadataRegistry(),
-    runtime: new KernelRuntime(),
+    modules,
+    services,
+    metadata,
+    runtime,
     structuralEvents
   };
+}
+
+function registerStructuralService(
+  registry: KernelServiceRegistry,
+  id: string,
+  service: unknown,
+  name: string,
+  category: "configuration" | "events" | "modules" | "execution" | "metadata" | "runtime",
+  version: string
+): void {
+  void registry.register(id, service, {
+    name,
+    category,
+    lifecycle: "available",
+    scope: "global",
+    status: "ok",
+    source: "kernel",
+    version,
+    tags: Object.freeze(["kernel", "structural"])
+  });
 }
 
 export function createBootstrapContext(): IExecutionContext {
@@ -213,7 +298,9 @@ export function createBootstrapContext(): IExecutionContext {
   });
 }
 
-function createKernelEventMetadata(contextSnapshot: ReturnType<IExecutionContext["snapshot"]>): EventMetadata {
+function createKernelEventMetadata(
+  contextSnapshot: ReturnType<IExecutionContext["snapshot"]>
+): EventMetadata {
   return {
     source: "kernel",
     correlationId: contextSnapshot.correlationId,
@@ -222,4 +309,3 @@ function createKernelEventMetadata(contextSnapshot: ReturnType<IExecutionContext
     tags: ["kernel", "structural"]
   };
 }
-

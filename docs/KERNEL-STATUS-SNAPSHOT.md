@@ -35,6 +35,10 @@ packages/kernel/src/core/status/
 
 `VeltryxKernel.status()` retorna `IKernelStatusService` e o metodo `snapshot()` produz uma estrutura serializavel, sem dependencia de Next.js, HTTP, banco, auth ou Runtime Renderer.
 
+Os campos `environment`, `appName`, `appVersion` e `runtimeMode` são obtidos do Configuration Provider oficial quando disponíveis. O snapshot completo de configuração não é duplicado nesta superfície.
+
+`servicesRegistered` e `serviceRegistryStatus` são derivados do summary oficial do Service Registry Snapshot quando a API evoluída está disponível. Descriptors e instâncias não são duplicados no Kernel Status Snapshot.
+
 ## Dados expostos
 
 O snapshot expoe:

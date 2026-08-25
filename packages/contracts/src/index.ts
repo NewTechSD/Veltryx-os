@@ -1,4 +1,8 @@
-﻿export type { IConfigurationProvider, ConfigurationQuery, ConfigurationScope } from "./configuration.js";
+﻿export type {
+  IConfigurationProvider,
+  ConfigurationQuery,
+  ConfigurationScope
+} from "./configuration.js";
 export type {
   CorrelationContext,
   ExecutionContextInput,
@@ -19,6 +23,27 @@ export type {
   UserContext,
   WorkspaceContext
 } from "./context.js";
+export { CONFIGURATION_KEYS } from "./configuration.js";
+export type {
+  ConfigurationDiagnosticEntry,
+  ConfigurationDiagnosticSeverity,
+  ConfigurationError,
+  ConfigurationKey,
+  ConfigurationResolutionResult,
+  ConfigurationSnapshot,
+  ConfigurationSourceSnapshot,
+  ConfigurationSourceType,
+  ConfigurationValidationIssue,
+  ConfigurationValidationResult,
+  ConfigurationValue,
+  ConfigurationValues,
+  ConfigurationWarning,
+  IConfigurationResolver,
+  IConfigurationSource,
+  IConfigurationValidator,
+  RuntimeMode,
+  VeltryxEnvironment
+} from "./configuration.js";
 export type {
   EventDispatchError,
   EventDispatchResult,
@@ -48,7 +73,12 @@ export type {
   KernelStatusMetric,
   KernelStatusSnapshot
 } from "./kernel-status.js";
-export type { IMetadataRegistry, MetadataQuery, MetadataRecord, MetadataStatus } from "./metadata.js";
+export type {
+  IMetadataRegistry,
+  MetadataQuery,
+  MetadataRecord,
+  MetadataStatus
+} from "./metadata.js";
 export type {
   IModuleCatalog,
   IModuleDiscovery,
@@ -110,8 +140,25 @@ export type {
   ModuleSystemWarning
 } from "./module-system-status.js";
 export type { IRuntime, RuntimeBootstrapResult, RuntimeSession, RuntimeState } from "./runtime.js";
-export type { IServiceRegistry, ServiceProvider, ServiceScope, ServiceToken } from "./services.js";
-
+export type {
+  IServiceRegistry,
+  ServiceCategory,
+  ServiceDescriptor,
+  ServiceDescriptorInput,
+  ServiceDescriptorSnapshot,
+  ServiceLifecycle,
+  ServiceProvider,
+  ServiceRegistrationOptions,
+  ServiceRegistryDiagnosticEntry,
+  ServiceRegistryDiagnosticSeverity,
+  ServiceRegistryError,
+  ServiceRegistrySnapshot,
+  ServiceRegistryStatus,
+  ServiceRegistryWarning,
+  ServiceScope,
+  ServiceStatus,
+  ServiceToken
+} from "./services.js";
 
 export type {
   IStructuralEventPublisher,
@@ -137,4 +184,3 @@ export type {
   StructuralEventPayload,
   StructuralEventPublishInput
 } from "./structural-events.js";
-

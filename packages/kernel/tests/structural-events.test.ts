@@ -43,12 +43,20 @@ const baseManifest: ModuleManifest = {
   seeds: []
 };
 
-function descriptor(id = "structural.module", dependencies: ModuleManifest["dependencies"] = []): ModuleDescriptor {
-  return new KernelModuleDescriptor({ ...baseManifest, id, name: `Module ${id}`, dependencies }, "resolved");
+function descriptor(
+  id = "structural.module",
+  dependencies: ModuleManifest["dependencies"] = []
+): ModuleDescriptor {
+  return new KernelModuleDescriptor(
+    { ...baseManifest, id, name: `Module ${id}`, dependencies },
+    "resolved"
+  );
 }
 
 function createStructuralPublisher() {
-  const bus = new InMemoryEventBus({ createEventId: () => `event-${bus.publishedEvents().length + 1}` });
+  const bus = new InMemoryEventBus({
+    createEventId: () => `event-${bus.publishedEvents().length + 1}`
+  });
   const publisher = new KernelStructuralEventPublisher(bus);
 
   return { bus, publisher };
@@ -64,7 +72,8 @@ describe("Kernel structural events", () => {
     await kernel.initialize(context);
     await kernel.ready(context);
 
-    const events = dependencies.events instanceof InMemoryEventBus ? dependencies.events.publishedEvents() : [];
+    const events =
+      dependencies.events instanceof InMemoryEventBus ? dependencies.events.publishedEvents() : [];
 
     expect(events.map((event) => event.eventName)).toEqual([
       KERNEL_STRUCTURAL_EVENTS.bootstrapStarted,
@@ -78,8 +87,14 @@ describe("Kernel structural events", () => {
       metadata: { source: "kernel", correlationId: "kernel-bootstrap" },
       contextSnapshot: { requestId: "kernel-bootstrap", correlationId: "kernel-bootstrap" }
     });
-    expect(events[1]?.payload).toMatchObject({ environment: expect.any(String), servicesRegistered: 0 });
-    expect(events[4]?.payload).toMatchObject({ readyAt: expect.any(String), bootTimestamp: expect.any(String) });
+    expect(events[1]?.payload).toMatchObject({
+      environment: expect.any(String),
+      servicesRegistered: 6
+    });
+    expect(events[4]?.payload).toMatchObject({
+      readyAt: expect.any(String),
+      bootTimestamp: expect.any(String)
+    });
   });
 
   it("emits kernel.bootstrap.failed when bootstrap fails", async () => {
@@ -96,9 +111,12 @@ describe("Kernel structural events", () => {
       }
     });
 
-    await expect(kernel.bootstrap(createBootstrapContext())).rejects.toThrow("Service registry unavailable");
+    await expect(kernel.bootstrap(createBootstrapContext())).rejects.toThrow(
+      "Service registry unavailable"
+    );
 
-    const events = dependencies.events instanceof InMemoryEventBus ? dependencies.events.publishedEvents() : [];
+    const events =
+      dependencies.events instanceof InMemoryEventBus ? dependencies.events.publishedEvents() : [];
     expect(events.map((event) => event.eventName)).toEqual([
       KERNEL_STRUCTURAL_EVENTS.bootstrapStarted,
       KERNEL_STRUCTURAL_EVENTS.bootstrapFailed
@@ -168,7 +186,10 @@ describe("Module resolution structural events", () => {
     const { bus, publisher } = createStructuralPublisher();
     const resolver = new KernelModuleDependencyResolver(undefined, undefined, publisher);
 
-    const result = resolver.resolve([descriptor("module.a"), descriptor("module.b", [{ id: "module.a" }])]);
+    const result = resolver.resolve([
+      descriptor("module.a"),
+      descriptor("module.b", [{ id: "module.a" }])
+    ]);
 
     expect(result.valid).toBe(true);
     expect(bus.publishedEvents().map((event) => event.eventName)).toEqual([
@@ -205,7 +226,12 @@ describe("Module resolution structural events", () => {
 describe("Module loading structural events", () => {
   it("emits module.loading.started and module.loading.completed", () => {
     const { bus, publisher } = createStructuralPublisher();
-    const loader = new KernelResolvedModuleLoader(undefined, undefined, () => new Date("2026-08-18T12:00:00.000Z"), publisher);
+    const loader = new KernelResolvedModuleLoader(
+      undefined,
+      undefined,
+      () => new Date("2026-08-18T12:00:00.000Z"),
+      publisher
+    );
     const resolution = validResolution([descriptor("module.a")]);
 
     const result = loader.load(resolution);
@@ -257,7 +283,9 @@ describe("Module loading structural events", () => {
 
     expect(result.valid).toBe(true);
     expect(result.totalLoaded).toBe(1);
-    expect(bus.publishedEvents().map((event) => event.eventName)).toContain(MODULE_SYSTEM_STRUCTURAL_EVENTS.loadingCompleted);
+    expect(bus.publishedEvents().map((event) => event.eventName)).toContain(
+      MODULE_SYSTEM_STRUCTURAL_EVENTS.loadingCompleted
+    );
   });
 });
 

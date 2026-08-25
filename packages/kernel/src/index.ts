@@ -1,5 +1,7 @@
 ﻿export * from "./core/events/index.js";
 export * from "./core/status/index.js";
+export * from "./core/services/index.js";
+export * from "./core/configuration/index.js";
 export * from "./module-system/status/index.js";
 export {
   KernelLoadedModule,
@@ -47,7 +49,6 @@ export {
   StubModuleManifestParser
 } from "./module-loader.js";
 export { KernelRuntime } from "./runtime.js";
-export { KernelServiceRegistry } from "./service-registry.js";
 export {
   VeltryxKernel,
   createBootstrapContext,
@@ -56,7 +57,3 @@ export {
   type KernelState,
   type VeltryxKernelDependencies
 } from "./kernel.js";
-
-
-
-
