@@ -138,8 +138,12 @@ export class VeltryxKernel {
     this.runtimeBootstrapService = await this.dependencyContainer.resolve<IRuntimeBootstrapService>(
       KERNEL_SERVICE_TOKENS.runtimeBootstrap
     );
-    const structuralResult = await this.runtimeBootstrapService.bootstrap();
+    const structuralResult = await this.runtimeBootstrapService.bootstrap(context.snapshot());
     if (!structuralResult.success) throw new Error("Runtime structural bootstrap failed");
+    const runtimeContext = this.runtimeBootstrapService.context();
+    const runtimeSnapshot = this.runtimeBootstrapService.snapshot();
+    if (this.dependencies.runtime instanceof KernelRuntime && runtimeContext && runtimeSnapshot)
+      this.dependencies.runtime.attachReadModel(runtimeContext, runtimeSnapshot);
     await this.dependencies.runtime.bootstrap(context);
 
     this.currentState = "initialized";
@@ -291,19 +295,27 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
     useValue: runtime
   });
   container.registerProvider({
+    token: KERNEL_SERVICE_TOKENS.dependencyInjection,
+    kind: "value",
+    lifecycle: "singleton",
+    useValue: container
+  });
+  container.registerProvider({
     token: KERNEL_SERVICE_TOKENS.runtimeBootstrap,
     kind: "factory",
     lifecycle: "singleton",
     dependencies: [
       KERNEL_SERVICE_TOKENS.configuration,
       KERNEL_SERVICE_TOKENS.serviceRegistry,
-      KERNEL_SERVICE_TOKENS.moduleSystem
+      KERNEL_SERVICE_TOKENS.moduleSystem,
+      KERNEL_SERVICE_TOKENS.dependencyInjection
     ],
-    useFactory: (resolvedConfiguration, resolvedServices, resolvedModules) =>
+    useFactory: (resolvedConfiguration, resolvedServices, resolvedModules, resolvedContainer) =>
       new RuntimeBootstrapService({
         configuration: resolvedConfiguration as IConfigurationProvider,
         services: resolvedServices as IServiceRegistry,
-        modules: resolvedModules as IModuleLoader
+        modules: resolvedModules as IModuleLoader,
+        dependencyInjection: resolvedContainer as IDependencyInjectionContainer
       }),
     descriptor: {
       name: "Runtime Bootstrap",

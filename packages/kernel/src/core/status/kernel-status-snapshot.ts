@@ -55,6 +55,10 @@ export function createKernelStatusSnapshot(input: {
   readonly providersRegistered?: number;
   readonly providersResolved?: number;
   readonly runtimeBootstrapStatus?: KernelStatusSnapshot["runtimeBootstrapStatus"];
+  readonly runtimeLifecycle?: KernelStatusSnapshot["runtimeLifecycle"];
+  readonly runtimeUptimeMs?: number;
+  readonly runtimeWarnings?: number;
+  readonly runtimeErrors?: number;
   readonly warnings?: readonly KernelDiagnosticEntry[];
   readonly errors?: readonly KernelDiagnosticEntry[];
   readonly diagnostics?: readonly KernelDiagnosticEntry[];
@@ -83,6 +87,10 @@ export function createKernelStatusSnapshot(input: {
     providersRegistered: input.providersRegistered,
     providersResolved: input.providersResolved,
     runtimeBootstrapStatus: input.runtimeBootstrapStatus,
+    runtimeLifecycle: input.runtimeLifecycle,
+    runtimeUptimeMs: input.runtimeUptimeMs,
+    runtimeWarnings: input.runtimeWarnings,
+    runtimeErrors: input.runtimeErrors,
     warnings,
     errors,
     diagnostics

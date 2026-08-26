@@ -1,20 +1,34 @@
 import type {
+  DependencyInjectionSnapshot,
+  ExecutionContextSnapshot,
   IRuntimeBootstrapService,
   RuntimeBootstrapDependencies,
   RuntimeBootstrapStatus,
-  RuntimeDiagnosticEntry,
-  RuntimeError,
+  RuntimeContext,
   RuntimeStructuralBootstrapResult,
+  RuntimeStatusSnapshot,
   RuntimeWarning
 } from "@veltryx/contracts";
+import { RuntimeContextFactory } from "./runtime-context-factory.js";
+import { createRuntimeEntry } from "./runtime-diagnostics.js";
+import { RuntimeLifecycleController } from "./runtime-lifecycle-controller.js";
+import { RuntimeStatusSnapshotService } from "./runtime-status-snapshot.js";
 
 export class RuntimeBootstrapService implements IRuntimeBootstrapService {
   private current: RuntimeBootstrapStatus;
+  private runtimeContext: RuntimeContext | undefined;
+  private runtimeSnapshot: RuntimeStatusSnapshot | undefined;
+  private readonly lifecycle = new RuntimeLifecycleController();
+  private readonly runtimeId: string;
+  private bootstrapped = false;
 
   constructor(
     private readonly dependencies: RuntimeBootstrapDependencies,
-    private readonly now: () => Date = () => new Date()
+    private readonly now: () => Date = () => new Date(),
+    private readonly contextFactory = new RuntimeContextFactory(undefined, now),
+    private readonly snapshotService = new RuntimeStatusSnapshotService(now)
   ) {
+    this.runtimeId = `veltryx-runtime-${this.now().getTime()}`;
     this.current = this.freezeStatus({
       status: "idle",
       runtimeMode: "preview",
@@ -27,61 +41,105 @@ export class RuntimeBootstrapService implements IRuntimeBootstrapService {
     });
   }
 
-  async bootstrap(): Promise<RuntimeStructuralBootstrapResult> {
+  async bootstrap(execution?: ExecutionContextSnapshot): Promise<RuntimeStructuralBootstrapResult> {
+    const repeated = this.bootstrapped;
+    this.lifecycle.transition("bootstrapping");
     this.current = this.freezeStatus({ ...this.current, status: "bootstrapping" });
     try {
       const configuration = this.dependencies.configuration.snapshot();
       const services = this.dependencies.services.snapshot();
+      const dependencyInjection =
+        this.dependencies.dependencyInjection?.snapshot() ??
+        this.emptyDependencyInjectionSnapshot();
       const modules = await this.dependencies.modules.snapshot();
       const warnings: RuntimeWarning[] = [];
-      const errors: RuntimeError[] = [];
-      if (configuration.errors.length > 0)
-        errors.push(
-          this.entry("RUNTIME_CONFIGURATION_INVALID", "Configuration snapshot reports errors.")
-        );
-      if (services.status === "error")
-        errors.push(
-          this.entry("RUNTIME_SERVICES_UNAVAILABLE", "Service Registry snapshot reports errors.")
-        );
-      if (modules.status === "error")
-        errors.push(
-          this.entry("RUNTIME_MODULE_SYSTEM_UNAVAILABLE", "Module System snapshot reports errors.")
+      if (repeated)
+        warnings.push(
+          createRuntimeEntry(
+            "runtime.bootstrapAlreadyExecuted",
+            "Runtime bootstrap was executed again."
+          )
         );
       if (
-        configuration.warnings.length > 0 ||
-        services.warnings.length > 0 ||
-        modules.warnings.length > 0
+        configuration.warnings.length ||
+        services.warnings.length ||
+        dependencyInjection.warnings.length ||
+        modules.warnings.length
       )
         warnings.push(
-          this.entry("RUNTIME_DEPENDENCY_WARNING", "A structural dependency reports warnings.")
+          createRuntimeEntry(
+            "runtime.dependencyWarning",
+            "A structural dependency reports warnings."
+          )
         );
-      const status = errors.length > 0 ? "error" : warnings.length > 0 ? "warning" : "ready";
-      const diagnostics: RuntimeDiagnosticEntry[] = [
-        ...warnings.map((entry) => ({ ...entry, severity: "warning" as const })),
-        ...errors.map((entry) => ({ ...entry, severity: "error" as const })),
-        {
-          ...this.entry("RUNTIME_BOOTSTRAP_COMPLETED", "Runtime structural bootstrap completed."),
-          severity: "info"
-        }
-      ];
+      const hasErrors =
+        configuration.errors.length > 0 ||
+        services.status === "error" ||
+        dependencyInjection.status === "error" ||
+        modules.status === "error";
+      let lifecycle: "ready" | "warning" | "error" = hasErrors
+        ? "error"
+        : warnings.length
+          ? "warning"
+          : "ready";
+      const bootstrappedAt = this.now().toISOString();
       this.current = this.freezeStatus({
-        status,
-        bootstrappedAt: this.now().toISOString(),
+        status: lifecycle,
+        bootstrappedAt,
         runtimeMode: configuration.runtimeMode,
         environment: configuration.environment,
         servicesAvailable: services.servicesAvailable,
         modulesAvailable: modules.modulesLoaded,
         warnings,
-        errors,
-        diagnostics
+        errors: hasErrors
+          ? [
+              createRuntimeEntry(
+                "runtime.bootstrapFailed",
+                "Runtime structural dependencies are unavailable."
+              )
+            ]
+          : [],
+        diagnostics: []
       });
+      let context = this.contextFactory.create({
+        runtimeId: this.runtimeId,
+        lifecycle,
+        configuration,
+        services,
+        dependencyInjection,
+        modules,
+        bootstrap: this.current,
+        execution
+      });
+      if (lifecycle === "ready" && context.warnings.length) {
+        lifecycle = "warning";
+        this.current = this.freezeStatus({ ...this.current, status: lifecycle });
+        context = this.contextFactory.create({
+          runtimeId: this.runtimeId,
+          lifecycle,
+          configuration,
+          services,
+          dependencyInjection,
+          modules,
+          bootstrap: this.current,
+          execution
+        });
+      }
+      this.lifecycle.transition(lifecycle);
+      this.runtimeContext = context;
+      this.runtimeSnapshot = this.snapshotService.snapshot(context);
+      this.bootstrapped = true;
     } catch {
-      const error = this.entry("RUNTIME_BOOTSTRAP_FAILED", "Runtime structural bootstrap failed.");
+      if (this.lifecycle.status() === "bootstrapping") this.lifecycle.transition("error");
+      const error = createRuntimeEntry(
+        "runtime.bootstrapFailed",
+        "Runtime structural bootstrap failed."
+      );
       this.current = this.freezeStatus({
         ...this.current,
         status: "error",
         errors: [error],
-        diagnostics: [{ ...error, severity: "error" }]
+        diagnostics: []
       });
     }
     return Object.freeze({ status: this.status(), success: this.current.status !== "error" });
@@ -90,12 +148,19 @@ export class RuntimeBootstrapService implements IRuntimeBootstrapService {
   status(): RuntimeBootstrapStatus {
     return this.freezeStatus(this.current);
   }
-  stop(): void {
-    this.current = this.freezeStatus({ ...this.current, status: "stopped" });
+  context(): RuntimeContext | undefined {
+    return this.runtimeContext;
   }
-
-  private entry(code: string, message: string): RuntimeWarning {
-    return Object.freeze({ code, message, source: "runtime" });
+  snapshot(): RuntimeStatusSnapshot | undefined {
+    return this.runtimeSnapshot;
+  }
+  stop(): void {
+    this.lifecycle.transition("stopped");
+    this.current = this.freezeStatus({ ...this.current, status: "stopped" });
+    if (this.runtimeContext) {
+      this.runtimeContext = Object.freeze({ ...this.runtimeContext, lifecycle: "stopped" });
+      this.runtimeSnapshot = this.snapshotService.snapshot(this.runtimeContext);
+    }
   }
 
   private freezeStatus(status: RuntimeBootstrapStatus): RuntimeBootstrapStatus {
@@ -104,6 +169,23 @@ export class RuntimeBootstrapService implements IRuntimeBootstrapService {
       warnings: Object.freeze([...status.warnings]),
       errors: Object.freeze([...status.errors]),
       diagnostics: Object.freeze([...status.diagnostics])
+    });
+  }
+
+  private emptyDependencyInjectionSnapshot(): DependencyInjectionSnapshot {
+    return Object.freeze({
+      status: "empty",
+      generatedAt: this.now().toISOString(),
+      providersRegistered: 0,
+      providersResolved: 0,
+      singletonProviders: 0,
+      transientProviders: 0,
+      providersWithWarnings: 0,
+      providersWithErrors: 0,
+      providers: Object.freeze([]),
+      warnings: Object.freeze([]),
+      errors: Object.freeze([]),
+      diagnostics: Object.freeze([])
     });
   }
 }

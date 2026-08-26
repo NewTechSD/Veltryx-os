@@ -1,14 +1,19 @@
 import type {
   IExecutionContext,
   IRuntime,
+  RuntimeContext,
   RuntimeBootstrapResult,
   RuntimeSession,
-  RuntimeState
+  RuntimeState,
+  RuntimeStatusSnapshot,
+  RuntimeLifecycleStatus
 } from "@veltryx/contracts";
 
 export class KernelRuntime implements IRuntime {
   private currentState: RuntimeState = "created";
   private currentSession: RuntimeSession | undefined;
+  private readContext: RuntimeContext | undefined;
+  private readSnapshot: RuntimeStatusSnapshot | undefined;
 
   async bootstrap(context: IExecutionContext): Promise<RuntimeBootstrapResult> {
     if (!context.requestId || !context.correlationId) {
@@ -38,5 +43,19 @@ export class KernelRuntime implements IRuntime {
 
   state(): RuntimeState {
     return this.currentState;
+  }
+
+  context(): RuntimeContext | undefined {
+    return this.readContext;
+  }
+  snapshot(): RuntimeStatusSnapshot | undefined {
+    return this.readSnapshot;
+  }
+  status(): RuntimeLifecycleStatus {
+    return this.readSnapshot?.status ?? "idle";
+  }
+  attachReadModel(context: RuntimeContext, snapshot: RuntimeStatusSnapshot): void {
+    this.readContext = context;
+    this.readSnapshot = snapshot;
   }
 }

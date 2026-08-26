@@ -39,6 +39,8 @@ Os campos `environment`, `appName`, `appVersion` e `runtimeMode` são obtidos do
 
 `servicesRegistered` e `serviceRegistryStatus` são derivados do summary oficial do Service Registry Snapshot quando a API evoluída está disponível. Descriptors e instâncias não são duplicados no Kernel Status Snapshot.
 
+O resumo oficial do Runtime informa lifecycle, uptime e quantidades de warnings/errors a partir do Runtime Status Snapshot, sem duplicar seu read model detalhado.
+
 ## Dados expostos
 
 O snapshot expoe:

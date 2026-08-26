@@ -150,6 +150,22 @@ export type {
   RuntimeStructuralBootstrapResult,
   RuntimeWarning
 } from "./runtime.js";
+export type {
+  IRuntimeContextFactory,
+  IRuntimeContextValidator,
+  IRuntimeLifecycleController,
+  IRuntimeStatusSnapshotService,
+  RuntimeConfigurationContext,
+  RuntimeContext,
+  RuntimeContextFactoryInput,
+  RuntimeContextSnapshot,
+  RuntimeContextValidationResult,
+  RuntimeDependencyInjectionContext,
+  RuntimeExecutionContextSummary,
+  RuntimeModulesContext,
+  RuntimeServicesContext,
+  RuntimeStatusSnapshot
+} from "./runtime.js";
 export { CircularDependencyError } from "./dependency-injection.js";
 export type {
   DependencyInjectionDiagnosticEntry,

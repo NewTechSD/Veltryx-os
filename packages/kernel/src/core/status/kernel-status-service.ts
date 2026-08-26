@@ -59,6 +59,7 @@ export class KernelStatusService implements IKernelStatusService {
     const moduleSnapshot = await this.collectModuleSnapshot(errors);
     const services = this.collectServices(errors);
     const runtimeStatus = this.collectRuntimeStatus(errors);
+    const runtimeSnapshot = this.dependencies.runtime.snapshot?.();
     const dependencyInjection = this.dependencies.container?.snapshot();
     const moduleMetrics = this.createModuleMetrics(moduleSnapshot);
     const configuration = this.collectConfiguration(errors);
@@ -88,6 +89,10 @@ export class KernelStatusService implements IKernelStatusService {
       providersRegistered: dependencyInjection?.providersRegistered,
       providersResolved: dependencyInjection?.providersResolved,
       runtimeBootstrapStatus: this.options.runtimeBootstrapStatus?.(),
+      runtimeLifecycle: runtimeSnapshot?.status,
+      runtimeUptimeMs: runtimeSnapshot?.uptimeMs,
+      runtimeWarnings: runtimeSnapshot?.warnings.length,
+      runtimeErrors: runtimeSnapshot?.errors.length,
       warnings,
       errors,
       diagnostics: [...warnings, ...errors]

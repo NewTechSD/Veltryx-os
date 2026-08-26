@@ -19,6 +19,8 @@ O serviço inicia em `idle`, passa por `bootstrapping` e termina em `ready`, `wa
 
 O Kernel resolve o bootstrap por `kernel.runtimeBootstrap` através do container antes de chamar a API legada `runtime.bootstrap(context)`. Isso preserva consumidores existentes enquanto separa validação estrutural da sessão operacional.
 
+O bootstrap agora alimenta o [Runtime Context](RUNTIME-CONTEXT.md), que por sua vez gera o [Runtime Status Snapshot](RUNTIME-STATUS-SNAPSHOT.md). A fachada legada expõe esses read models por `kernel.runtime().context()` e `kernel.runtime().snapshot()`.
+
 Configuration, Service Registry e Module System são consumidos exclusivamente por seus snapshots públicos. O status não contém instâncias, stacks ou detalhes internos mutáveis.
 
 Eventos específicos de Runtime foram adiados: o bootstrap já depende da ordem estrutural do Kernel e introduzi-los nesta entrega aumentaria o risco de ciclo entre Event Bus, container e Runtime. Os eventos existentes do Kernel continuam ativos.

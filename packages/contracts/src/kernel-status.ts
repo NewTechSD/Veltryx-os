@@ -58,6 +58,10 @@ export interface KernelStatusSnapshot {
   readonly providersRegistered?: number;
   readonly providersResolved?: number;
   readonly runtimeBootstrapStatus?: import("./runtime.js").RuntimeLifecycleStatus;
+  readonly runtimeLifecycle?: import("./runtime.js").RuntimeLifecycleStatus;
+  readonly runtimeUptimeMs?: number;
+  readonly runtimeWarnings?: number;
+  readonly runtimeErrors?: number;
   readonly warnings: readonly KernelDiagnosticEntry[];
   readonly errors: readonly KernelDiagnosticEntry[];
   readonly diagnostics: readonly KernelDiagnosticEntry[];

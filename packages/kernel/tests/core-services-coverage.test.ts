@@ -96,14 +96,17 @@ describe("Kernel core service coverage", () => {
     await expect(registry.register(record)).rejects.toThrow(
       "Metadata already registered: kernel:manifest:1.0.0"
     );
-    await expect(registry.get({ namespace: "kernel", key: "manifest", version: "1.1.0" }))
-      .resolves.toMatchObject({ version: "1.1.0" });
+    await expect(
+      registry.get({ namespace: "kernel", key: "manifest", version: "1.1.0" })
+    ).resolves.toMatchObject({ version: "1.1.0" });
     await expect(registry.listVersions("kernel", "manifest")).resolves.toEqual(["1.0.0", "1.1.0"]);
   });
 
   it("validates runtime bootstrap context and exposes session state", async () => {
     const runtime = new KernelRuntime();
     const context = createExecutionContext({ requestId: "req-1", correlationId: "corr-1" });
+
+    expect(runtime.status()).toBe("idle");
 
     await expect(runtime.bootstrap({ ...context, requestId: "" })).rejects.toThrow(
       "Runtime bootstrap requires requestId and correlationId"
@@ -126,7 +129,9 @@ describe("Kernel core service coverage", () => {
       scope: "global" as const
     };
 
-    await expect(registry.resolve(token)).rejects.toThrow("Service not registered: kernel.singleton");
+    await expect(registry.resolve(token)).rejects.toThrow(
+      "Service not registered: kernel.singleton"
+    );
 
     let calls = 0;
     await registry.register({ token, resolve: () => ({ calls: ++calls }) });

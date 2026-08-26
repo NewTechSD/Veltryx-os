@@ -1,7 +1,17 @@
-import type { IConfigurationProvider, RuntimeMode, VeltryxEnvironment } from "./configuration.js";
-import type { IExecutionContext } from "./context.js";
+import type {
+  ConfigurationSnapshot,
+  IConfigurationProvider,
+  RuntimeMode,
+  VeltryxEnvironment
+} from "./configuration.js";
+import type { ExecutionContextSnapshot, IExecutionContext } from "./context.js";
+import type {
+  DependencyInjectionSnapshot,
+  IDependencyInjectionContainer
+} from "./dependency-injection.js";
+import type { ModuleSystemSnapshot } from "./module-system-status.js";
 import type { IModuleLoader } from "./modules.js";
-import type { IServiceRegistry } from "./services.js";
+import type { IServiceRegistry, ServiceRegistrySnapshot } from "./services.js";
 
 export type RuntimeState =
   | "created"
@@ -27,6 +37,9 @@ export interface IRuntime {
   bootstrap(context: IExecutionContext): Promise<RuntimeBootstrapResult>;
   session(): RuntimeSession | undefined;
   state(): RuntimeState;
+  context(): RuntimeContext | undefined;
+  snapshot(): RuntimeStatusSnapshot | undefined;
+  status(): RuntimeLifecycleStatus;
 }
 export type RuntimeLifecycleStatus =
   "idle" | "bootstrapping" | "ready" | "warning" | "error" | "stopped";
@@ -35,6 +48,8 @@ export interface RuntimeDiagnosticEntry {
   readonly message: string;
   readonly severity: "info" | "warning" | "error";
   readonly source: "runtime";
+  readonly details?: Readonly<Record<string, unknown>>;
+  readonly timestamp?: string;
 }
 export type RuntimeWarning = Omit<RuntimeDiagnosticEntry, "severity">;
 export type RuntimeError = Omit<RuntimeDiagnosticEntry, "severity">;
@@ -57,9 +72,116 @@ export interface RuntimeBootstrapDependencies {
   readonly configuration: IConfigurationProvider;
   readonly services: IServiceRegistry;
   readonly modules: IModuleLoader;
+  readonly dependencyInjection?: IDependencyInjectionContainer;
 }
 export interface IRuntimeBootstrapService {
-  bootstrap(): Promise<RuntimeStructuralBootstrapResult>;
+  bootstrap(execution?: ExecutionContextSnapshot): Promise<RuntimeStructuralBootstrapResult>;
   status(): RuntimeBootstrapStatus;
+  context(): RuntimeContext | undefined;
+  snapshot(): RuntimeStatusSnapshot | undefined;
   stop(): void;
+}
+
+export interface RuntimeConfigurationContext {
+  readonly status: "ready" | "warning" | "error";
+  readonly appName: string;
+  readonly appVersion: string;
+  readonly debugEnabled: boolean;
+}
+export interface RuntimeServicesContext {
+  readonly status: string;
+  readonly registered: number;
+  readonly available: number;
+  readonly withWarnings: number;
+  readonly withErrors: number;
+}
+export interface RuntimeDependencyInjectionContext {
+  readonly status: string;
+  readonly providersRegistered: number;
+  readonly providersResolved: number;
+  readonly singletonProviders: number;
+  readonly transientProviders: number;
+  readonly providersWithWarnings: number;
+  readonly providersWithErrors: number;
+}
+export interface RuntimeModulesContext {
+  readonly status: string;
+  readonly discovered: number;
+  readonly resolved: number;
+  readonly loaded: number;
+  readonly withWarnings: number;
+  readonly withErrors: number;
+}
+export interface RuntimeExecutionContextSummary {
+  readonly requestId: string;
+  readonly correlationId: string;
+  readonly tenantAvailable: boolean;
+  readonly workspaceAvailable: boolean;
+  readonly userAvailable: boolean;
+}
+export interface RuntimeContext {
+  readonly runtimeId: string;
+  readonly lifecycle: RuntimeLifecycleStatus;
+  readonly environment: VeltryxEnvironment;
+  readonly runtimeMode: RuntimeMode;
+  readonly bootstrappedAt?: string;
+  readonly generatedAt: string;
+  readonly configuration: RuntimeConfigurationContext;
+  readonly services: RuntimeServicesContext;
+  readonly dependencyInjection: RuntimeDependencyInjectionContext;
+  readonly modules: RuntimeModulesContext;
+  readonly execution?: RuntimeExecutionContextSummary;
+  readonly warnings: readonly RuntimeWarning[];
+  readonly errors: readonly RuntimeError[];
+  readonly diagnostics: readonly RuntimeDiagnosticEntry[];
+}
+export type RuntimeContextSnapshot = RuntimeContext;
+export interface RuntimeStatusSnapshot {
+  readonly status: RuntimeLifecycleStatus;
+  readonly generatedAt: string;
+  readonly runtimeId: string;
+  readonly environment: VeltryxEnvironment;
+  readonly runtimeMode: RuntimeMode;
+  readonly bootstrappedAt?: string;
+  readonly uptimeMs?: number;
+  readonly configurationStatus: string;
+  readonly serviceRegistryStatus: string;
+  readonly dependencyInjectionStatus: string;
+  readonly moduleSystemStatus: string;
+  readonly servicesAvailable: number;
+  readonly providersRegistered: number;
+  readonly providersResolved: number;
+  readonly modulesDiscovered: number;
+  readonly modulesResolved: number;
+  readonly modulesLoaded: number;
+  readonly warnings: readonly RuntimeWarning[];
+  readonly errors: readonly RuntimeError[];
+  readonly diagnostics: readonly RuntimeDiagnosticEntry[];
+}
+export interface RuntimeContextFactoryInput {
+  readonly runtimeId: string;
+  readonly lifecycle: RuntimeLifecycleStatus;
+  readonly configuration: ConfigurationSnapshot;
+  readonly services: ServiceRegistrySnapshot;
+  readonly dependencyInjection: DependencyInjectionSnapshot;
+  readonly modules: ModuleSystemSnapshot;
+  readonly bootstrap: RuntimeBootstrapStatus;
+  readonly execution?: ExecutionContextSnapshot;
+}
+export interface RuntimeContextValidationResult {
+  readonly valid: boolean;
+  readonly errors: readonly RuntimeError[];
+}
+export interface IRuntimeContextFactory {
+  create(input: RuntimeContextFactoryInput): RuntimeContext;
+}
+export interface IRuntimeContextValidator {
+  validate(context: RuntimeContext): RuntimeContextValidationResult;
+}
+export interface IRuntimeLifecycleController {
+  status(): RuntimeLifecycleStatus;
+  transition(status: RuntimeLifecycleStatus): RuntimeLifecycleStatus;
+}
+export interface IRuntimeStatusSnapshotService {
+  snapshot(context: RuntimeContext): RuntimeStatusSnapshot;
 }

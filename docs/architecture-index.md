@@ -306,6 +306,8 @@ Se qualquer resposta for "nao", a implementacao nao deve comecar.
 - [Service Registry](SERVICE-REGISTRY.md)
 - [Dependency Injection Container](DEPENDENCY-INJECTION-CONTAINER.md)
 - [Runtime Bootstrap v1](RUNTIME-BOOTSTRAP.md)
+- [Runtime Context](RUNTIME-CONTEXT.md)
+- [Runtime Status Snapshot](RUNTIME-STATUS-SNAPSHOT.md)
 
 ## Documentos Oficiais
 
