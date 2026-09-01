@@ -132,3 +132,7 @@ O Kernel publica eventos estruturais de bootstrap e readiness via Event Bus em m
 ## Metadata Engine Services
 
 O bootstrap estrutural registra `kernel.metadataRegistry` e `kernel.metadataEngine` como servicos reais apontando para a implementacao do Metadata Registry evoluido. O Runtime Bootstrap recebe apenas o snapshot publico para montar resumo no Runtime Context.
+
+## Component Registry e UI Composition
+
+O bootstrap padrao registra os servicos reais kernel.componentRegistry e kernel.uiCompositionRuntime no Service Registry e no DI Container. Ambos permanecem declarativos e agnosticos de runtime/plataforma.

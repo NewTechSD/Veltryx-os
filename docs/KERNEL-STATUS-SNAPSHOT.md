@@ -100,3 +100,7 @@ O Kernel Status Snapshot consome o snapshot publico do Metadata Engine apenas co
 - `metadataPagesRegistered`
 
 O snapshot completo de metadata nao e duplicado nesta superficie.
+
+## Component Registry e UI Composition
+
+O Kernel Status Snapshot inclui resumo leve de componentRegistryStatus, componentsRegistered, uiCompositionStatus e compositionsGenerated. O snapshot nao expoe contratos completos de componentes nem Composition Trees.

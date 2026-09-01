@@ -75,6 +75,14 @@ export class RuntimeContextFactory implements IRuntimeContextFactory {
         entitiesRegistered: input.metadata?.entitiesRegistered ?? 0,
         pagesRegistered: input.metadata?.pagesRegistered ?? 0
       }),
+      componentRegistry: Object.freeze({
+        status: input.componentRegistry?.status ?? "empty",
+        componentsRegistered: input.componentRegistry?.componentsRegistered ?? 0
+      }),
+      uiComposition: Object.freeze({
+        status: input.uiComposition?.status ?? "empty",
+        compositionsGenerated: input.uiComposition?.compositionsGenerated ?? 0
+      }),
       execution: input.execution
         ? Object.freeze({
             requestId: input.execution.requestId,
@@ -195,4 +203,7 @@ export class RuntimeContextFactory implements IRuntimeContextFactory {
     return errors;
   }
 }
+
+
+
 

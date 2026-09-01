@@ -1,9 +1,10 @@
 ﻿import type {
   EventMetadata,
-  IExecutionContext,
+  IComponentRegistry,
   IConfigurationProvider,
   IDependencyInjectionContainer,
   IEventBus,
+  IExecutionContext,
   IKernelStatusService,
   IMetadataEngine,
   IMetadataRegistry,
@@ -11,16 +12,22 @@
   IRuntime,
   IRuntimeBootstrapService,
   IServiceRegistry,
-  IStructuralEventPublisher
+  IStructuralEventPublisher,
+  IUICompositionRuntime
 } from "@veltryx/contracts";
 
 import { CONFIGURATION_KEYS, ConfigurationProvider } from "./core/configuration/index.js";
+import { DependencyInjectionContainer } from "./core/di/index.js";
 import {
   KERNEL_STRUCTURAL_EVENTS,
   KernelStructuralEventPublisher,
   normalizeStructuralEventError
 } from "./core/events/index.js";
+import { RuntimeBootstrapService } from "./core/runtime/index.js";
+import { KERNEL_SERVICE_TOKENS } from "./core/services/index.js";
 import { KernelStatusService } from "./core/status/index.js";
+import { ComponentRegistry, registerSystemComponents } from "./core/components/index.js";
+import { UICompositionRuntime } from "./core/ui-composition/index.js";
 import { InMemoryEventBus } from "./event-bus.js";
 import { createExecutionContext } from "./execution-context.js";
 import { KernelExecutionContextFactory } from "./core/execution-context/index.js";
@@ -28,9 +35,6 @@ import { InMemoryMetadataRegistry } from "./metadata-registry.js";
 import { KernelModuleLoader } from "./module-loader.js";
 import { KernelRuntime } from "./runtime.js";
 import { KernelServiceRegistry } from "./service-registry.js";
-import { KERNEL_SERVICE_TOKENS } from "./core/services/index.js";
-import { DependencyInjectionContainer } from "./core/di/index.js";
-import { RuntimeBootstrapService } from "./core/runtime/index.js";
 
 export type KernelState = "created" | "bootstrapped" | "initialized" | "ready";
 
@@ -40,6 +44,8 @@ export interface VeltryxKernelDependencies {
   readonly modules: IModuleLoader;
   readonly services: IServiceRegistry;
   readonly metadata: IMetadataRegistry;
+  readonly components: IComponentRegistry;
+  readonly uiComposition: IUICompositionRuntime;
   readonly runtime: IRuntime;
   readonly container?: IDependencyInjectionContainer;
   readonly structuralEvents?: IStructuralEventPublisher;
@@ -80,10 +86,7 @@ export class VeltryxKernel {
     await this.publishStructuralEvent({
       eventName: KERNEL_STRUCTURAL_EVENTS.bootstrapStarted,
       eventType: "kernel",
-      payload: {
-        environment,
-        startedAt: startedAt.toISOString()
-      },
+      payload: { environment, startedAt: startedAt.toISOString() },
       metadata: createKernelEventMetadata(contextSnapshot),
       contextSnapshot,
       occurredAt: startedAt
@@ -92,7 +95,6 @@ export class VeltryxKernel {
     try {
       this.currentState = "bootstrapped";
       this.bootedAt = new Date();
-
       const completedAt = new Date();
       await this.publishStructuralEvent({
         eventName: KERNEL_STRUCTURAL_EVENTS.bootstrapCompleted,
@@ -120,16 +122,12 @@ export class VeltryxKernel {
         contextSnapshot,
         occurredAt: failedAt
       });
-
       throw error;
     }
   }
 
   async initialize(context: IExecutionContext): Promise<void> {
-    if (this.currentState !== "bootstrapped") {
-      throw new Error("Kernel must be bootstrapped before initialize");
-    }
-
+    if (this.currentState !== "bootstrapped") throw new Error("Kernel must be bootstrapped before initialize");
     await this.dependencies.modules.discover();
     if (!this.dependencyContainer.has(KERNEL_SERVICE_TOKENS.runtimeBootstrap)) {
       await this.dependencies.runtime.bootstrap(context);
@@ -146,17 +144,12 @@ export class VeltryxKernel {
     if (this.dependencies.runtime instanceof KernelRuntime && runtimeContext && runtimeSnapshot)
       this.dependencies.runtime.attachReadModel(runtimeContext, runtimeSnapshot);
     await this.dependencies.runtime.bootstrap(context);
-
     this.currentState = "initialized";
   }
 
   async ready(context: IExecutionContext): Promise<KernelReadyResult> {
-    if (this.currentState !== "initialized") {
-      throw new Error("Kernel must be initialized before ready");
-    }
-
+    if (this.currentState !== "initialized") throw new Error("Kernel must be initialized before ready");
     this.currentState = "ready";
-
     const readyAt = new Date();
     await this.publishStructuralEvent({
       eventName: KERNEL_STRUCTURAL_EVENTS.ready,
@@ -169,11 +162,7 @@ export class VeltryxKernel {
       contextSnapshot: context.snapshot(),
       occurredAt: readyAt
     });
-
-    return {
-      state: this.currentState,
-      message: "Kernel Ready"
-    };
+    return { state: this.currentState, message: "Kernel Ready" };
   }
 
   state(): KernelState {
@@ -192,6 +181,14 @@ export class VeltryxKernel {
     return this.dependencies.metadata;
   }
 
+  components(): IComponentRegistry {
+    return this.dependencies.components;
+  }
+
+  uiComposition(): IUICompositionRuntime {
+    return this.dependencies.uiComposition;
+  }
+
   runtime(): IRuntime {
     return this.dependencies.runtime;
   }
@@ -208,15 +205,6 @@ export class VeltryxKernel {
     return this.dependencies.configuration;
   }
 
-  private async publishStructuralEvent(
-    event: Parameters<IStructuralEventPublisher["publish"]>[0]
-  ): Promise<void> {
-    try {
-      await this.structuralEvents.publish(event);
-    } catch {
-      return;
-    }
-  }
   status(options: KernelStatusOptions = {}): IKernelStatusService {
     return new KernelStatusService(this.dependencies, {
       kernelState: () => this.currentState,
@@ -225,6 +213,16 @@ export class VeltryxKernel {
       includeTechnicalDetails: options.includeTechnicalDetails,
       runtimeBootstrapStatus: () => this.runtimeBootstrapService?.status().status
     });
+  }
+
+  private async publishStructuralEvent(
+    event: Parameters<IStructuralEventPublisher["publish"]>[0]
+  ): Promise<void> {
+    try {
+      await this.structuralEvents.publish(event);
+    } catch {
+      return;
+    }
   }
 }
 
@@ -235,84 +233,28 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
   const modules = new KernelModuleLoader(undefined, structuralEvents);
   const services = new KernelServiceRegistry();
   const metadata = new InMemoryMetadataRegistry();
+  const components = new ComponentRegistry();
+  registerSystemComponents(components);
+  const uiComposition = new UICompositionRuntime(components);
   const runtime = new KernelRuntime();
   const container = new DependencyInjectionContainer(services);
   const executionContextFactory = new KernelExecutionContextFactory();
   const version = configuration.getString(CONFIGURATION_KEYS.appVersion) ?? "0.1.0";
 
-  registerStructuralService(
-    services,
-    KERNEL_SERVICE_TOKENS.configuration,
-    configuration,
-    "Configuration Provider",
-    "configuration",
-    version
-  );
-  registerStructuralService(
-    services,
-    KERNEL_SERVICE_TOKENS.serviceRegistry,
-    services,
-    "Service Registry",
-    "system",
-    version
-  );
-  registerStructuralService(
-    services,
-    KERNEL_SERVICE_TOKENS.dependencyInjection,
-    container,
-    "Dependency Injection Container",
-    "system",
-    version
-  );
+  registerStructuralService(services, KERNEL_SERVICE_TOKENS.configuration, configuration, "Configuration Provider", "configuration", version);
+  registerStructuralService(services, KERNEL_SERVICE_TOKENS.serviceRegistry, services, "Service Registry", "system", version);
+  registerStructuralService(services, KERNEL_SERVICE_TOKENS.dependencyInjection, container, "Dependency Injection Container", "system", version);
 
-  container.registerProvider({
-    token: KERNEL_SERVICE_TOKENS.configuration,
-    kind: "value",
-    lifecycle: "singleton",
-    useValue: configuration
-  });
-  container.registerProvider({
-    token: KERNEL_SERVICE_TOKENS.eventBus,
-    kind: "value",
-    lifecycle: "singleton",
-    useValue: events
-  });
-  container.registerProvider({
-    token: KERNEL_SERVICE_TOKENS.moduleSystem,
-    kind: "value",
-    lifecycle: "singleton",
-    useValue: modules
-  });
-  container.registerProvider({
-    token: KERNEL_SERVICE_TOKENS.serviceRegistry,
-    kind: "value",
-    lifecycle: "singleton",
-    useValue: services
-  });
-  container.registerProvider({
-    token: KERNEL_SERVICE_TOKENS.metadataRegistry,
-    kind: "value",
-    lifecycle: "singleton",
-    useValue: metadata
-  });
-  container.registerProvider({
-    token: KERNEL_SERVICE_TOKENS.metadataEngine,
-    kind: "value",
-    lifecycle: "singleton",
-    useValue: metadata
-  });
-  container.registerProvider({
-    token: KERNEL_SERVICE_TOKENS.runtime,
-    kind: "value",
-    lifecycle: "singleton",
-    useValue: runtime
-  });
-  container.registerProvider({
-    token: KERNEL_SERVICE_TOKENS.dependencyInjection,
-    kind: "value",
-    lifecycle: "singleton",
-    useValue: container
-  });
+  container.registerProvider({ token: KERNEL_SERVICE_TOKENS.configuration, kind: "value", lifecycle: "singleton", useValue: configuration });
+  container.registerProvider({ token: KERNEL_SERVICE_TOKENS.eventBus, kind: "value", lifecycle: "singleton", useValue: events });
+  container.registerProvider({ token: KERNEL_SERVICE_TOKENS.moduleSystem, kind: "value", lifecycle: "singleton", useValue: modules });
+  container.registerProvider({ token: KERNEL_SERVICE_TOKENS.serviceRegistry, kind: "value", lifecycle: "singleton", useValue: services });
+  container.registerProvider({ token: KERNEL_SERVICE_TOKENS.metadataRegistry, kind: "value", lifecycle: "singleton", useValue: metadata });
+  container.registerProvider({ token: KERNEL_SERVICE_TOKENS.metadataEngine, kind: "value", lifecycle: "singleton", useValue: metadata });
+  container.registerProvider({ token: KERNEL_SERVICE_TOKENS.componentRegistry, kind: "value", lifecycle: "singleton", useValue: components });
+  container.registerProvider({ token: KERNEL_SERVICE_TOKENS.uiCompositionRuntime, kind: "value", lifecycle: "singleton", useValue: uiComposition });
+  container.registerProvider({ token: KERNEL_SERVICE_TOKENS.runtime, kind: "value", lifecycle: "singleton", useValue: runtime });
+  container.registerProvider({ token: KERNEL_SERVICE_TOKENS.dependencyInjection, kind: "value", lifecycle: "singleton", useValue: container });
   container.registerProvider({
     token: KERNEL_SERVICE_TOKENS.runtimeBootstrap,
     kind: "factory",
@@ -322,15 +264,19 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
       KERNEL_SERVICE_TOKENS.serviceRegistry,
       KERNEL_SERVICE_TOKENS.moduleSystem,
       KERNEL_SERVICE_TOKENS.dependencyInjection,
-      KERNEL_SERVICE_TOKENS.metadataEngine
+      KERNEL_SERVICE_TOKENS.metadataEngine,
+      KERNEL_SERVICE_TOKENS.componentRegistry,
+      KERNEL_SERVICE_TOKENS.uiCompositionRuntime
     ],
-    useFactory: (resolvedConfiguration, resolvedServices, resolvedModules, resolvedContainer, resolvedMetadata) =>
+    useFactory: (resolvedConfiguration, resolvedServices, resolvedModules, resolvedContainer, resolvedMetadata, resolvedComponents, resolvedUIComposition) =>
       new RuntimeBootstrapService({
         configuration: resolvedConfiguration as IConfigurationProvider,
         services: resolvedServices as IServiceRegistry,
         modules: resolvedModules as IModuleLoader,
         dependencyInjection: resolvedContainer as IDependencyInjectionContainer,
-        metadata: resolvedMetadata as IMetadataEngine
+        metadata: resolvedMetadata as IMetadataEngine,
+        componentRegistry: resolvedComponents as IComponentRegistry,
+        uiComposition: resolvedUIComposition as IUICompositionRuntime
       }),
     descriptor: {
       name: "Runtime Bootstrap",
@@ -343,54 +289,15 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
       tags: ["kernel", "structural"]
     }
   });
-  registerStructuralService(
-    services,
-    KERNEL_SERVICE_TOKENS.eventBus,
-    events,
-    "Event Bus",
-    "events",
-    version
-  );
-  registerStructuralService(
-    services,
-    KERNEL_SERVICE_TOKENS.moduleSystem,
-    modules,
-    "Module System",
-    "modules",
-    version
-  );
-  registerStructuralService(
-    services,
-    KERNEL_SERVICE_TOKENS.executionContextFactory,
-    executionContextFactory,
-    "Execution Context Factory",
-    "execution",
-    version
-  );
-  registerStructuralService(
-    services,
-    KERNEL_SERVICE_TOKENS.metadataRegistry,
-    metadata,
-    "Metadata Registry",
-    "metadata",
-    version
-  );
-  registerStructuralService(
-    services,
-    KERNEL_SERVICE_TOKENS.metadataEngine,
-    metadata,
-    "Metadata Engine",
-    "metadata",
-    version
-  );
-  registerStructuralService(
-    services,
-    KERNEL_SERVICE_TOKENS.runtime,
-    runtime,
-    "Runtime",
-    "runtime",
-    version
-  );
+
+  registerStructuralService(services, KERNEL_SERVICE_TOKENS.eventBus, events, "Event Bus", "events", version);
+  registerStructuralService(services, KERNEL_SERVICE_TOKENS.moduleSystem, modules, "Module System", "modules", version);
+  registerStructuralService(services, KERNEL_SERVICE_TOKENS.executionContextFactory, executionContextFactory, "Execution Context Factory", "execution", version);
+  registerStructuralService(services, KERNEL_SERVICE_TOKENS.metadataRegistry, metadata, "Metadata Registry", "metadata", version);
+  registerStructuralService(services, KERNEL_SERVICE_TOKENS.metadataEngine, metadata, "Metadata Engine", "metadata", version);
+  registerStructuralService(services, KERNEL_SERVICE_TOKENS.componentRegistry, components, "Component Registry", "system", version);
+  registerStructuralService(services, KERNEL_SERVICE_TOKENS.uiCompositionRuntime, uiComposition, "UI Composition Runtime", "runtime", version);
+  registerStructuralService(services, KERNEL_SERVICE_TOKENS.runtime, runtime, "Runtime", "runtime", version);
 
   return {
     configuration,
@@ -398,6 +305,8 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
     modules,
     services,
     metadata,
+    components,
+    uiComposition,
     runtime,
     container,
     structuralEvents
@@ -409,8 +318,7 @@ function registerStructuralService(
   id: string,
   service: unknown,
   name: string,
-  category:
-    "configuration" | "events" | "modules" | "execution" | "metadata" | "runtime" | "system",
+  category: "configuration" | "events" | "modules" | "execution" | "metadata" | "runtime" | "system",
   version: string
 ): void {
   void registry.register(id, service, {
@@ -448,4 +356,3 @@ function createKernelEventMetadata(
     tags: ["kernel", "structural"]
   };
 }
-

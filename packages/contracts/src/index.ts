@@ -1,4 +1,51 @@
 ﻿export type {
+  ComponentCapability,
+  ComponentCategory,
+  ComponentDefinition,
+  ComponentDefinitionInput,
+  ComponentDefinitionSnapshot,
+  ComponentDiagnosticSeverity,
+  ComponentKey,
+  ComponentPropDefinition,
+  ComponentPropsSchema,
+  ComponentPropType,
+  ComponentRegistrationOptions,
+  ComponentRegistryDiagnosticEntry,
+  ComponentRegistryError,
+  ComponentRegistrySnapshot,
+  ComponentRegistryStatus,
+  ComponentRegistryWarning,
+  ComponentResolutionResult,
+  ComponentSlotDefinition,
+  ComponentType,
+  ComponentValidationResult,
+  IComponentRegistry,
+  IComponentResolver,
+  IComponentSnapshotService,
+  IComponentValidator
+} from "./components.js";
+export type {
+  CompositionActionBinding,
+  CompositionBinding,
+  CompositionDiagnosticEntry,
+  CompositionDiagnosticSeverity,
+  CompositionError,
+  CompositionInput,
+  CompositionNode,
+  CompositionResolutionResult,
+  CompositionSourceType,
+  CompositionStatus,
+  CompositionTree,
+  CompositionValidationResult,
+  CompositionVisibilityRule,
+  CompositionWarning,
+  ICompositionResolver,
+  ICompositionSnapshotService,
+  ICompositionValidator,
+  IUICompositionRuntime,
+  UICompositionSnapshot
+} from "./ui-composition.js";
+export type {
   IConfigurationProvider,
   ConfigurationQuery,
   ConfigurationScope
@@ -195,6 +242,7 @@ export type {
   IRuntimeContextValidator,
   IRuntimeLifecycleController,
   IRuntimeStatusSnapshotService,
+  RuntimeComponentRegistryContext,
   RuntimeConfigurationContext,
   RuntimeContext,
   RuntimeContextFactoryInput,
@@ -205,6 +253,7 @@ export type {
   RuntimeModulesContext,
   RuntimeMetadataContext,
   RuntimeServicesContext,
+  RuntimeUICompositionContext,
   RuntimeStatusSnapshot
 } from "./runtime.js";
 export { CircularDependencyError } from "./dependency-injection.js";
@@ -266,5 +315,7 @@ export type {
   StructuralEventPayload,
   StructuralEventPublishInput
 } from "./structural-events.js";
+
+
 
 

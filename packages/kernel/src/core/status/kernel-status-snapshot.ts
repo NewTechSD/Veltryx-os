@@ -53,6 +53,10 @@ export function createKernelStatusSnapshot(input: {
   readonly metadataResourcesRegistered?: number;
   readonly metadataEntitiesRegistered?: number;
   readonly metadataPagesRegistered?: number;
+  readonly componentRegistryStatus?: KernelRegistryStatus;
+  readonly componentsRegistered?: number;
+  readonly uiCompositionStatus?: KernelRegistryStatus;
+  readonly compositionsGenerated?: number;
   readonly runtimeStatus: KernelStatusSnapshot["runtimeStatus"];
   readonly dependencyInjectionStatus?: KernelStatusSnapshot["dependencyInjectionStatus"];
   readonly providersRegistered?: number;
@@ -88,6 +92,10 @@ export function createKernelStatusSnapshot(input: {
     metadataResourcesRegistered: input.metadataResourcesRegistered,
     metadataEntitiesRegistered: input.metadataEntitiesRegistered,
     metadataPagesRegistered: input.metadataPagesRegistered,
+    componentRegistryStatus: input.componentRegistryStatus,
+    componentsRegistered: input.componentsRegistered,
+    uiCompositionStatus: input.uiCompositionStatus,
+    compositionsGenerated: input.compositionsGenerated,
     runtimeStatus: input.runtimeStatus,
     dependencyInjectionStatus: input.dependencyInjectionStatus,
     providersRegistered: input.providersRegistered,
@@ -102,4 +110,7 @@ export function createKernelStatusSnapshot(input: {
     diagnostics
   };
 }
+
+
+
 

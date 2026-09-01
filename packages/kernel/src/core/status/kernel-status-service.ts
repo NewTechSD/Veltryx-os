@@ -1,7 +1,9 @@
 ﻿import type {
   IConfigurationProvider,
   IKernelStatusService,
+  IComponentRegistry,
   IMetadataRegistry,
+  IUICompositionRuntime,
   IModuleLoader,
   IRuntime,
   IServiceRegistry,
@@ -25,6 +27,8 @@ export interface KernelStatusServiceDependencies {
   readonly services: IServiceRegistry;
   readonly modules: IModuleLoader;
   readonly metadata: IMetadataRegistry;
+  readonly components?: IComponentRegistry;
+  readonly uiComposition?: IUICompositionRuntime;
   readonly runtime: IRuntime;
   readonly container?: import("@veltryx/contracts").IDependencyInjectionContainer;
 }
@@ -56,6 +60,8 @@ export class KernelStatusService implements IKernelStatusService {
     const moduleMetrics = this.createModuleMetrics(moduleSnapshot);
     const configuration = this.collectConfiguration(errors);
     const metadata = this.collectMetadataSnapshot(errors);
+    const components = this.collectComponentSnapshot(errors);
+    const uiComposition = this.collectUICompositionSnapshot(errors);
 
     return createKernelStatusSnapshot({
       kernelStatus: errors.length > 0 ? "error" : this.options.kernelState(),
@@ -80,6 +86,10 @@ export class KernelStatusService implements IKernelStatusService {
       metadataResourcesRegistered: metadata.resourcesRegistered,
       metadataEntitiesRegistered: metadata.entitiesRegistered,
       metadataPagesRegistered: metadata.pagesRegistered,
+      componentRegistryStatus: components.status,
+      componentsRegistered: components.componentsRegistered,
+      uiCompositionStatus: uiComposition.status,
+      compositionsGenerated: uiComposition.compositionsGenerated,
       runtimeStatus,
       dependencyInjectionStatus: dependencyInjection?.status,
       providersRegistered: dependencyInjection?.providersRegistered,
@@ -235,6 +245,48 @@ export class KernelStatusService implements IKernelStatusService {
     }
   }
 
+
+  private collectComponentSnapshot(errors: KernelDiagnosticEntry[]): {
+    readonly status: KernelRegistryStatus;
+    readonly componentsRegistered?: number;
+  } {
+    try {
+      if (!this.dependencies.components) return { status: { status: "notImplemented", detail: "Component Registry is not configured." } };
+      const snapshot = this.dependencies.components.snapshot();
+      if (snapshot.status === "error") {
+        errors.push(createKernelDiagnosticEntry("KERNEL_COMPONENT_REGISTRY_DEGRADED", "Component Registry public snapshot reports errors.", "error", "components"));
+      }
+      const availability = snapshot.status === "error" ? "unavailable" : "available";
+      return {
+        status: { status: availability, detail: `Component Registry snapshot status: ${snapshot.status}.` },
+        componentsRegistered: snapshot.componentsRegistered
+      };
+    } catch (error) {
+      errors.push(this.toDiagnostic(error, "KERNEL_COMPONENT_REGISTRY_FAILED", "components"));
+      return { status: { status: "unavailable", detail: "Component Registry public snapshot is unavailable." } };
+    }
+  }
+
+  private collectUICompositionSnapshot(errors: KernelDiagnosticEntry[]): {
+    readonly status: KernelRegistryStatus;
+    readonly compositionsGenerated?: number;
+  } {
+    try {
+      if (!this.dependencies.uiComposition) return { status: { status: "notImplemented", detail: "UI Composition Runtime is not configured." } };
+      const snapshot = this.dependencies.uiComposition.snapshot();
+      if (snapshot.status === "error") {
+        errors.push(createKernelDiagnosticEntry("KERNEL_UI_COMPOSITION_DEGRADED", "UI Composition Runtime public snapshot reports errors.", "error", "ui-composition"));
+      }
+      const availability = snapshot.status === "error" ? "unavailable" : "available";
+      return {
+        status: { status: availability, detail: `UI Composition Runtime snapshot status: ${snapshot.status}.` },
+        compositionsGenerated: snapshot.compositionsGenerated
+      };
+    } catch (error) {
+      errors.push(this.toDiagnostic(error, "KERNEL_UI_COMPOSITION_FAILED", "ui-composition"));
+      return { status: { status: "unavailable", detail: "UI Composition Runtime public snapshot is unavailable." } };
+    }
+  }
   private collectRuntimeStatus(
     errors: KernelDiagnosticEntry[]
   ): KernelStatusSnapshot["runtimeStatus"] {
@@ -315,4 +367,5 @@ export class KernelStatusService implements IKernelStatusService {
     );
   }
 }
+
 

@@ -11,6 +11,8 @@ import type {
 } from "./dependency-injection.js";
 import type { ModuleSystemSnapshot } from "./module-system-status.js";
 import type { IMetadataSnapshotService, MetadataEngineSnapshot } from "./metadata.js";
+import type { ComponentRegistrySnapshot } from "./components.js";
+import type { UICompositionSnapshot } from "./ui-composition.js";
 import type { IModuleLoader } from "./modules.js";
 import type { IServiceRegistry, ServiceRegistrySnapshot } from "./services.js";
 
@@ -75,6 +77,8 @@ export interface RuntimeBootstrapDependencies {
   readonly modules: IModuleLoader;
   readonly dependencyInjection?: IDependencyInjectionContainer;
   readonly metadata?: IMetadataSnapshotService;
+  readonly componentRegistry?: { snapshot(): ComponentRegistrySnapshot };
+  readonly uiComposition?: { snapshot(): UICompositionSnapshot };
 }
 export interface IRuntimeBootstrapService {
   bootstrap(execution?: ExecutionContextSnapshot): Promise<RuntimeStructuralBootstrapResult>;
@@ -121,6 +125,14 @@ export interface RuntimeMetadataContext {
   readonly entitiesRegistered: number;
   readonly pagesRegistered: number;
 }
+export interface RuntimeComponentRegistryContext {
+  readonly status: string;
+  readonly componentsRegistered: number;
+}
+export interface RuntimeUICompositionContext {
+  readonly status: string;
+  readonly compositionsGenerated: number;
+}
 export interface RuntimeExecutionContextSummary {
   readonly requestId: string;
   readonly correlationId: string;
@@ -140,6 +152,8 @@ export interface RuntimeContext {
   readonly dependencyInjection: RuntimeDependencyInjectionContext;
   readonly modules: RuntimeModulesContext;
   readonly metadata: RuntimeMetadataContext;
+  readonly componentRegistry?: RuntimeComponentRegistryContext;
+  readonly uiComposition?: RuntimeUICompositionContext;
   readonly execution?: RuntimeExecutionContextSummary;
   readonly warnings: readonly RuntimeWarning[];
   readonly errors: readonly RuntimeError[];
@@ -163,6 +177,10 @@ export interface RuntimeStatusSnapshot {
   readonly metadataResourcesRegistered: number;
   readonly metadataEntitiesRegistered: number;
   readonly metadataPagesRegistered: number;
+  readonly componentRegistryStatus?: string;
+  readonly componentsRegistered?: number;
+  readonly uiCompositionStatus?: string;
+  readonly compositionsGenerated?: number;
   readonly servicesAvailable: number;
   readonly providersRegistered: number;
   readonly providersResolved: number;
@@ -181,6 +199,8 @@ export interface RuntimeContextFactoryInput {
   readonly dependencyInjection: DependencyInjectionSnapshot;
   readonly modules: ModuleSystemSnapshot;
   readonly metadata?: MetadataEngineSnapshot;
+  readonly componentRegistry?: ComponentRegistrySnapshot;
+  readonly uiComposition?: UICompositionSnapshot;
   readonly bootstrap: RuntimeBootstrapStatus;
   readonly execution?: ExecutionContextSnapshot;
 }
@@ -201,5 +221,7 @@ export interface IRuntimeLifecycleController {
 export interface IRuntimeStatusSnapshotService {
   snapshot(context: RuntimeContext): RuntimeStatusSnapshot;
 }
+
+
 
 

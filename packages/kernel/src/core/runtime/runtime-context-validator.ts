@@ -66,6 +66,8 @@ export class RuntimeContextValidator implements IRuntimeContextValidator {
       context.metadata.resourcesRegistered,
       context.metadata.entitiesRegistered,
       context.metadata.pagesRegistered,
+      context.componentRegistry?.componentsRegistered ?? 0,
+      context.uiComposition?.compositionsGenerated ?? 0,
       context.modules.withErrors
     ];
   }
@@ -81,4 +83,5 @@ export class RuntimeContextValidator implements IRuntimeContextValidator {
     return createRuntimeEntry(code, message);
   }
 }
+
 

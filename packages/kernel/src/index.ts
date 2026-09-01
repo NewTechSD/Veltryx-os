@@ -5,6 +5,8 @@ export * from "./core/configuration/index.js";
 export * from "./core/di/index.js";
 export * from "./core/runtime/index.js";
 export * from "./core/metadata/index.js";
+export * from "./core/components/index.js";
+export * from "./core/ui-composition/index.js";
 export * from "./module-system/status/index.js";
 export {
   KernelLoadedModule,
@@ -60,4 +62,5 @@ export {
   type KernelState,
   type VeltryxKernelDependencies
 } from "./kernel.js";
+
 

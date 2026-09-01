@@ -54,11 +54,11 @@ Construir as capacidades de plataforma que transformam metadata em experiencia u
 
 Implementacoes:
 
-| IMP      | Entrega           | Objetivo                                                                                     | RFCs Dependentes                                 | Prioridade | Complexidade | Status  | Dependencias                           |
-| -------- | ----------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------ | ---------- | ------------ | ------- | -------------------------------------- |
-| IMP-0007 | UI Composition    | Implementar composicao abstrata de UI por componentes, slots, propriedades, eventos e acoes. | RFC-0005, RFC-0006, RFC-0007, RFC-0099           | Alta       | Alta         | Planned | IMP-0005, IMP-0006                     |
-| IMP-0008 | Builder           | Implementar editor visual para produzir metadata governada.                                  | RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0099 | Alta       | Alta         | Blocked | RFC-0008, IMP-0005, IMP-0006, IMP-0007 |
-| IMP-0009 | Application Model | Implementar modelo de aplicacao gerado por Runtime, metadata e composicao.                   | RFC-0005, RFC-0006, RFC-0007, RFC-0009, RFC-0099 | Media      | Alta         | Blocked | RFC-0009, IMP-0006, IMP-0007           |
+| IMP      | Entrega           | Objetivo                                                                                                      | RFCs Dependentes                                 | Prioridade | Complexidade | Status  | Dependencias                           |
+| -------- | ----------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ | ---------- | ------------ | ------- | -------------------------------------- |
+| IMP-0007 | UI Composition    | Implementar composicao abstrata de UI por componentes, slots, propriedades, eventos e acoes.                  | RFC-0005, RFC-0006, RFC-0007, RFC-0099           | Alta       | Alta         | Planned | IMP-0005, IMP-0006                     |
+| IMP-0008 | Runtime Adapters  | Definir e implementar adapters de runtime para traduzir Site Schema e Composition Tree para delivery targets. | RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0099 | Alta       | Alta         | Blocked | RFC-0008, IMP-0005, IMP-0006, IMP-0007 |
+| IMP-0009 | Application Model | Implementar modelo de aplicacao gerado por Runtime, metadata e composicao.                                    | RFC-0005, RFC-0006, RFC-0007, RFC-0009, RFC-0099 | Media      | Alta         | Blocked | RFC-0009, IMP-0006, IMP-0007           |
 
 ### Fase 3
 
@@ -174,4 +174,20 @@ Somente planejamento.
 
 Metadata Engine Core e Metadata Registry Evolution implementam a fundacao estrutural de metadata para SPRINT-0004. A entrega cobre namespaces, resources, entities, fields, relations, actions, views, forms, lists, pages, menus, permission declarations, validator, resolver, snapshot publico e diagnostics seguros.
 
-A proxima entrega recomendada e TASK-0312 Component Registry + UI Composition Runtime.
+A proxima entrega recomendada e TASK-0312 Component Registry + UI Composition Runtime, com a trava arquitetural TASK-0312A de runtime/platform agnosticism.
+
+## TASK-0312A / Architecture Guardrail
+
+ADR-0004 Builder Runtime Agnosticism foi aceita para impedir acoplamento prematuro do Builder, Site Schema, Component Registry e UI Composition Runtime a qualquer runtime ou plataforma.
+
+RFC-0008 Runtime Abstraction & Platform Adapters foi criada como Draft. Ela prepara uma futura camada de Runtime Adapter responsavel por compatibilidade, preview, publish, deploy, rollback, capabilities e mapping concreto de implementacoes.
+
+Criterios adicionais para TASK-0312:
+
+- Component Registry deve armazenar contratos declarativos, nao implementacoes visuais.
+- UI Composition Runtime deve gerar Composition Tree universal.
+- Site Schema deve permanecer contrato universal.
+- Builder manipula schema, nao entrega visual.
+- Runtime Adapter traduz schema/composition para plataforma.
+- Veltryx OS permanece Control Plane.
+- Site publicado pertence ao Delivery Plane.

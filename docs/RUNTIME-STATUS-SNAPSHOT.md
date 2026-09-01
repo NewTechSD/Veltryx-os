@@ -1,6 +1,6 @@
-# Runtime Status Snapshot
+﻿# Runtime Status Snapshot
 
-O Runtime Status Snapshot é o read model público detalhado do Runtime.
+O Runtime Status Snapshot Ã© o read model pÃºblico detalhado do Runtime.
 
 ```text
 Runtime Context
@@ -15,21 +15,21 @@ Kernel Status Summary
 Admin / Diagnostics futuros
 ```
 
-## Campos públicos
+## Campos pÃºblicos
 
-O snapshot expõe status, `generatedAt`, `runtimeId`, environment, runtime mode, `bootstrappedAt`, uptime, status de Configuration, Service Registry, DI e Module System, além dos contadores de serviços, providers e módulos. Warnings, errors e diagnostics são normalizados.
+O snapshot expÃµe status, `generatedAt`, `runtimeId`, environment, runtime mode, `bootstrappedAt`, uptime, status de Configuration, Service Registry, DI e Module System, alÃ©m dos contadores de serviÃ§os, providers e mÃ³dulos. Warnings, errors e diagnostics sÃ£o normalizados.
 
-O uptime é calculado a partir de `bootstrappedAt` quando o timestamp é válido. O snapshot é uma projeção do Runtime Context e não contém os snapshots brutos usados pela factory.
+O uptime Ã© calculado a partir de `bootstrappedAt` quando o timestamp Ã© vÃ¡lido. O snapshot Ã© uma projeÃ§Ã£o do Runtime Context e nÃ£o contÃ©m os snapshots brutos usados pela factory.
 
-## Relações
+## RelaÃ§Ãµes
 
-O Runtime Bootstrap alimenta o Runtime Context; o Runtime Context alimenta este snapshot. O Kernel Status consome apenas lifecycle, uptime e contadores de warnings/errors, preservando sua função de resumo global.
+O Runtime Bootstrap alimenta o Runtime Context; o Runtime Context alimenta este snapshot. O Kernel Status consome apenas lifecycle, uptime e contadores de warnings/errors, preservando sua funÃ§Ã£o de resumo global.
 
-Instâncias, providers, factories, classes, closures, stacks, secrets, `process.env` e dados de usuário não são expostos. Objetos e arrays públicos são congelados.
+InstÃ¢ncias, providers, factories, classes, closures, stacks, secrets, `process.env` e dados de usuÃ¡rio nÃ£o sÃ£o expostos. Objetos e arrays pÃºblicos sÃ£o congelados.
 
-## Limitações
+## LimitaÃ§Ãµes
 
-Não há observabilidade externa, histórico de snapshots, persistência, renderer ou Metadata Runtime. Eventos `runtime.context.created`, `runtime.snapshot.generated` e `runtime.lifecycle.changed` permanecem adiados para uma integração futura sem dependências circulares.
+NÃ£o hÃ¡ observabilidade externa, histÃ³rico de snapshots, persistÃªncia, renderer ou Metadata Runtime. Eventos `runtime.context.created`, `runtime.snapshot.generated` e `runtime.lifecycle.changed` permanecem adiados para uma integraÃ§Ã£o futura sem dependÃªncias circulares.
 
 ## Metadata Summary
 
@@ -42,3 +42,7 @@ O Runtime Status Snapshot expoe somente contadores resumidos de metadata:
 - `metadataPagesRegistered`
 
 Esses campos sao derivados do Runtime Context e nao substituem o Metadata Snapshot publico.
+
+## Component Registry e UI Composition
+
+O Runtime Status Snapshot expoe apenas campos leves: componentRegistryStatus, componentsRegistered, uiCompositionStatus e compositionsGenerated. Composition Trees completas permanecem fora do snapshot publico de status.

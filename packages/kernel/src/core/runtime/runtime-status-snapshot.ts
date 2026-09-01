@@ -32,6 +32,10 @@ export class RuntimeStatusSnapshotService implements IRuntimeStatusSnapshotServi
       metadataResourcesRegistered: context.metadata.resourcesRegistered,
       metadataEntitiesRegistered: context.metadata.entitiesRegistered,
       metadataPagesRegistered: context.metadata.pagesRegistered,
+      componentRegistryStatus: context.componentRegistry?.status,
+      componentsRegistered: context.componentRegistry?.componentsRegistered,
+      uiCompositionStatus: context.uiComposition?.status,
+      compositionsGenerated: context.uiComposition?.compositionsGenerated,
       servicesAvailable: context.services.available,
       providersRegistered: context.dependencyInjection.providersRegistered,
       providersResolved: context.dependencyInjection.providersResolved,
@@ -54,4 +58,5 @@ export class RuntimeStatusSnapshotService implements IRuntimeStatusSnapshotServi
     });
   }
 }
+
 

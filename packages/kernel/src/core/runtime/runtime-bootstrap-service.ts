@@ -53,6 +53,8 @@ export class RuntimeBootstrapService implements IRuntimeBootstrapService {
         this.emptyDependencyInjectionSnapshot();
       const modules = await this.dependencies.modules.snapshot();
       const metadata = this.dependencies.metadata?.snapshot();
+      const componentRegistry = this.dependencies.componentRegistry?.snapshot();
+      const uiComposition = this.dependencies.uiComposition?.snapshot();
       const warnings: RuntimeWarning[] = [];
       if (repeated)
         warnings.push(
@@ -110,6 +112,8 @@ export class RuntimeBootstrapService implements IRuntimeBootstrapService {
         dependencyInjection,
         modules,
         metadata,
+        componentRegistry,
+        uiComposition,
         bootstrap: this.current,
         execution
       });
@@ -124,6 +128,8 @@ export class RuntimeBootstrapService implements IRuntimeBootstrapService {
           dependencyInjection,
           modules,
           metadata,
+        componentRegistry,
+        uiComposition,
           bootstrap: this.current,
           execution
         });
@@ -192,4 +198,7 @@ export class RuntimeBootstrapService implements IRuntimeBootstrapService {
     });
   }
 }
+
+
+
 

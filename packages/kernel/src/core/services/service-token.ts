@@ -11,7 +11,9 @@ export const KERNEL_SERVICE_TOKENS = Object.freeze({
   runtime: "kernel.runtime",
   serviceRegistry: "kernel.serviceRegistry",
   dependencyInjection: "kernel.dependencyInjection",
-  runtimeBootstrap: "kernel.runtimeBootstrap"
+  runtimeBootstrap: "kernel.runtimeBootstrap",
+  componentRegistry: "kernel.componentRegistry",
+  uiCompositionRuntime: "kernel.uiCompositionRuntime"
 } as const);
 
 const TOKEN_PATTERN = /^[a-z][a-z0-9]*(?:[._-][A-Za-z0-9]+)+$/;
@@ -33,4 +35,5 @@ export function freezeServiceToken(token: ServiceToken): ServiceToken {
   if (!token.owner.trim()) throw new Error("Service token owner must be a non-empty string");
   return Object.freeze({ ...token });
 }
+
 

@@ -1,4 +1,4 @@
-# Veltryx OS Architecture Index
+﻿# Veltryx OS Architecture Index
 
 > Documento mestre da arquitetura do Veltryx OS.
 >
@@ -76,7 +76,7 @@ RFC-0006 Runtime Engine
 RFC-0007 UI Composition System
         |
         v
-RFC-0008 Builder
+RFC-0008 Runtime Abstraction & Platform Adapters
         |
         v
 RFC-0009 Application Model
@@ -124,18 +124,18 @@ Estas RFCs formam o nucleo imutavel do Veltryx OS.
 
 ## Plataforma
 
-| RFC      | Documento                                                         | Status  |
-| -------- | ----------------------------------------------------------------- | ------- |
-| RFC-0007 | [UI Composition System](../rfc/RFC-0007-ui-composition-system.md) | Frozen  |
-| RFC-0008 | Builder                                                           | Planned |
-| RFC-0009 | Application Model                                                 | Planned |
-| RFC-0010 | Permission Engine                                                 | Planned |
-| RFC-0011 | Authentication                                                    | Planned |
-| RFC-0012 | Workflow Engine                                                   | Planned |
-| RFC-0013 | API Engine                                                        | Planned |
-| RFC-0014 | Query Engine                                                      | Planned |
-| RFC-0015 | Data Layer                                                        | Planned |
-| RFC-0016 | Event System                                                      | Planned |
+| RFC      | Documento                                                                                           | Status  |
+| -------- | --------------------------------------------------------------------------------------------------- | ------- |
+| RFC-0007 | [UI Composition System](../rfc/RFC-0007-ui-composition-system.md)                                   | Frozen  |
+| RFC-0008 | [Runtime Abstraction & Platform Adapters](../rfc/RFC-0008-runtime-abstraction-platform-adapters.md) | Draft   |
+| RFC-0009 | Builder / Application Model                                                                         | Planned |
+| RFC-0010 | Permission Engine                                                                                   | Planned |
+| RFC-0011 | Authentication                                                                                      | Planned |
+| RFC-0012 | Workflow Engine                                                                                     | Planned |
+| RFC-0013 | API Engine                                                                                          | Planned |
+| RFC-0014 | Query Engine                                                                                        | Planned |
+| RFC-0015 | Data Layer                                                                                          | Planned |
+| RFC-0016 | Event System                                                                                        | Planned |
 
 ## Infraestrutura
 
@@ -308,6 +308,8 @@ Se qualquer resposta for "nao", a implementacao nao deve comecar.
 - [Runtime Bootstrap v1](RUNTIME-BOOTSTRAP.md)
 - [Runtime Context](RUNTIME-CONTEXT.md)
 - [Runtime Status Snapshot](RUNTIME-STATUS-SNAPSHOT.md)
+- [Component Registry](COMPONENT-REGISTRY.md)
+- [UI Composition Runtime](UI-COMPOSITION-RUNTIME.md)
 
 ## Documentos Oficiais
 
@@ -340,3 +342,32 @@ Documentos tecnicos adicionados para a fundacao de metadata:
 
 - [Metadata Engine](METADATA-ENGINE.md)
 - [Metadata Registry](METADATA-REGISTRY.md)
+
+## Runtime Agnosticism Guardrail
+
+ADR-0004 estabelece que Builder, Site Schema, Component Registry e UI Composition Runtime devem permanecer runtime-agnostic e platform-agnostic.
+
+RFC-0008 nasce como Draft para formalizar Runtime Abstraction & Platform Adapters. Ate sua aprovacao, nenhuma implementacao pode acoplar o Core, Contracts, Component Registry ou UI Composition Runtime a um framework, DOM, plataforma de publicacao, template executavel ou mapping concreto de componente.
+
+Fluxo arquitetural esperado:
+
+```text
+Veltryx OS
+    |
+    v
+Builder
+    |
+    v
+Site Schema
+    |
+    v
+Publishing Pipeline
+    |
+    v
+Runtime Adapter
+    |
+    v
+Site publicado
+```
+
+Veltryx OS permanece Control Plane. Sites publicados pertencem ao Delivery Plane.

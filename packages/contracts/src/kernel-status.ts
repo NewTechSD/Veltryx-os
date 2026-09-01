@@ -33,7 +33,7 @@ export interface KernelDiagnosticEntry {
   readonly code: string;
   readonly message: string;
   readonly severity: KernelDiagnosticSeverity;
-  readonly source: "kernel" | "bootstrap" | "modules" | "metadata" | "runtime" | "services";
+  readonly source: "kernel" | "bootstrap" | "modules" | "metadata" | "runtime" | "services" | "components" | "ui-composition";
   readonly detail?: string;
   readonly stack?: string;
 }
@@ -56,6 +56,10 @@ export interface KernelStatusSnapshot {
   readonly metadataResourcesRegistered?: number;
   readonly metadataEntitiesRegistered?: number;
   readonly metadataPagesRegistered?: number;
+  readonly componentRegistryStatus?: KernelRegistryStatus;
+  readonly componentsRegistered?: number;
+  readonly uiCompositionStatus?: KernelRegistryStatus;
+  readonly compositionsGenerated?: number;
   readonly runtimeStatus: RuntimeState | KernelSnapshotAvailability;
   readonly dependencyInjectionStatus?: import("./dependency-injection.js").DependencyInjectionStatus;
   readonly providersRegistered?: number;
@@ -73,4 +77,7 @@ export interface KernelStatusSnapshot {
 export interface IKernelStatusService {
   snapshot(): Promise<KernelStatusSnapshot>;
 }
+
+
+
 
