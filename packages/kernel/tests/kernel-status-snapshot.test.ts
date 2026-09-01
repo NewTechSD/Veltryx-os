@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import type { ModuleManifest, ServiceToken } from "@veltryx/contracts";
 
 import {
@@ -56,10 +56,10 @@ describe("Kernel public status snapshot", () => {
     expect(snapshot.bootStatus).toBe("ready");
     expect(snapshot.bootTimestamp).toEqual(expect.any(String));
     expect(snapshot.environment).toBe("test");
-    expect(snapshot.servicesRegistered).toMatchObject({ status: "available", value: 10 });
+    expect(snapshot.servicesRegistered).toMatchObject({ status: "available", value: 11 });
     expect(snapshot.dependencyInjectionStatus).toBe("ready");
-    expect(snapshot.providersRegistered).toBe(7);
-    expect(snapshot.providersResolved).toBe(5);
+    expect(snapshot.providersRegistered).toBe(9);
+    expect(snapshot.providersResolved).toBe(6);
     expect(snapshot.runtimeBootstrapStatus).toBe("warning");
     expect(snapshot.runtimeLifecycle).toBe("warning");
     expect(snapshot.runtimeWarnings).toBeGreaterThan(0);
@@ -71,13 +71,11 @@ describe("Kernel public status snapshot", () => {
     expect(snapshot.metadataRegistryStatus).toMatchObject({ status: "available" });
     expect(snapshot.runtimeStatus).toBe("ready");
     expect(snapshot.errors).toEqual([]);
-    expect(snapshot.warnings).toEqual([
-      expect.objectContaining({
-        code: "KERNEL_METADATA_GLOBAL_SUMMARY_NOT_IMPLEMENTED",
-        severity: "warning"
-      })
-    ]);
-    expect(snapshot.diagnostics).toEqual(snapshot.warnings);
+    expect(snapshot.metadataResourcesRegistered).toBe(0);
+    expect(snapshot.metadataEntitiesRegistered).toBe(0);
+    expect(snapshot.metadataPagesRegistered).toBe(0);
+    expect(snapshot.warnings).toEqual([]);
+    expect(snapshot.diagnostics).toEqual([]);
   });
 
   it("returns explicit notBootstrapped state before bootstrap", async () => {
@@ -142,7 +140,7 @@ describe("Kernel public status snapshot", () => {
       "KERNEL_RUNTIME_STATUS_FAILED"
     ]);
     expect(snapshot.errors.every((error) => error.stack === undefined)).toBe(true);
-    expect(snapshot.diagnostics).toHaveLength(4);
+    expect(snapshot.diagnostics).toHaveLength(3);
   });
   it("reports bootstrapped and initialized boot states before ready", async () => {
     const kernel = new VeltryxKernel();
@@ -244,3 +242,4 @@ describe("Kernel public status snapshot", () => {
     expect(snapshot.diagnostics).toEqual([warning, error]);
   });
 });
+

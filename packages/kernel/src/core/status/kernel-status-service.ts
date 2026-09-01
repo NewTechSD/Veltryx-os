@@ -45,15 +45,7 @@ export class KernelStatusService implements IKernelStatusService {
   ) {}
 
   async snapshot(): Promise<KernelStatusSnapshot> {
-    const warnings: KernelDiagnosticEntry[] = [
-      createKernelDiagnosticEntry(
-        "KERNEL_METADATA_GLOBAL_SUMMARY_NOT_IMPLEMENTED",
-        "Metadata registry does not expose a global count snapshot.",
-        "warning",
-        "metadata",
-        "The public metadata contract supports namespace queries only."
-      )
-    ];
+    const warnings: KernelDiagnosticEntry[] = [];
     const errors: KernelDiagnosticEntry[] = [];
 
     const moduleSnapshot = await this.collectModuleSnapshot(errors);
@@ -63,6 +55,7 @@ export class KernelStatusService implements IKernelStatusService {
     const dependencyInjection = this.dependencies.container?.snapshot();
     const moduleMetrics = this.createModuleMetrics(moduleSnapshot);
     const configuration = this.collectConfiguration(errors);
+    const metadata = this.collectMetadataSnapshot(errors);
 
     return createKernelStatusSnapshot({
       kernelStatus: errors.length > 0 ? "error" : this.options.kernelState(),
@@ -83,7 +76,10 @@ export class KernelStatusService implements IKernelStatusService {
         resolved: moduleMetrics.resolved,
         loaded: moduleMetrics.loaded
       },
-      metadataRegistryStatus: this.collectMetadataRegistryStatus(),
+      metadataRegistryStatus: metadata.status,
+      metadataResourcesRegistered: metadata.resourcesRegistered,
+      metadataEntitiesRegistered: metadata.entitiesRegistered,
+      metadataPagesRegistered: metadata.pagesRegistered,
       runtimeStatus,
       dependencyInjectionStatus: dependencyInjection?.status,
       providersRegistered: dependencyInjection?.providersRegistered,
@@ -201,12 +197,42 @@ export class KernelStatusService implements IKernelStatusService {
     }
   }
 
-  private collectMetadataRegistryStatus(): KernelRegistryStatus {
-    return {
-      status: "available",
-      detail:
-        "Metadata registry public contract is available. Global registry counts are not part of the contract."
-    };
+  private collectMetadataSnapshot(errors: KernelDiagnosticEntry[]): {
+    readonly status: KernelRegistryStatus;
+    readonly resourcesRegistered?: number;
+    readonly entitiesRegistered?: number;
+    readonly pagesRegistered?: number;
+  } {
+    try {
+      if (typeof this.dependencies.metadata.snapshot !== "function") {
+        return {
+          status: { status: "available", detail: "Legacy Metadata Registry contract is available." }
+        };
+      }
+      const snapshot = this.dependencies.metadata.snapshot();
+      if (snapshot.status === "error") {
+        errors.push(
+          createKernelDiagnosticEntry(
+            "KERNEL_METADATA_REGISTRY_DEGRADED",
+            "Metadata Registry public snapshot reports errors.",
+            "error",
+            "metadata"
+          )
+        );
+      }
+      const availability = snapshot.status === "error" ? "unavailable" : "available";
+      return {
+        status: { status: availability, detail: `Metadata Registry snapshot status: ${snapshot.status}.` },
+        resourcesRegistered: snapshot.resourcesRegistered,
+        entitiesRegistered: snapshot.entitiesRegistered,
+        pagesRegistered: snapshot.pagesRegistered
+      };
+    } catch (error) {
+      errors.push(this.toDiagnostic(error, "KERNEL_METADATA_REGISTRY_FAILED", "metadata"));
+      return {
+        status: { status: "unavailable", detail: "Metadata Registry public snapshot is unavailable." }
+      };
+    }
   }
 
   private collectRuntimeStatus(
@@ -289,3 +315,4 @@ export class KernelStatusService implements IKernelStatusService {
     );
   }
 }
+

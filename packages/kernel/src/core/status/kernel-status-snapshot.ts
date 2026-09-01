@@ -50,6 +50,9 @@ export function createKernelStatusSnapshot(input: {
   readonly modulesLoaded: KernelStatusMetric;
   readonly moduleSystemStatus: KernelModuleSystemStatus;
   readonly metadataRegistryStatus: KernelRegistryStatus;
+  readonly metadataResourcesRegistered?: number;
+  readonly metadataEntitiesRegistered?: number;
+  readonly metadataPagesRegistered?: number;
   readonly runtimeStatus: KernelStatusSnapshot["runtimeStatus"];
   readonly dependencyInjectionStatus?: KernelStatusSnapshot["dependencyInjectionStatus"];
   readonly providersRegistered?: number;
@@ -82,6 +85,9 @@ export function createKernelStatusSnapshot(input: {
     modulesLoaded: input.modulesLoaded,
     moduleSystemStatus: input.moduleSystemStatus,
     metadataRegistryStatus: input.metadataRegistryStatus,
+    metadataResourcesRegistered: input.metadataResourcesRegistered,
+    metadataEntitiesRegistered: input.metadataEntitiesRegistered,
+    metadataPagesRegistered: input.metadataPagesRegistered,
     runtimeStatus: input.runtimeStatus,
     dependencyInjectionStatus: input.dependencyInjectionStatus,
     providersRegistered: input.providersRegistered,
@@ -96,3 +102,4 @@ export function createKernelStatusSnapshot(input: {
     diagnostics
   };
 }
+

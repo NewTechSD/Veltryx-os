@@ -333,3 +333,10 @@ Objetivo:
 Iniciar a preparacao para IMP-0001 Bootstrap conforme governanca aprovada.
 
 Apos o freeze da fundacao e a revisao arquitetural, a proxima etapa autorizavel e IMP-0001 Bootstrap.
+
+## Metadata Engine Core Documentation
+
+Documentos tecnicos adicionados para a fundacao de metadata:
+
+- [Metadata Engine](METADATA-ENGINE.md)
+- [Metadata Registry](METADATA-REGISTRY.md)

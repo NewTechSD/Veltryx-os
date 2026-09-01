@@ -1,4 +1,4 @@
-import type { ServiceToken } from "@veltryx/contracts";
+﻿import type { ServiceToken } from "@veltryx/contracts";
 
 export const KERNEL_SERVICE_TOKENS = Object.freeze({
   configuration: "kernel.configuration",
@@ -7,6 +7,7 @@ export const KERNEL_SERVICE_TOKENS = Object.freeze({
   executionContextFactory: "kernel.executionContextFactory",
   status: "kernel.status",
   metadataRegistry: "kernel.metadataRegistry",
+  metadataEngine: "kernel.metadataEngine",
   runtime: "kernel.runtime",
   serviceRegistry: "kernel.serviceRegistry",
   dependencyInjection: "kernel.dependencyInjection",
@@ -32,3 +33,4 @@ export function freezeServiceToken(token: ServiceToken): ServiceToken {
   if (!token.owner.trim()) throw new Error("Service token owner must be a non-empty string");
   return Object.freeze({ ...token });
 }
+

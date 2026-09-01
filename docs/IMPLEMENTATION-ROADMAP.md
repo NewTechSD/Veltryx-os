@@ -35,14 +35,14 @@ Estabelecer a base minima executavel da plataforma, incluindo bootstrap, contrat
 
 Implementacoes:
 
-| IMP | Entrega | Objetivo | RFCs Dependentes | Prioridade | Complexidade | Status | Dependencias |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| IMP-0001 | Bootstrap | Criar o fluxo inicial de inicializacao da plataforma e validar pre-condicoes do Core. | RFC-0001, RFC-0002, RFC-0099 | Alta | Media | Planned | Nenhuma |
-| IMP-0002 | Core Contracts | Materializar contratos publicos iniciais do Platform Core. | RFC-0001, RFC-0002, RFC-0004, RFC-0099 | Alta | Alta | Planned | IMP-0001 |
-| IMP-0003 | Module Loader | Implementar descoberta, validacao e lifecycle inicial de modulos. | RFC-0001, RFC-0002, RFC-0003, RFC-0099 | Alta | Alta | Planned | IMP-0001, IMP-0002 |
-| IMP-0004 | Service Registry | Implementar registro, resolucao e descarte basico de services por contrato. | RFC-0002, RFC-0003, RFC-0004, RFC-0099 | Alta | Alta | Planned | IMP-0002, IMP-0003 |
-| IMP-0005 | Metadata Registry | Implementar registro e consulta de metadata validada. | RFC-0001, RFC-0003, RFC-0005, RFC-0099 | Alta | Alta | Planned | IMP-0002, IMP-0003, IMP-0004 |
-| IMP-0006 | Runtime Bootstrap | Implementar inicializacao minima do Runtime e conexao com registries. | RFC-0001, RFC-0002, RFC-0004, RFC-0005, RFC-0006, RFC-0099 | Alta | Alta | Planned | IMP-0002, IMP-0004, IMP-0005 |
+| IMP      | Entrega           | Objetivo                                                                              | RFCs Dependentes                                           | Prioridade | Complexidade | Status  | Dependencias                 |
+| -------- | ----------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------- | ------------ | ------- | ---------------------------- |
+| IMP-0001 | Bootstrap         | Criar o fluxo inicial de inicializacao da plataforma e validar pre-condicoes do Core. | RFC-0001, RFC-0002, RFC-0099                               | Alta       | Media        | Planned | Nenhuma                      |
+| IMP-0002 | Core Contracts    | Materializar contratos publicos iniciais do Platform Core.                            | RFC-0001, RFC-0002, RFC-0004, RFC-0099                     | Alta       | Alta         | Planned | IMP-0001                     |
+| IMP-0003 | Module Loader     | Implementar descoberta, validacao e lifecycle inicial de modulos.                     | RFC-0001, RFC-0002, RFC-0003, RFC-0099                     | Alta       | Alta         | Planned | IMP-0001, IMP-0002           |
+| IMP-0004 | Service Registry  | Implementar registro, resolucao e descarte basico de services por contrato.           | RFC-0002, RFC-0003, RFC-0004, RFC-0099                     | Alta       | Alta         | Planned | IMP-0002, IMP-0003           |
+| IMP-0005 | Metadata Registry | Implementar registro e consulta de metadata validada.                                 | RFC-0001, RFC-0003, RFC-0005, RFC-0099                     | Alta       | Alta         | Planned | IMP-0002, IMP-0003, IMP-0004 |
+| IMP-0006 | Runtime Bootstrap | Implementar inicializacao minima do Runtime e conexao com registries.                 | RFC-0001, RFC-0002, RFC-0004, RFC-0005, RFC-0006, RFC-0099 | Alta       | Alta         | Planned | IMP-0002, IMP-0004, IMP-0005 |
 
 ### Fase 2
 
@@ -54,11 +54,11 @@ Construir as capacidades de plataforma que transformam metadata em experiencia u
 
 Implementacoes:
 
-| IMP | Entrega | Objetivo | RFCs Dependentes | Prioridade | Complexidade | Status | Dependencias |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| IMP-0007 | UI Composition | Implementar composicao abstrata de UI por componentes, slots, propriedades, eventos e acoes. | RFC-0005, RFC-0006, RFC-0007, RFC-0099 | Alta | Alta | Planned | IMP-0005, IMP-0006 |
-| IMP-0008 | Builder | Implementar editor visual para produzir metadata governada. | RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0099 | Alta | Alta | Blocked | RFC-0008, IMP-0005, IMP-0006, IMP-0007 |
-| IMP-0009 | Application Model | Implementar modelo de aplicacao gerado por Runtime, metadata e composicao. | RFC-0005, RFC-0006, RFC-0007, RFC-0009, RFC-0099 | Media | Alta | Blocked | RFC-0009, IMP-0006, IMP-0007 |
+| IMP      | Entrega           | Objetivo                                                                                     | RFCs Dependentes                                 | Prioridade | Complexidade | Status  | Dependencias                           |
+| -------- | ----------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------ | ---------- | ------------ | ------- | -------------------------------------- |
+| IMP-0007 | UI Composition    | Implementar composicao abstrata de UI por componentes, slots, propriedades, eventos e acoes. | RFC-0005, RFC-0006, RFC-0007, RFC-0099           | Alta       | Alta         | Planned | IMP-0005, IMP-0006                     |
+| IMP-0008 | Builder           | Implementar editor visual para produzir metadata governada.                                  | RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0099 | Alta       | Alta         | Blocked | RFC-0008, IMP-0005, IMP-0006, IMP-0007 |
+| IMP-0009 | Application Model | Implementar modelo de aplicacao gerado por Runtime, metadata e composicao.                   | RFC-0005, RFC-0006, RFC-0007, RFC-0009, RFC-0099 | Media      | Alta         | Blocked | RFC-0009, IMP-0006, IMP-0007           |
 
 ### Fase 3
 
@@ -70,13 +70,13 @@ Implementar capacidades empresariais basicas de identidade, acesso, usuarios, or
 
 Implementacoes:
 
-| IMP | Entrega | Objetivo | RFCs Dependentes | Prioridade | Complexidade | Status | Dependencias |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| IMP-0010 | Auth | Implementar autenticacao de usuarios, servicos e integracoes. | RFC-0001, RFC-0002, RFC-0011, RFC-0099 | Alta | Alta | Blocked | RFC-0011, IMP-0002 |
-| IMP-0011 | RBAC | Implementar controle de acesso por roles, permissoes, recursos e contexto. | RFC-0001, RFC-0002, RFC-0006, RFC-0010, RFC-0099 | Alta | Alta | Blocked | RFC-0010, IMP-0010 |
-| IMP-0012 | Users | Implementar modelo operacional de usuarios e identidades. | RFC-0011, RFC-0099 | Alta | Media | Blocked | RFC-0011, IMP-0010 |
-| IMP-0013 | Organizations | Implementar organizacoes como estrutura administrativa de negocio. | RFC-0001, RFC-0011, RFC-0099 | Media | Media | Blocked | RFC-0011, IMP-0012 |
-| IMP-0014 | Tenants | Implementar isolamento logico por tenant e workspace. | RFC-0001, RFC-0002, RFC-0011, RFC-0099 | Alta | Alta | Blocked | RFC-0011, IMP-0010, IMP-0011 |
+| IMP      | Entrega       | Objetivo                                                                   | RFCs Dependentes                                 | Prioridade | Complexidade | Status  | Dependencias                 |
+| -------- | ------------- | -------------------------------------------------------------------------- | ------------------------------------------------ | ---------- | ------------ | ------- | ---------------------------- |
+| IMP-0010 | Auth          | Implementar autenticacao de usuarios, servicos e integracoes.              | RFC-0001, RFC-0002, RFC-0011, RFC-0099           | Alta       | Alta         | Blocked | RFC-0011, IMP-0002           |
+| IMP-0011 | RBAC          | Implementar controle de acesso por roles, permissoes, recursos e contexto. | RFC-0001, RFC-0002, RFC-0006, RFC-0010, RFC-0099 | Alta       | Alta         | Blocked | RFC-0010, IMP-0010           |
+| IMP-0012 | Users         | Implementar modelo operacional de usuarios e identidades.                  | RFC-0011, RFC-0099                               | Alta       | Media        | Blocked | RFC-0011, IMP-0010           |
+| IMP-0013 | Organizations | Implementar organizacoes como estrutura administrativa de negocio.         | RFC-0001, RFC-0011, RFC-0099                     | Media      | Media        | Blocked | RFC-0011, IMP-0012           |
+| IMP-0014 | Tenants       | Implementar isolamento logico por tenant e workspace.                      | RFC-0001, RFC-0002, RFC-0011, RFC-0099           | Alta       | Alta         | Blocked | RFC-0011, IMP-0010, IMP-0011 |
 
 ### Fase 4
 
@@ -88,12 +88,12 @@ Adicionar capacidades de automacao, eventos, agendamento, filas e orquestracao c
 
 Implementacoes:
 
-| IMP | Entrega | Objetivo | RFCs Dependentes | Prioridade | Complexidade | Status | Dependencias |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| IMP-0015 | Workflow | Implementar workflow conforme contratos futuros de automacao. | RFC-0012, RFC-0016, RFC-0099 | Media | Alta | Blocked | RFC-0012, RFC-0016 |
-| IMP-0016 | Scheduler | Implementar agendamento de tarefas e execucoes rastreaveis. | RFC-0012, RFC-0016, RFC-0099 | Media | Media | Blocked | RFC-0012, RFC-0016 |
-| IMP-0017 | Event Bus | Implementar barramento operacional de eventos. | RFC-0002, RFC-0003, RFC-0016, RFC-0099 | Alta | Alta | Blocked | RFC-0016, IMP-0002, IMP-0003 |
-| IMP-0018 | Queue | Implementar processamento assincrono e filas conforme arquitetura aprovada. | RFC-0016, RFC-0018, RFC-0099 | Media | Alta | Blocked | RFC-0016, RFC-0018, IMP-0017 |
+| IMP      | Entrega   | Objetivo                                                                    | RFCs Dependentes                       | Prioridade | Complexidade | Status  | Dependencias                 |
+| -------- | --------- | --------------------------------------------------------------------------- | -------------------------------------- | ---------- | ------------ | ------- | ---------------------------- |
+| IMP-0015 | Workflow  | Implementar workflow conforme contratos futuros de automacao.               | RFC-0012, RFC-0016, RFC-0099           | Media      | Alta         | Blocked | RFC-0012, RFC-0016           |
+| IMP-0016 | Scheduler | Implementar agendamento de tarefas e execucoes rastreaveis.                 | RFC-0012, RFC-0016, RFC-0099           | Media      | Media        | Blocked | RFC-0012, RFC-0016           |
+| IMP-0017 | Event Bus | Implementar barramento operacional de eventos.                              | RFC-0002, RFC-0003, RFC-0016, RFC-0099 | Alta       | Alta         | Blocked | RFC-0016, IMP-0002, IMP-0003 |
+| IMP-0018 | Queue     | Implementar processamento assincrono e filas conforme arquitetura aprovada. | RFC-0016, RFC-0018, RFC-0099           | Media      | Alta         | Blocked | RFC-0016, RFC-0018, IMP-0017 |
 
 ### Fase 5
 
@@ -105,11 +105,11 @@ Habilitar ecossistema de extensoes por SDK, CLI e plugins, preparando a platafor
 
 Implementacoes:
 
-| IMP | Entrega | Objetivo | RFCs Dependentes | Prioridade | Complexidade | Status | Dependencias |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| IMP-0019 | SDK | Implementar SDK oficial para modulos, plugins, metadata, runtime e contratos publicos. | RFC-0001, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0099 | Media | Alta | Planned | IMP-0002, IMP-0003, IMP-0004, IMP-0005, IMP-0006 |
-| IMP-0020 | CLI | Implementar CLI para operacoes de desenvolvimento, validacao e suporte a modulos. | RFC-0003, RFC-0099 | Media | Media | Blocked | RFC de CLI, IMP-0019 |
-| IMP-0021 | Plugins | Implementar instalacao, validacao e ativacao controlada de plugins. | RFC-0003, RFC-0004, RFC-0005, RFC-0007, RFC-0099 | Media | Alta | Planned | IMP-0003, IMP-0004, IMP-0005, IMP-0007 |
+| IMP      | Entrega | Objetivo                                                                               | RFCs Dependentes                                           | Prioridade | Complexidade | Status  | Dependencias                                     |
+| -------- | ------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------- | ------------ | ------- | ------------------------------------------------ |
+| IMP-0019 | SDK     | Implementar SDK oficial para modulos, plugins, metadata, runtime e contratos publicos. | RFC-0001, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0099 | Media      | Alta         | Planned | IMP-0002, IMP-0003, IMP-0004, IMP-0005, IMP-0006 |
+| IMP-0020 | CLI     | Implementar CLI para operacoes de desenvolvimento, validacao e suporte a modulos.      | RFC-0003, RFC-0099                                         | Media      | Media        | Blocked | RFC de CLI, IMP-0019                             |
+| IMP-0021 | Plugins | Implementar instalacao, validacao e ativacao controlada de plugins.                    | RFC-0003, RFC-0004, RFC-0005, RFC-0007, RFC-0099           | Media      | Alta         | Planned | IMP-0003, IMP-0004, IMP-0005, IMP-0007           |
 
 ## Para cada implementacao
 
@@ -162,13 +162,16 @@ Nenhum codigo.
 
 Somente planejamento.
 
-
-
 ## Entregas Implementadas Recentes
 
 - TASK-0302 / IMP-0018 Event Bus: barramento interno em memoria do Platform Core implementado em @veltryx/kernel, com contratos publicos em @veltryx/contracts e documentacao em docs/EVENT-BUS.md.
 
-
 - TASK-0303 / IMP-0019 Kernel Structural Events: eventos estruturais internos do Kernel e Module System publicados via Event Bus em memoria, documentados em docs/KERNEL-STRUCTURAL-EVENTS.md.
 
 `r`n## TASK-0304 / IMP-0020`r`n`r`nModule System Public Snapshot implementado como fronteira publica de leitura via `kernel.modules().snapshot()`, preparando a futura tela `/modules` sem expor internals do Kernel.`r`n
+
+## TASK-0311 / IMP-0027
+
+Metadata Engine Core e Metadata Registry Evolution implementam a fundacao estrutural de metadata para SPRINT-0004. A entrega cobre namespaces, resources, entities, fields, relations, actions, views, forms, lists, pages, menus, permission declarations, validator, resolver, snapshot publico e diagnostics seguros.
+
+A proxima entrega recomendada e TASK-0312 Component Registry + UI Composition Runtime.

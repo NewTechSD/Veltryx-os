@@ -28,3 +28,7 @@ Eventos específicos de Runtime foram adiados: o bootstrap já depende da ordem 
 ## Limitações e próximos passos
 
 Não há Runtime Context completo, renderer, metadata resolver, UI composition, persistência ou shutdown operacional. A próxima implementação recomendada é a TASK-0310, Runtime Context e Runtime Status Snapshot completo.
+
+## Metadata Engine Input
+
+O Runtime Bootstrap v1 pode receber o Metadata Snapshot publico como dependencia estrutural opcional. Ele copia apenas contadores e status para o Runtime Context, sem resolver metadata ou executar comportamento declarado.

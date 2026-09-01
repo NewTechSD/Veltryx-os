@@ -33,3 +33,9 @@ A factory recebe somente snapshots públicos. Ela não resolve providers, não e
 ## Limitações
 
 O contexto ainda não possui Metadata Engine, Component Registry, renderer ou UI Composition. Eventos específicos de Runtime continuam adiados para evitar ciclo estrutural com o Event Bus. O próximo passo recomendado é a evolução do Metadata Engine.
+
+## Metadata Summary
+
+O Runtime Context recebe um resumo leve do Metadata Engine durante o bootstrap estrutural. O campo `metadata` informa status, namespaces registrados, resources registrados, entities registradas e pages registradas.
+
+O Runtime nao resolve, executa, renderiza ou duplica metadata nesta etapa.

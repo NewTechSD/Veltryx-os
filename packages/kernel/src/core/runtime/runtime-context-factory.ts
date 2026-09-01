@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   IRuntimeContextFactory,
   RuntimeContext,
   RuntimeContextFactoryInput,
@@ -68,6 +68,13 @@ export class RuntimeContextFactory implements IRuntimeContextFactory {
         withWarnings: input.modules.modules.filter((module) => module.warnings.length > 0).length,
         withErrors: input.modules.modules.filter((module) => module.errors.length > 0).length
       }),
+      metadata: Object.freeze({
+        status: input.metadata?.status ?? "empty",
+        namespacesRegistered: input.metadata?.namespacesRegistered ?? 0,
+        resourcesRegistered: input.metadata?.resourcesRegistered ?? 0,
+        entitiesRegistered: input.metadata?.entitiesRegistered ?? 0,
+        pagesRegistered: input.metadata?.pagesRegistered ?? 0
+      }),
       execution: input.execution
         ? Object.freeze({
             requestId: input.execution.requestId,
@@ -88,6 +95,14 @@ export class RuntimeContextFactory implements IRuntimeContextFactory {
 
   private warnings(input: RuntimeContextFactoryInput, timestamp: string): RuntimeWarning[] {
     const warnings: RuntimeWarning[] = [];
+    if ((input.metadata?.status === "partial" || input.metadata?.warnings.length) && input.metadata.resourcesRegistered > 0)
+      warnings.push(
+        createRuntimeEntry(
+          "runtime.metadataWarning",
+          "Metadata Engine reports warnings.",
+          timestamp
+        )
+      );
     if (input.modules.modulesLoaded === 0)
       warnings.push(
         createRuntimeEntry("runtime.noModulesLoaded", "No modules are loaded.", timestamp)
@@ -161,6 +176,14 @@ export class RuntimeContextFactory implements IRuntimeContextFactory {
           timestamp
         )
       );
+    if (input.metadata?.status === "error")
+      errors.push(
+        createRuntimeEntry(
+          "runtime.metadataUnavailable",
+          "Metadata Engine is unavailable.",
+          timestamp
+        )
+      );
     if (input.modules.status === "error")
       errors.push(
         createRuntimeEntry(
@@ -172,3 +195,4 @@ export class RuntimeContextFactory implements IRuntimeContextFactory {
     return errors;
   }
 }
+

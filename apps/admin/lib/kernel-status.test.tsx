@@ -23,7 +23,10 @@ describe("getKernelStatusSnapshot", () => {
     expect(snapshot.moduleSystemStatus.status).toBe("available");
     expect(snapshot.metadataRegistryStatus.status).toBe("available");
     expect(snapshot.runtimeStatus).toBe("ready");
-    expect(snapshot.warnings[0]?.code).toBe("KERNEL_METADATA_GLOBAL_SUMMARY_NOT_IMPLEMENTED");
+    expect(snapshot.metadataResourcesRegistered).toBe(0);
+    expect(snapshot.metadataEntitiesRegistered).toBe(0);
+    expect(snapshot.metadataPagesRegistered).toBe(0);
+    expect(snapshot.warnings).toEqual([]);
   });
 
   it("does not infer modulesLoaded when the Kernel snapshot already provides it", async () => {
@@ -156,3 +159,4 @@ describe("createKernelStatusViewModel", () => {
     expect(html).toContain("Environment");
   });
 });
+

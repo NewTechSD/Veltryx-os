@@ -89,3 +89,14 @@ Stacks podem ser habilitados por `includeTechnicalDetails`, mas nao devem ser ob
 O snapshot nao cria API externa, REST, GraphQL, banco, Prisma, Redis, Auth, login, sessao, JWT, Runtime Renderer, Builder, CRUD, metricas Prometheus, tracing, observabilidade avancada ou Event Bus.
 
 `r`n## Module System Snapshot`r`n`r`nOs contadores de modulos do Kernel Status Snapshot devem ser alimentados pelo Module System Public Snapshot quando disponivel. O status geral nao deve recalcular discovery, resolution ou loading.`r`n
+
+## Metadata Engine Summary
+
+O Kernel Status Snapshot consome o snapshot publico do Metadata Engine apenas como resumo. Campos expostos:
+
+- `metadataRegistryStatus`
+- `metadataResourcesRegistered`
+- `metadataEntitiesRegistered`
+- `metadataPagesRegistered`
+
+O snapshot completo de metadata nao e duplicado nesta superficie.

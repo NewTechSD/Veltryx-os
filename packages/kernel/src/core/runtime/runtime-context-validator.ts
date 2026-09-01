@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   IRuntimeContextValidator,
   RuntimeContext,
   RuntimeContextValidationResult,
@@ -62,6 +62,10 @@ export class RuntimeContextValidator implements IRuntimeContextValidator {
       context.modules.resolved,
       context.modules.loaded,
       context.modules.withWarnings,
+      context.metadata.namespacesRegistered,
+      context.metadata.resourcesRegistered,
+      context.metadata.entitiesRegistered,
+      context.metadata.pagesRegistered,
       context.modules.withErrors
     ];
   }
@@ -77,3 +81,4 @@ export class RuntimeContextValidator implements IRuntimeContextValidator {
     return createRuntimeEntry(code, message);
   }
 }
+

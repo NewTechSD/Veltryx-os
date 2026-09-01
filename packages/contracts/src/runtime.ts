@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   ConfigurationSnapshot,
   IConfigurationProvider,
   RuntimeMode,
@@ -10,6 +10,7 @@ import type {
   IDependencyInjectionContainer
 } from "./dependency-injection.js";
 import type { ModuleSystemSnapshot } from "./module-system-status.js";
+import type { IMetadataSnapshotService, MetadataEngineSnapshot } from "./metadata.js";
 import type { IModuleLoader } from "./modules.js";
 import type { IServiceRegistry, ServiceRegistrySnapshot } from "./services.js";
 
@@ -73,6 +74,7 @@ export interface RuntimeBootstrapDependencies {
   readonly services: IServiceRegistry;
   readonly modules: IModuleLoader;
   readonly dependencyInjection?: IDependencyInjectionContainer;
+  readonly metadata?: IMetadataSnapshotService;
 }
 export interface IRuntimeBootstrapService {
   bootstrap(execution?: ExecutionContextSnapshot): Promise<RuntimeStructuralBootstrapResult>;
@@ -112,6 +114,13 @@ export interface RuntimeModulesContext {
   readonly withWarnings: number;
   readonly withErrors: number;
 }
+export interface RuntimeMetadataContext {
+  readonly status: string;
+  readonly namespacesRegistered: number;
+  readonly resourcesRegistered: number;
+  readonly entitiesRegistered: number;
+  readonly pagesRegistered: number;
+}
 export interface RuntimeExecutionContextSummary {
   readonly requestId: string;
   readonly correlationId: string;
@@ -130,6 +139,7 @@ export interface RuntimeContext {
   readonly services: RuntimeServicesContext;
   readonly dependencyInjection: RuntimeDependencyInjectionContext;
   readonly modules: RuntimeModulesContext;
+  readonly metadata: RuntimeMetadataContext;
   readonly execution?: RuntimeExecutionContextSummary;
   readonly warnings: readonly RuntimeWarning[];
   readonly errors: readonly RuntimeError[];
@@ -148,6 +158,11 @@ export interface RuntimeStatusSnapshot {
   readonly serviceRegistryStatus: string;
   readonly dependencyInjectionStatus: string;
   readonly moduleSystemStatus: string;
+  readonly metadataStatus: string;
+  readonly metadataNamespacesRegistered: number;
+  readonly metadataResourcesRegistered: number;
+  readonly metadataEntitiesRegistered: number;
+  readonly metadataPagesRegistered: number;
   readonly servicesAvailable: number;
   readonly providersRegistered: number;
   readonly providersResolved: number;
@@ -165,6 +180,7 @@ export interface RuntimeContextFactoryInput {
   readonly services: ServiceRegistrySnapshot;
   readonly dependencyInjection: DependencyInjectionSnapshot;
   readonly modules: ModuleSystemSnapshot;
+  readonly metadata?: MetadataEngineSnapshot;
   readonly bootstrap: RuntimeBootstrapStatus;
   readonly execution?: ExecutionContextSnapshot;
 }
@@ -185,3 +201,5 @@ export interface IRuntimeLifecycleController {
 export interface IRuntimeStatusSnapshotService {
   snapshot(context: RuntimeContext): RuntimeStatusSnapshot;
 }
+
+

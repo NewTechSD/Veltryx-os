@@ -53,6 +53,9 @@ export interface KernelStatusSnapshot {
   readonly modulesLoaded: KernelStatusMetric;
   readonly moduleSystemStatus: KernelModuleSystemStatus;
   readonly metadataRegistryStatus: KernelRegistryStatus;
+  readonly metadataResourcesRegistered?: number;
+  readonly metadataEntitiesRegistered?: number;
+  readonly metadataPagesRegistered?: number;
   readonly runtimeStatus: RuntimeState | KernelSnapshotAvailability;
   readonly dependencyInjectionStatus?: import("./dependency-injection.js").DependencyInjectionStatus;
   readonly providersRegistered?: number;
@@ -70,3 +73,4 @@ export interface KernelStatusSnapshot {
 export interface IKernelStatusService {
   snapshot(): Promise<KernelStatusSnapshot>;
 }
+

@@ -30,3 +30,15 @@ Instâncias, providers, factories, classes, closures, stacks, secrets, `process.
 ## Limitações
 
 Não há observabilidade externa, histórico de snapshots, persistência, renderer ou Metadata Runtime. Eventos `runtime.context.created`, `runtime.snapshot.generated` e `runtime.lifecycle.changed` permanecem adiados para uma integração futura sem dependências circulares.
+
+## Metadata Summary
+
+O Runtime Status Snapshot expoe somente contadores resumidos de metadata:
+
+- `metadataStatus`
+- `metadataNamespacesRegistered`
+- `metadataResourcesRegistered`
+- `metadataEntitiesRegistered`
+- `metadataPagesRegistered`
+
+Esses campos sao derivados do Runtime Context e nao substituem o Metadata Snapshot publico.

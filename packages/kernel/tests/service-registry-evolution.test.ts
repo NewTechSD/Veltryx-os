@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import type { ServiceDescriptorInput, ServiceToken } from "@veltryx/contracts";
 import {
   KERNEL_SERVICE_TOKENS,
@@ -352,19 +352,21 @@ describe("Kernel Service Registry integration", () => {
         KERNEL_SERVICE_TOKENS.dependencyInjection,
         KERNEL_SERVICE_TOKENS.eventBus,
         KERNEL_SERVICE_TOKENS.executionContextFactory,
+        KERNEL_SERVICE_TOKENS.metadataEngine,
         KERNEL_SERVICE_TOKENS.metadataRegistry,
         KERNEL_SERVICE_TOKENS.moduleSystem,
         KERNEL_SERVICE_TOKENS.runtime,
         KERNEL_SERVICE_TOKENS.serviceRegistry
       ].sort()
     );
-    expect(snapshot.services).toHaveLength(8);
+    expect(snapshot.services).toHaveLength(9);
     expect(
       snapshot.services.some((service) => service.token === KERNEL_SERVICE_TOKENS.status)
     ).toBe(false);
-    expect(status.servicesRegistered).toMatchObject({ status: "available", value: 8 });
+    expect(status.servicesRegistered).toMatchObject({ status: "available", value: 9 });
     expect(status.dependencyInjectionStatus).toBe("ready");
     expect(status.serviceRegistryStatus).toMatchObject({ status: "available" });
     expect(kernel.state()).toBe(before);
   });
 });
+

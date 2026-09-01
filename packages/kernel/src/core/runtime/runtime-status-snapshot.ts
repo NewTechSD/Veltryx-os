@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   IRuntimeStatusSnapshotService,
   RuntimeContext,
   RuntimeStatusSnapshot
@@ -27,6 +27,11 @@ export class RuntimeStatusSnapshotService implements IRuntimeStatusSnapshotServi
       serviceRegistryStatus: context.services.status,
       dependencyInjectionStatus: context.dependencyInjection.status,
       moduleSystemStatus: context.modules.status,
+      metadataStatus: context.metadata.status,
+      metadataNamespacesRegistered: context.metadata.namespacesRegistered,
+      metadataResourcesRegistered: context.metadata.resourcesRegistered,
+      metadataEntitiesRegistered: context.metadata.entitiesRegistered,
+      metadataPagesRegistered: context.metadata.pagesRegistered,
       servicesAvailable: context.services.available,
       providersRegistered: context.dependencyInjection.providersRegistered,
       providersResolved: context.dependencyInjection.providersResolved,
@@ -49,3 +54,4 @@ export class RuntimeStatusSnapshotService implements IRuntimeStatusSnapshotServi
     });
   }
 }
+

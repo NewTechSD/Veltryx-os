@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   DependencyInjectionSnapshot,
   ExecutionContextSnapshot,
   IRuntimeBootstrapService,
@@ -52,6 +52,7 @@ export class RuntimeBootstrapService implements IRuntimeBootstrapService {
         this.dependencies.dependencyInjection?.snapshot() ??
         this.emptyDependencyInjectionSnapshot();
       const modules = await this.dependencies.modules.snapshot();
+      const metadata = this.dependencies.metadata?.snapshot();
       const warnings: RuntimeWarning[] = [];
       if (repeated)
         warnings.push(
@@ -108,6 +109,7 @@ export class RuntimeBootstrapService implements IRuntimeBootstrapService {
         services,
         dependencyInjection,
         modules,
+        metadata,
         bootstrap: this.current,
         execution
       });
@@ -121,6 +123,7 @@ export class RuntimeBootstrapService implements IRuntimeBootstrapService {
           services,
           dependencyInjection,
           modules,
+          metadata,
           bootstrap: this.current,
           execution
         });
@@ -189,3 +192,4 @@ export class RuntimeBootstrapService implements IRuntimeBootstrapService {
     });
   }
 }
+

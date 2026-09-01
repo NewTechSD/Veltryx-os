@@ -74,10 +74,50 @@ export type {
   KernelStatusSnapshot
 } from "./kernel-status.js";
 export type {
+  IMetadataEngine,
   IMetadataRegistry,
+  IMetadataResolver,
+  IMetadataSnapshotService,
+  IMetadataValidator,
+  MetadataAction,
+  MetadataActionType,
+  MetadataDiagnosticEntry,
+  MetadataEngineSnapshot,
+  MetadataEngineStatus,
+  MetadataEntity,
+  MetadataError,
+  MetadataField,
+  MetadataFieldOption,
+  MetadataFieldType,
+  MetadataFilterDefinition,
+  MetadataForm,
+  MetadataFormField,
+  MetadataLayoutDefinition,
+  MetadataList,
+  MetadataListColumn,
+  MetadataMenu,
+  MetadataMenuItem,
+  MetadataNamespace,
+  MetadataNamespaceSnapshot,
+  MetadataPage,
+  MetadataPageSection,
+  MetadataPermissionDeclaration,
   MetadataQuery,
   MetadataRecord,
-  MetadataStatus
+  MetadataRegistrationOptions,
+  MetadataRelation,
+  MetadataRelationType,
+  MetadataResolutionResult,
+  MetadataResource,
+  MetadataResourceSnapshot,
+  MetadataResourceType,
+  MetadataSortDefinition,
+  MetadataStatus,
+  MetadataValidationResult,
+  MetadataValidationRule,
+  MetadataView,
+  MetadataViewType,
+  MetadataWarning
 } from "./metadata.js";
 export type {
   IModuleCatalog,
@@ -163,6 +203,7 @@ export type {
   RuntimeDependencyInjectionContext,
   RuntimeExecutionContextSummary,
   RuntimeModulesContext,
+  RuntimeMetadataContext,
   RuntimeServicesContext,
   RuntimeStatusSnapshot
 } from "./runtime.js";
@@ -225,3 +266,5 @@ export type {
   StructuralEventPayload,
   StructuralEventPublishInput
 } from "./structural-events.js";
+
+

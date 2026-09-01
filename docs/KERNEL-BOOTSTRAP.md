@@ -128,3 +128,7 @@ Comandos esperados:
 O Kernel publica eventos estruturais de bootstrap e readiness via Event Bus em memoria: kernel.bootstrap.started, kernel.bootstrap.completed, kernel.bootstrap.failed e kernel.ready. O catalogo completo esta em docs/KERNEL-STRUCTURAL-EVENTS.md.
 
 `r`n## Module System Public Snapshot`r`n`r`nO Kernel expoe `kernel.modules().snapshot()` como read model publico do Module System. Gerar o snapshot nao executa bootstrap, discovery, resolution, loading ou Runtime.`r`n
+
+## Metadata Engine Services
+
+O bootstrap estrutural registra `kernel.metadataRegistry` e `kernel.metadataEngine` como servicos reais apontando para a implementacao do Metadata Registry evoluido. O Runtime Bootstrap recebe apenas o snapshot publico para montar resumo no Runtime Context.

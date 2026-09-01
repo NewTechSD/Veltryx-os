@@ -5,6 +5,7 @@
   IDependencyInjectionContainer,
   IEventBus,
   IKernelStatusService,
+  IMetadataEngine,
   IMetadataRegistry,
   IModuleLoader,
   IRuntime,
@@ -187,7 +188,7 @@ export class VeltryxKernel {
     return this.dependencies.modules;
   }
 
-  metadata(): IMetadataRegistry {
+  metadata(): IMetadataEngine {
     return this.dependencies.metadata;
   }
 
@@ -289,6 +290,18 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
     useValue: services
   });
   container.registerProvider({
+    token: KERNEL_SERVICE_TOKENS.metadataRegistry,
+    kind: "value",
+    lifecycle: "singleton",
+    useValue: metadata
+  });
+  container.registerProvider({
+    token: KERNEL_SERVICE_TOKENS.metadataEngine,
+    kind: "value",
+    lifecycle: "singleton",
+    useValue: metadata
+  });
+  container.registerProvider({
     token: KERNEL_SERVICE_TOKENS.runtime,
     kind: "value",
     lifecycle: "singleton",
@@ -308,14 +321,16 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
       KERNEL_SERVICE_TOKENS.configuration,
       KERNEL_SERVICE_TOKENS.serviceRegistry,
       KERNEL_SERVICE_TOKENS.moduleSystem,
-      KERNEL_SERVICE_TOKENS.dependencyInjection
+      KERNEL_SERVICE_TOKENS.dependencyInjection,
+      KERNEL_SERVICE_TOKENS.metadataEngine
     ],
-    useFactory: (resolvedConfiguration, resolvedServices, resolvedModules, resolvedContainer) =>
+    useFactory: (resolvedConfiguration, resolvedServices, resolvedModules, resolvedContainer, resolvedMetadata) =>
       new RuntimeBootstrapService({
         configuration: resolvedConfiguration as IConfigurationProvider,
         services: resolvedServices as IServiceRegistry,
         modules: resolvedModules as IModuleLoader,
-        dependencyInjection: resolvedContainer as IDependencyInjectionContainer
+        dependencyInjection: resolvedContainer as IDependencyInjectionContainer,
+        metadata: resolvedMetadata as IMetadataEngine
       }),
     descriptor: {
       name: "Runtime Bootstrap",
@@ -357,6 +372,14 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
     KERNEL_SERVICE_TOKENS.metadataRegistry,
     metadata,
     "Metadata Registry",
+    "metadata",
+    version
+  );
+  registerStructuralService(
+    services,
+    KERNEL_SERVICE_TOKENS.metadataEngine,
+    metadata,
+    "Metadata Engine",
     "metadata",
     version
   );
@@ -425,3 +448,4 @@ function createKernelEventMetadata(
     tags: ["kernel", "structural"]
   };
 }
+
