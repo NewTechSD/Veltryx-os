@@ -55,6 +55,7 @@ export class RuntimeBootstrapService implements IRuntimeBootstrapService {
       const metadata = this.dependencies.metadata?.snapshot();
       const componentRegistry = this.dependencies.componentRegistry?.snapshot();
       const uiComposition = this.dependencies.uiComposition?.snapshot();
+      const persistence = this.dependencies.persistence?.snapshot();
       const warnings: RuntimeWarning[] = [];
       if (repeated)
         warnings.push(
@@ -114,6 +115,7 @@ export class RuntimeBootstrapService implements IRuntimeBootstrapService {
         metadata,
         componentRegistry,
         uiComposition,
+        persistence,
         bootstrap: this.current,
         execution
       });
@@ -130,6 +132,7 @@ export class RuntimeBootstrapService implements IRuntimeBootstrapService {
           metadata,
         componentRegistry,
         uiComposition,
+        persistence,
           bootstrap: this.current,
           execution
         });

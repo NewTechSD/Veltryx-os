@@ -46,3 +46,7 @@ Esses campos sao derivados do Runtime Context e nao substituem o Metadata Snapsh
 ## Component Registry e UI Composition
 
 O Runtime Status Snapshot expoe apenas campos leves: componentRegistryStatus, componentsRegistered, uiCompositionStatus e compositionsGenerated. Composition Trees completas permanecem fora do snapshot publico de status.
+
+## Persistence summary
+
+Runtime Status copies the immutable aggregate summary produced during structural bootstrap: status, provider identity/kind and counters only. Stored data and provider internals are excluded.

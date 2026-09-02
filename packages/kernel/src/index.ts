@@ -7,6 +7,7 @@ export * from "./core/runtime/index.js";
 export * from "./core/metadata/index.js";
 export * from "./core/components/index.js";
 export * from "./core/ui-composition/index.js";
+export * from "./core/persistence/index.js";
 export * from "./module-system/status/index.js";
 export {
   KernelLoadedModule,

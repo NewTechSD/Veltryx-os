@@ -104,3 +104,7 @@ O snapshot completo de metadata nao e duplicado nesta superficie.
 ## Component Registry e UI Composition
 
 O Kernel Status Snapshot inclui resumo leve de componentRegistryStatus, componentsRegistered, uiCompositionStatus e compositionsGenerated. O snapshot nao expoe contratos completos de componentes nem Composition Trees.
+
+## Persistence summary
+
+RFC-0015 adds an optional aggregate `persistence` summary containing status, provider id/kind, namespace/collection/record counters and issue counts. It never exposes records, maps, connections, clients, secrets or stack traces.

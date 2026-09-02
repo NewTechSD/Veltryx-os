@@ -8,6 +8,7 @@
   IKernelStatusService,
   IMetadataEngine,
   IMetadataRegistry,
+  IPersistenceService,
   IModuleLoader,
   IRuntime,
   IRuntimeBootstrapService,
@@ -28,6 +29,7 @@ import { KERNEL_SERVICE_TOKENS } from "./core/services/index.js";
 import { KernelStatusService } from "./core/status/index.js";
 import { ComponentRegistry, registerSystemComponents } from "./core/components/index.js";
 import { UICompositionRuntime } from "./core/ui-composition/index.js";
+import { InMemoryPersistenceProvider, PersistenceService } from "./core/persistence/index.js";
 import { InMemoryEventBus } from "./event-bus.js";
 import { createExecutionContext } from "./execution-context.js";
 import { KernelExecutionContextFactory } from "./core/execution-context/index.js";
@@ -46,6 +48,7 @@ export interface VeltryxKernelDependencies {
   readonly metadata: IMetadataRegistry;
   readonly components: IComponentRegistry;
   readonly uiComposition: IUICompositionRuntime;
+  readonly persistence?: IPersistenceService;
   readonly runtime: IRuntime;
   readonly container?: IDependencyInjectionContainer;
   readonly structuralEvents?: IStructuralEventPublisher;
@@ -67,6 +70,7 @@ export class VeltryxKernel {
   private readonly structuralEvents: IStructuralEventPublisher;
   private readonly dependencyContainer: IDependencyInjectionContainer;
   private runtimeBootstrapService: IRuntimeBootstrapService | undefined;
+  private readonly persistenceService: IPersistenceService;
 
   constructor(
     private readonly dependencies: VeltryxKernelDependencies = createKernelDependencies()
@@ -75,6 +79,7 @@ export class VeltryxKernel {
       dependencies.structuralEvents ?? new KernelStructuralEventPublisher(dependencies.events);
     this.dependencyContainer =
       dependencies.container ?? new DependencyInjectionContainer(dependencies.services);
+    this.persistenceService = dependencies.persistence ?? new PersistenceService(new InMemoryPersistenceProvider());
   }
 
   async bootstrap(context: IExecutionContext): Promise<void> {
@@ -189,6 +194,10 @@ export class VeltryxKernel {
     return this.dependencies.uiComposition;
   }
 
+  persistence(): IPersistenceService {
+    return this.persistenceService;
+  }
+
   runtime(): IRuntime {
     return this.dependencies.runtime;
   }
@@ -236,6 +245,7 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
   const components = new ComponentRegistry();
   registerSystemComponents(components);
   const uiComposition = new UICompositionRuntime(components);
+  const persistence = new PersistenceService(new InMemoryPersistenceProvider());
   const runtime = new KernelRuntime();
   const container = new DependencyInjectionContainer(services);
   const executionContextFactory = new KernelExecutionContextFactory();
@@ -253,6 +263,7 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
   container.registerProvider({ token: KERNEL_SERVICE_TOKENS.metadataEngine, kind: "value", lifecycle: "singleton", useValue: metadata });
   container.registerProvider({ token: KERNEL_SERVICE_TOKENS.componentRegistry, kind: "value", lifecycle: "singleton", useValue: components });
   container.registerProvider({ token: KERNEL_SERVICE_TOKENS.uiCompositionRuntime, kind: "value", lifecycle: "singleton", useValue: uiComposition });
+  container.registerProvider({ token: KERNEL_SERVICE_TOKENS.persistence, kind: "value", lifecycle: "singleton", useValue: persistence });
   container.registerProvider({ token: KERNEL_SERVICE_TOKENS.runtime, kind: "value", lifecycle: "singleton", useValue: runtime });
   container.registerProvider({ token: KERNEL_SERVICE_TOKENS.dependencyInjection, kind: "value", lifecycle: "singleton", useValue: container });
   container.registerProvider({
@@ -266,9 +277,10 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
       KERNEL_SERVICE_TOKENS.dependencyInjection,
       KERNEL_SERVICE_TOKENS.metadataEngine,
       KERNEL_SERVICE_TOKENS.componentRegistry,
-      KERNEL_SERVICE_TOKENS.uiCompositionRuntime
+      KERNEL_SERVICE_TOKENS.uiCompositionRuntime,
+      KERNEL_SERVICE_TOKENS.persistence
     ],
-    useFactory: (resolvedConfiguration, resolvedServices, resolvedModules, resolvedContainer, resolvedMetadata, resolvedComponents, resolvedUIComposition) =>
+    useFactory: (resolvedConfiguration, resolvedServices, resolvedModules, resolvedContainer, resolvedMetadata, resolvedComponents, resolvedUIComposition, resolvedPersistence) =>
       new RuntimeBootstrapService({
         configuration: resolvedConfiguration as IConfigurationProvider,
         services: resolvedServices as IServiceRegistry,
@@ -276,7 +288,8 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
         dependencyInjection: resolvedContainer as IDependencyInjectionContainer,
         metadata: resolvedMetadata as IMetadataEngine,
         componentRegistry: resolvedComponents as IComponentRegistry,
-        uiComposition: resolvedUIComposition as IUICompositionRuntime
+        uiComposition: resolvedUIComposition as IUICompositionRuntime,
+        persistence: resolvedPersistence as IPersistenceService
       }),
     descriptor: {
       name: "Runtime Bootstrap",
@@ -297,6 +310,7 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
   registerStructuralService(services, KERNEL_SERVICE_TOKENS.metadataEngine, metadata, "Metadata Engine", "metadata", version);
   registerStructuralService(services, KERNEL_SERVICE_TOKENS.componentRegistry, components, "Component Registry", "system", version);
   registerStructuralService(services, KERNEL_SERVICE_TOKENS.uiCompositionRuntime, uiComposition, "UI Composition Runtime", "runtime", version);
+  registerStructuralService(services, KERNEL_SERVICE_TOKENS.persistence, persistence, "Persistence Service", "system", version);
   registerStructuralService(services, KERNEL_SERVICE_TOKENS.runtime, runtime, "Runtime", "runtime", version);
 
   return {
@@ -307,6 +321,7 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
     metadata,
     components,
     uiComposition,
+    persistence,
     runtime,
     container,
     structuralEvents

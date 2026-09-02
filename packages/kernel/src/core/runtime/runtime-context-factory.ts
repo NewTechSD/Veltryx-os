@@ -83,6 +83,7 @@ export class RuntimeContextFactory implements IRuntimeContextFactory {
         status: input.uiComposition?.status ?? "empty",
         compositionsGenerated: input.uiComposition?.compositionsGenerated ?? 0
       }),
+      persistence: input.persistence ? summary(input.persistence) : undefined,
       execution: input.execution
         ? Object.freeze({
             requestId: input.execution.requestId,
@@ -202,6 +203,10 @@ export class RuntimeContextFactory implements IRuntimeContextFactory {
       );
     return errors;
   }
+}
+
+function summary(snapshot: NonNullable<RuntimeContextFactoryInput["persistence"]>) {
+  return Object.freeze({ status: snapshot.status, providerId: snapshot.provider.id, providerKind: snapshot.provider.kind, namespaces: snapshot.namespaces, collections: snapshot.collections, records: snapshot.records, warnings: snapshot.warnings.length, errors: snapshot.errors.length, diagnostics: snapshot.diagnostics.length });
 }
 
 

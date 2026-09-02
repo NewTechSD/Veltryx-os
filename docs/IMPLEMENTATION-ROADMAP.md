@@ -54,13 +54,14 @@ Construir as capacidades de plataforma que transformam metadata em experiencia u
 
 Implementacoes:
 
-| IMP      | Entrega                                             | Objetivo                                                                                                      | RFCs Dependentes                                 | Prioridade | Complexidade | Status   | Dependencias                           |
-| -------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ | ---------- | ------------ | -------- | -------------------------------------- |
-| IMP-0007 | UI Composition                                      | Implementar composicao abstrata de UI por componentes, slots, propriedades, eventos e acoes.                  | RFC-0005, RFC-0006, RFC-0007, RFC-0099           | Alta       | Alta         | Planned  | IMP-0005, IMP-0006                     |
-| IMP-0008 | Runtime Adapters                                    | Definir e implementar adapters de runtime para traduzir Site Schema e Composition Tree para delivery targets. | RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0099 | Alta       | Alta         | Blocked  | RFC-0008, IMP-0005, IMP-0006, IMP-0007 |
-| IMP-0009 | Application Model                                   | Implementar modelo de aplicacao gerado por Runtime, metadata e composicao.                                    | RFC-0005, RFC-0006, RFC-0007, RFC-0009, RFC-0099 | Media      | Alta         | Blocked  | RFC-0009, IMP-0006, IMP-0007           |
-| IMP-0029 | Admin Composition Adapter + Dynamic Screen Renderer | Renderizar Composition Tree somente dentro do Admin, sem constituir adapter de publicacao.                    | RFC-0007, RFC-0099                               | Alta       | Alta         | Approved | ADR-0004, TASK-0312                    |
-| IMP-0030 | Dynamic Admin Shell + Navigation/Menu Composition   | Derivar a navegacao interna do Admin de metadata/menu/composition sem implementar adapter de publicacao.      | RFC-0005, RFC-0006, RFC-0007, RFC-0099           | Alta       | Alta         | Approved | IMP-0029, TASK-0313, ADR-0004          |
+| IMP      | Entrega                                             | Objetivo                                                                                                      | RFCs Dependentes                                                     | Prioridade | Complexidade | Status   | Dependencias                           |
+| -------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------- | ------------ | -------- | -------------------------------------- |
+| IMP-0007 | UI Composition                                      | Implementar composicao abstrata de UI por componentes, slots, propriedades, eventos e acoes.                  | RFC-0005, RFC-0006, RFC-0007, RFC-0099                               | Alta       | Alta         | Planned  | IMP-0005, IMP-0006                     |
+| IMP-0008 | Runtime Adapters                                    | Definir e implementar adapters de runtime para traduzir Site Schema e Composition Tree para delivery targets. | RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0099                     | Alta       | Alta         | Blocked  | RFC-0008, IMP-0005, IMP-0006, IMP-0007 |
+| IMP-0009 | Application Model                                   | Implementar modelo de aplicacao gerado por Runtime, metadata e composicao.                                    | RFC-0005, RFC-0006, RFC-0007, RFC-0009, RFC-0099                     | Media      | Alta         | Blocked  | RFC-0009, IMP-0006, IMP-0007           |
+| IMP-0029 | Admin Composition Adapter + Dynamic Screen Renderer | Renderizar Composition Tree somente dentro do Admin, sem constituir adapter de publicacao.                    | RFC-0007, RFC-0099                                                   | Alta       | Alta         | Approved | ADR-0004, TASK-0312                    |
+| IMP-0030 | Dynamic Admin Shell + Navigation/Menu Composition   | Derivar a navegacao interna do Admin de metadata/menu/composition sem implementar adapter de publicacao.      | RFC-0005, RFC-0006, RFC-0007, RFC-0099                               | Alta       | Alta         | Approved | IMP-0029, TASK-0313, ADR-0004          |
+| IMP-0031 | Persistence Layer + Data Access Contracts           | Criar contratos agnosticos, provider in-memory e snapshots publicos sem banco, ORM, driver ou SQL.            | RFC-0001, RFC-0002, RFC-0004, RFC-0005, RFC-0006, RFC-0015, RFC-0099 | Critica    | Alta         | Approved | RFC-0015                               |
 
 ### Fase 3
 
@@ -218,3 +219,14 @@ A TASK-0314 esta aprovada sob o nome **Dynamic Admin Shell + Navigation/Menu Com
 - Does Not Depend On: aprovacao da RFC-0008.
 
 A TASK-0314 evolui somente o Admin Shell interno de `apps/admin`. Ela nao implementa Runtime Adapter de publicacao. Runtime Adapters de publicacao continuam bloqueados ate aprovacao da RFC-0008.
+
+## TASK-0315 / IMP-0031
+
+A TASK-0315 esta aprovada como **Persistence Layer + Data Access Contracts** sob a RFC-0015 Data Layer.
+
+- Status: Approved.
+- Depends On: RFC-0001, RFC-0002, RFC-0004, RFC-0005, RFC-0006, RFC-0015 e RFC-0099.
+- RFC-0009 permanece reservada para Builder/Application Model.
+- Does Not Depend On: aprovacao da RFC-0008.
+
+A implementacao limita-se a contratos publicos, Persistence Service, provider in-memory, repository e snapshots seguros. Banco real, Prisma, PostgreSQL, ORM, driver, SQL e migrations permanecem fora de escopo.

@@ -15,6 +15,7 @@ import type { ComponentRegistrySnapshot } from "./components.js";
 import type { UICompositionSnapshot } from "./ui-composition.js";
 import type { IModuleLoader } from "./modules.js";
 import type { IServiceRegistry, ServiceRegistrySnapshot } from "./services.js";
+import type { PersistenceSnapshot, PersistenceSummary } from "./persistence.js";
 
 export type RuntimeState =
   | "created"
@@ -79,6 +80,7 @@ export interface RuntimeBootstrapDependencies {
   readonly metadata?: IMetadataSnapshotService;
   readonly componentRegistry?: { snapshot(): ComponentRegistrySnapshot };
   readonly uiComposition?: { snapshot(): UICompositionSnapshot };
+  readonly persistence?: { snapshot(): PersistenceSnapshot };
 }
 export interface IRuntimeBootstrapService {
   bootstrap(execution?: ExecutionContextSnapshot): Promise<RuntimeStructuralBootstrapResult>;
@@ -154,6 +156,7 @@ export interface RuntimeContext {
   readonly metadata: RuntimeMetadataContext;
   readonly componentRegistry?: RuntimeComponentRegistryContext;
   readonly uiComposition?: RuntimeUICompositionContext;
+  readonly persistence?: PersistenceSummary;
   readonly execution?: RuntimeExecutionContextSummary;
   readonly warnings: readonly RuntimeWarning[];
   readonly errors: readonly RuntimeError[];
@@ -181,6 +184,7 @@ export interface RuntimeStatusSnapshot {
   readonly componentsRegistered?: number;
   readonly uiCompositionStatus?: string;
   readonly compositionsGenerated?: number;
+  readonly persistence?: PersistenceSummary;
   readonly servicesAvailable: number;
   readonly providersRegistered: number;
   readonly providersResolved: number;
@@ -201,6 +205,7 @@ export interface RuntimeContextFactoryInput {
   readonly metadata?: MetadataEngineSnapshot;
   readonly componentRegistry?: ComponentRegistrySnapshot;
   readonly uiComposition?: UICompositionSnapshot;
+  readonly persistence?: PersistenceSnapshot;
   readonly bootstrap: RuntimeBootstrapStatus;
   readonly execution?: ExecutionContextSnapshot;
 }

@@ -68,6 +68,12 @@ export class RuntimeContextValidator implements IRuntimeContextValidator {
       context.metadata.pagesRegistered,
       context.componentRegistry?.componentsRegistered ?? 0,
       context.uiComposition?.compositionsGenerated ?? 0,
+      context.persistence?.namespaces ?? 0,
+      context.persistence?.collections ?? 0,
+      context.persistence?.records ?? 0,
+      context.persistence?.warnings ?? 0,
+      context.persistence?.errors ?? 0,
+      context.persistence?.diagnostics ?? 0,
       context.modules.withErrors
     ];
   }

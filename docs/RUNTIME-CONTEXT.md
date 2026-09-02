@@ -43,3 +43,7 @@ O Runtime nao resolve, executa, renderiza ou duplica metadata nesta etapa.
 ## Component Registry e UI Composition
 
 O Runtime Context expõe somente componentRegistry.status, componentRegistry.componentsRegistered, uiComposition.status e uiComposition.compositionsGenerated. O objetivo e permitir observabilidade estrutural sem transformar o contexto em dump de registry ou composition tree.
+
+## Persistence context
+
+Runtime Context may contain an optional `PersistenceSummary` derived exclusively from the public provider snapshot. The context does not carry repositories, provider instances, maps or record payloads.

@@ -33,7 +33,7 @@ export interface KernelDiagnosticEntry {
   readonly code: string;
   readonly message: string;
   readonly severity: KernelDiagnosticSeverity;
-  readonly source: "kernel" | "bootstrap" | "modules" | "metadata" | "runtime" | "services" | "components" | "ui-composition";
+  readonly source: "kernel" | "bootstrap" | "modules" | "metadata" | "runtime" | "services" | "components" | "ui-composition" | "persistence";
   readonly detail?: string;
   readonly stack?: string;
 }
@@ -60,6 +60,7 @@ export interface KernelStatusSnapshot {
   readonly componentsRegistered?: number;
   readonly uiCompositionStatus?: KernelRegistryStatus;
   readonly compositionsGenerated?: number;
+  readonly persistence?: import("./persistence.js").PersistenceSummary;
   readonly runtimeStatus: RuntimeState | KernelSnapshotAvailability;
   readonly dependencyInjectionStatus?: import("./dependency-injection.js").DependencyInjectionStatus;
   readonly providersRegistered?: number;

@@ -290,6 +290,35 @@ export type {
   ServiceStatus,
   ServiceToken
 } from "./services.js";
+export type {
+  CountRecordsInput,
+  CreateRecordInput,
+  IPersistenceProvider,
+  IPersistenceService,
+  IRepository,
+  ListRecordsInput,
+  PersistenceCollectionName,
+  PersistenceDiagnostic,
+  PersistenceError,
+  PersistenceKey,
+  PersistenceListResult,
+  PersistenceNamespace,
+  PersistenceOperation,
+  PersistenceProviderKind,
+  PersistenceProviderSnapshot,
+  PersistenceRecord,
+  PersistenceRecordData,
+  PersistenceRecordId,
+  PersistenceRecordMetadata,
+  PersistenceResult,
+  PersistenceSnapshot,
+  PersistenceStatus,
+  PersistenceSummary,
+  PersistenceValue,
+  PersistenceWarning,
+  RepositoryInput,
+  UpdateRecordInput
+} from "./persistence.js";
 
 export type {
   IStructuralEventPublisher,

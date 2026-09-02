@@ -136,3 +136,7 @@ O bootstrap estrutural registra `kernel.metadataRegistry` e `kernel.metadataEngi
 ## Component Registry e UI Composition
 
 O bootstrap padrao registra os servicos reais kernel.componentRegistry e kernel.uiCompositionRuntime no Service Registry e no DI Container. Ambos permanecem declarativos e agnosticos de runtime/plataforma.
+
+## Persistence structural service
+
+Kernel dependency creation installs the in-memory Persistence Service as a singleton, registers `kernel.persistence` in Service Registry and DI, and supplies its public snapshot to Runtime Bootstrap. No external connection is opened during bootstrap.

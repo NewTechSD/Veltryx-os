@@ -89,7 +89,7 @@ describe("Kernel structural events", () => {
     });
     expect(events[1]?.payload).toMatchObject({
       environment: expect.any(String),
-      servicesRegistered: 11
+      servicesRegistered: 12
     });
     expect(events[4]?.payload).toMatchObject({
       readyAt: expect.any(String),

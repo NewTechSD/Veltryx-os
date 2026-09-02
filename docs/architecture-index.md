@@ -124,18 +124,18 @@ Estas RFCs formam o nucleo imutavel do Veltryx OS.
 
 ## Plataforma
 
-| RFC      | Documento                                                                                           | Status  |
-| -------- | --------------------------------------------------------------------------------------------------- | ------- |
-| RFC-0007 | [UI Composition System](../rfc/RFC-0007-ui-composition-system.md)                                   | Frozen  |
-| RFC-0008 | [Runtime Abstraction & Platform Adapters](../rfc/RFC-0008-runtime-abstraction-platform-adapters.md) | Draft   |
-| RFC-0009 | Builder / Application Model                                                                         | Planned |
-| RFC-0010 | Permission Engine                                                                                   | Planned |
-| RFC-0011 | Authentication                                                                                      | Planned |
-| RFC-0012 | Workflow Engine                                                                                     | Planned |
-| RFC-0013 | API Engine                                                                                          | Planned |
-| RFC-0014 | Query Engine                                                                                        | Planned |
-| RFC-0015 | Data Layer                                                                                          | Planned |
-| RFC-0016 | Event System                                                                                        | Planned |
+| RFC      | Documento                                                                                           | Status   |
+| -------- | --------------------------------------------------------------------------------------------------- | -------- |
+| RFC-0007 | [UI Composition System](../rfc/RFC-0007-ui-composition-system.md)                                   | Frozen   |
+| RFC-0008 | [Runtime Abstraction & Platform Adapters](../rfc/RFC-0008-runtime-abstraction-platform-adapters.md) | Draft    |
+| RFC-0009 | Builder / Application Model                                                                         | Planned  |
+| RFC-0010 | Permission Engine                                                                                   | Planned  |
+| RFC-0011 | Authentication                                                                                      | Planned  |
+| RFC-0012 | Workflow Engine                                                                                     | Planned  |
+| RFC-0013 | API Engine                                                                                          | Planned  |
+| RFC-0014 | Query Engine                                                                                        | Planned  |
+| RFC-0015 | [Data Layer — Persistence & Data Access Contracts](../rfc/RFC-0015-data-layer.md)                   | Approved |
+| RFC-0016 | Event System                                                                                        | Planned  |
 
 ## Infraestrutura
 
@@ -152,16 +152,19 @@ Estas RFCs formam o nucleo imutavel do Veltryx OS.
 
 ### Autorizacoes de Implementacao
 
-| IMP      | Documento                                                                                                            | Status   | Autorizado por                                       | Relacionado a                          |
-| -------- | -------------------------------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------- | -------------------------------------- |
-| IMP-0029 | [Admin Composition Adapter + Dynamic Screen Renderer](IMP-0029-admin-composition-adapter-dynamic-screen-renderer.md) | Approved | RFC-0007 + RFC-0099 + ADR-0004                       | RFC-0008 Draft                         |
-| IMP-0030 | [Dynamic Admin Shell + Navigation/Menu Composition](IMP-0030-dynamic-admin-shell-navigation-menu-composition.md)     | Approved | RFC-0005 + RFC-0006 + RFC-0007 + RFC-0099 + ADR-0004 | IMP-0029; RFC-0008 Draft, not required |
+| IMP      | Documento                                                                                                            | Status   | Autorizado por                                                             | Relacionado a                          |
+| -------- | -------------------------------------------------------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------- | -------------------------------------- |
+| IMP-0029 | [Admin Composition Adapter + Dynamic Screen Renderer](IMP-0029-admin-composition-adapter-dynamic-screen-renderer.md) | Approved | RFC-0007 + RFC-0099 + ADR-0004                                             | RFC-0008 Draft                         |
+| IMP-0030 | [Dynamic Admin Shell + Navigation/Menu Composition](IMP-0030-dynamic-admin-shell-navigation-menu-composition.md)     | Approved | RFC-0005 + RFC-0006 + RFC-0007 + RFC-0099 + ADR-0004                       | IMP-0029; RFC-0008 Draft, not required |
+| IMP-0031 | [Persistence Layer + Data Access Contracts](IMP-0031-persistence-layer-data-access-contracts.md)                     | Approved | RFC-0001 + RFC-0002 + RFC-0004 + RFC-0005 + RFC-0006 + RFC-0015 + RFC-0099 | RFC-0008 Draft, not required           |
 
 O IMP-0029 autoriza a TASK-0313 somente como renderizacao interna de Composition Tree em `apps/admin`. A aprovacao da RFC-0008 nao e dependencia dessa task porque o Admin Composition Adapter nao e um Runtime Adapter de publicacao.
 
 Implementation references: [Admin Composition Adapter](ADMIN-COMPOSITION-ADAPTER.md) and [Dynamic Screen Renderer](DYNAMIC-SCREEN-RENDERER.md). Both remain restricted to `apps/admin`.
 
 O IMP-0030 autoriza a TASK-0314 a derivar a navegacao do Admin Shell de metadata/menu/composition exclusivamente em `apps/admin`. A Composition Tree permanece universal; a RFC-0008 continua Draft e nao e requerida por esta task.
+
+O IMP-0031 autoriza a Persistence Layer agnostica e o provider in-memory sob a RFC-0015. RFC-0009 permanece reservada para Builder/Application Model. Banco, ORM, driver, SQL e migrations nao sao autorizados.
 
 Implementation references: [Dynamic Admin Shell](DYNAMIC-ADMIN-SHELL.md) and [Navigation/Menu Composition](NAVIGATION-MENU-COMPOSITION.md).
 

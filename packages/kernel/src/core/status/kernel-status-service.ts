@@ -6,6 +6,7 @@
   IUICompositionRuntime,
   IModuleLoader,
   IRuntime,
+  IPersistenceService,
   IServiceRegistry,
   KernelBootStatus,
   KernelDiagnosticEntry,
@@ -29,6 +30,7 @@ export interface KernelStatusServiceDependencies {
   readonly metadata: IMetadataRegistry;
   readonly components?: IComponentRegistry;
   readonly uiComposition?: IUICompositionRuntime;
+  readonly persistence?: IPersistenceService;
   readonly runtime: IRuntime;
   readonly container?: import("@veltryx/contracts").IDependencyInjectionContainer;
 }
@@ -62,6 +64,7 @@ export class KernelStatusService implements IKernelStatusService {
     const metadata = this.collectMetadataSnapshot(errors);
     const components = this.collectComponentSnapshot(errors);
     const uiComposition = this.collectUICompositionSnapshot(errors);
+    const persistence = this.collectPersistenceSnapshot(errors);
 
     return createKernelStatusSnapshot({
       kernelStatus: errors.length > 0 ? "error" : this.options.kernelState(),
@@ -90,6 +93,7 @@ export class KernelStatusService implements IKernelStatusService {
       componentsRegistered: components.componentsRegistered,
       uiCompositionStatus: uiComposition.status,
       compositionsGenerated: uiComposition.compositionsGenerated,
+      persistence,
       runtimeStatus,
       dependencyInjectionStatus: dependencyInjection?.status,
       providersRegistered: dependencyInjection?.providersRegistered,
@@ -296,6 +300,17 @@ export class KernelStatusService implements IKernelStatusService {
       errors.push(this.toDiagnostic(error, "KERNEL_RUNTIME_STATUS_FAILED", "runtime"));
 
       return "unavailable";
+    }
+  }
+
+  private collectPersistenceSnapshot(errors: KernelDiagnosticEntry[]): KernelStatusSnapshot["persistence"] {
+    try {
+      if (!this.dependencies.persistence) return undefined;
+      const snapshot = this.dependencies.persistence.snapshot();
+      return Object.freeze({ status: snapshot.status, providerId: snapshot.provider.id, providerKind: snapshot.provider.kind, namespaces: snapshot.namespaces, collections: snapshot.collections, records: snapshot.records, warnings: snapshot.warnings.length, errors: snapshot.errors.length, diagnostics: snapshot.diagnostics.length });
+    } catch (error) {
+      errors.push(this.toDiagnostic(error, "KERNEL_PERSISTENCE_SNAPSHOT_FAILED", "persistence"));
+      return undefined;
     }
   }
 
