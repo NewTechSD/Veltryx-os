@@ -54,11 +54,12 @@ Construir as capacidades de plataforma que transformam metadata em experiencia u
 
 Implementacoes:
 
-| IMP      | Entrega           | Objetivo                                                                                                      | RFCs Dependentes                                 | Prioridade | Complexidade | Status  | Dependencias                           |
-| -------- | ----------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ | ---------- | ------------ | ------- | -------------------------------------- |
-| IMP-0007 | UI Composition    | Implementar composicao abstrata de UI por componentes, slots, propriedades, eventos e acoes.                  | RFC-0005, RFC-0006, RFC-0007, RFC-0099           | Alta       | Alta         | Planned | IMP-0005, IMP-0006                     |
-| IMP-0008 | Runtime Adapters  | Definir e implementar adapters de runtime para traduzir Site Schema e Composition Tree para delivery targets. | RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0099 | Alta       | Alta         | Blocked | RFC-0008, IMP-0005, IMP-0006, IMP-0007 |
-| IMP-0009 | Application Model | Implementar modelo de aplicacao gerado por Runtime, metadata e composicao.                                    | RFC-0005, RFC-0006, RFC-0007, RFC-0009, RFC-0099 | Media      | Alta         | Blocked | RFC-0009, IMP-0006, IMP-0007           |
+| IMP      | Entrega                                             | Objetivo                                                                                                      | RFCs Dependentes                                 | Prioridade | Complexidade | Status   | Dependencias                           |
+| -------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ | ---------- | ------------ | -------- | -------------------------------------- |
+| IMP-0007 | UI Composition                                      | Implementar composicao abstrata de UI por componentes, slots, propriedades, eventos e acoes.                  | RFC-0005, RFC-0006, RFC-0007, RFC-0099           | Alta       | Alta         | Planned  | IMP-0005, IMP-0006                     |
+| IMP-0008 | Runtime Adapters                                    | Definir e implementar adapters de runtime para traduzir Site Schema e Composition Tree para delivery targets. | RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0099 | Alta       | Alta         | Blocked  | RFC-0008, IMP-0005, IMP-0006, IMP-0007 |
+| IMP-0009 | Application Model                                   | Implementar modelo de aplicacao gerado por Runtime, metadata e composicao.                                    | RFC-0005, RFC-0006, RFC-0007, RFC-0009, RFC-0099 | Media      | Alta         | Blocked  | RFC-0009, IMP-0006, IMP-0007           |
+| IMP-0029 | Admin Composition Adapter + Dynamic Screen Renderer | Renderizar Composition Tree somente dentro do Admin, sem constituir adapter de publicacao.                    | RFC-0007, RFC-0099                               | Alta       | Alta         | Approved | ADR-0004, TASK-0312                    |
 
 ### Fase 3
 
@@ -191,3 +192,16 @@ Criterios adicionais para TASK-0312:
 - Runtime Adapter traduz schema/composition para plataforma.
 - Veltryx OS permanece Control Plane.
 - Site publicado pertence ao Delivery Plane.
+
+## TASK-0313 / IMP-0029
+
+A TASK-0313 esta aprovada sob o nome **Admin Composition Adapter + Dynamic Screen Renderer**.
+
+- Status: Approved.
+- Depends On: RFC-0007, RFC-0099, ADR-0004 e TASK-0312.
+- Related To: RFC-0008, que permanece Draft.
+- Does Not Depend On: aprovacao da RFC-0008.
+
+A autorizacao limita a implementacao a renderizacao de Composition Tree dentro de `apps/admin`. O mapping concreto de `componentKey` para React pertence somente ao Admin; `packages/kernel`, `packages/contracts` e a Composition Tree permanecem runtime-agnostic.
+
+O Admin Composition Adapter nao e Runtime Adapter de publicacao. Next Runtime Adapter, WordPress Runtime Adapter, Static Runtime Adapter, Publishing Pipeline, Preview, Publish, Rollback e deploy targets reais continuam bloqueados ate a aprovacao da RFC-0008.

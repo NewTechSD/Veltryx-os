@@ -150,6 +150,16 @@ Estas RFCs formam o nucleo imutavel do Veltryx OS.
 | -------- | --------------------------------------------------------------------- | -------- |
 | RFC-0099 | [Architecture Governance](../rfc/RFC-0099-architecture-governance.md) | Approved |
 
+### Autorizacoes de Implementacao
+
+| IMP      | Documento                                                                                                            | Status   | Autorizado por                 | Relacionado a  |
+| -------- | -------------------------------------------------------------------------------------------------------------------- | -------- | ------------------------------ | -------------- |
+| IMP-0029 | [Admin Composition Adapter + Dynamic Screen Renderer](IMP-0029-admin-composition-adapter-dynamic-screen-renderer.md) | Approved | RFC-0007 + RFC-0099 + ADR-0004 | RFC-0008 Draft |
+
+O IMP-0029 autoriza a TASK-0313 somente como renderizacao interna de Composition Tree em `apps/admin`. A aprovacao da RFC-0008 nao e dependencia dessa task porque o Admin Composition Adapter nao e um Runtime Adapter de publicacao.
+
+A RFC-0008 permanece Draft. Next Runtime Adapter, WordPress Runtime Adapter, Static Runtime Adapter, Publishing Pipeline, Preview, Publish, Rollback e deploy targets reais continuam bloqueados ate sua aprovacao.
+
 ## Fluxo Arquitetural
 
 ```text
@@ -348,6 +358,8 @@ Documentos tecnicos adicionados para a fundacao de metadata:
 ADR-0004 estabelece que Builder, Site Schema, Component Registry e UI Composition Runtime devem permanecer runtime-agnostic e platform-agnostic.
 
 RFC-0008 nasce como Draft para formalizar Runtime Abstraction & Platform Adapters. Ate sua aprovacao, nenhuma implementacao pode acoplar o Core, Contracts, Component Registry ou UI Composition Runtime a um framework, DOM, plataforma de publicacao, template executavel ou mapping concreto de componente.
+
+O Admin Composition Adapter autorizado pelo IMP-0029 nao altera essa restricao: seu mapping React fica exclusivamente em `apps/admin`, consome a Composition Tree universal e serve apenas ao painel administrativo. Ele nao e adapter de publicacao ou delivery e, portanto, nao depende da aprovacao da RFC-0008.
 
 Fluxo arquitetural esperado:
 
