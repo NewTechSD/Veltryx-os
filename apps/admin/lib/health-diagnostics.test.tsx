@@ -200,7 +200,7 @@ describe("Admin operational pages", () => {
     const html = renderToStaticMarkup(await AdminHome());
 
     expect(html).toContain("Kernel readiness overview");
-    expect(html).toContain("Overview");
+    expect(html).toContain("Dashboard");
     expect(html).toContain("Diagnostics");
   });
 

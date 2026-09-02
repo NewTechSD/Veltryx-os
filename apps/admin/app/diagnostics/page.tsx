@@ -15,7 +15,7 @@ export default async function DiagnosticsPage() {
   });
 
   return (
-    <AppShell statusLabel={viewModel.statusLabel} generatedAt={viewModel.generatedAt}>
+    <AppShell currentPath="/diagnostics" statusLabel={viewModel.statusLabel} generatedAt={viewModel.generatedAt}>
       <DiagnosticsPanel diagnostics={diagnostics} />
     </AppShell>
   );

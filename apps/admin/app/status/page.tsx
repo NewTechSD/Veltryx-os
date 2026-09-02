@@ -10,7 +10,7 @@ export default async function StatusPage() {
   const viewModel = createKernelStatusViewModel(snapshot);
 
   return (
-    <AppShell statusLabel={viewModel.statusLabel} generatedAt={viewModel.generatedAt}>
+    <AppShell currentPath="/status" statusLabel={viewModel.statusLabel} generatedAt={viewModel.generatedAt}>
       <StatusSummary snapshot={snapshot} />
     </AppShell>
   );

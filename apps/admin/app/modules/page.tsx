@@ -8,7 +8,7 @@ export default async function ModulesPage() {
   const viewModel = await getModuleSystemViewModel();
 
   return (
-    <AppShell statusLabel={viewModel.statusLabel} generatedAt={viewModel.generatedAt}>
+    <AppShell currentPath="/modules" statusLabel={viewModel.statusLabel} generatedAt={viewModel.generatedAt}>
       <ModuleSystemScreen viewModel={viewModel} />
     </AppShell>
   );

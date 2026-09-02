@@ -152,13 +152,18 @@ Estas RFCs formam o nucleo imutavel do Veltryx OS.
 
 ### Autorizacoes de Implementacao
 
-| IMP      | Documento                                                                                                            | Status   | Autorizado por                 | Relacionado a  |
-| -------- | -------------------------------------------------------------------------------------------------------------------- | -------- | ------------------------------ | -------------- |
-| IMP-0029 | [Admin Composition Adapter + Dynamic Screen Renderer](IMP-0029-admin-composition-adapter-dynamic-screen-renderer.md) | Approved | RFC-0007 + RFC-0099 + ADR-0004 | RFC-0008 Draft |
+| IMP      | Documento                                                                                                            | Status   | Autorizado por                                       | Relacionado a                          |
+| -------- | -------------------------------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------- | -------------------------------------- |
+| IMP-0029 | [Admin Composition Adapter + Dynamic Screen Renderer](IMP-0029-admin-composition-adapter-dynamic-screen-renderer.md) | Approved | RFC-0007 + RFC-0099 + ADR-0004                       | RFC-0008 Draft                         |
+| IMP-0030 | [Dynamic Admin Shell + Navigation/Menu Composition](IMP-0030-dynamic-admin-shell-navigation-menu-composition.md)     | Approved | RFC-0005 + RFC-0006 + RFC-0007 + RFC-0099 + ADR-0004 | IMP-0029; RFC-0008 Draft, not required |
 
 O IMP-0029 autoriza a TASK-0313 somente como renderizacao interna de Composition Tree em `apps/admin`. A aprovacao da RFC-0008 nao e dependencia dessa task porque o Admin Composition Adapter nao e um Runtime Adapter de publicacao.
 
 Implementation references: [Admin Composition Adapter](ADMIN-COMPOSITION-ADAPTER.md) and [Dynamic Screen Renderer](DYNAMIC-SCREEN-RENDERER.md). Both remain restricted to `apps/admin`.
+
+O IMP-0030 autoriza a TASK-0314 a derivar a navegacao do Admin Shell de metadata/menu/composition exclusivamente em `apps/admin`. A Composition Tree permanece universal; a RFC-0008 continua Draft e nao e requerida por esta task.
+
+Implementation references: [Dynamic Admin Shell](DYNAMIC-ADMIN-SHELL.md) and [Navigation/Menu Composition](NAVIGATION-MENU-COMPOSITION.md).
 
 A RFC-0008 permanece Draft. Next Runtime Adapter, WordPress Runtime Adapter, Static Runtime Adapter, Publishing Pipeline, Preview, Publish, Rollback e deploy targets reais continuam bloqueados ate sua aprovacao.
 

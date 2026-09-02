@@ -8,5 +8,6 @@ export default async function DynamicRuntimePage({ params }: Readonly<{ params: 
   const input = await params;
   const viewModel = await getAdminCompositionScreenViewModel(input);
   const statusLabel = viewModel.status === "ready" ? "Ready" : viewModel.status === "warning" ? "Warning" : viewModel.status === "empty" ? "Empty" : "Error";
-  return <AppShell statusLabel={statusLabel} generatedAt={viewModel.generatedAt}><DynamicScreenRenderer viewModel={viewModel} /></AppShell>;
+  const currentPath = `/runtime/${input.sourceType}/${input.namespace}/${input.sourceId}`;
+  return <AppShell currentPath={currentPath} statusLabel={statusLabel} generatedAt={viewModel.generatedAt}><DynamicScreenRenderer viewModel={viewModel} /></AppShell>;
 }

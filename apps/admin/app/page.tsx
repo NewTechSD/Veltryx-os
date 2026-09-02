@@ -8,7 +8,7 @@ export default async function AdminHome() {
   const status = await getKernelStatusViewModel();
 
   return (
-    <AppShell statusLabel={status.statusLabel} generatedAt={status.generatedAt}>
+    <AppShell currentPath="/" statusLabel={status.statusLabel} generatedAt={status.generatedAt}>
       <KernelDashboard dashboard={status} />
     </AppShell>
   );

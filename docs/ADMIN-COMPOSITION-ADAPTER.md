@@ -41,3 +41,7 @@ This adapter is not a publishing or delivery Runtime Adapter. It renders only in
 - Only `page` has an Admin demonstration source in this iteration, although source types are validated against the universal contract.
 - No API, database, authentication, permission evaluation, business rule or action execution exists.
 - Snapshot values can be zero before a runtime lifecycle has been bootstrapped; this is an honest public state, not invented data.
+
+## Admin Shell integration
+
+IMP-0030 adds a sibling Admin Navigation Adapter for shell navigation. It follows the same public-API and immutable-ViewModel boundary, but consumes `system.menu` composition and does not alter the dynamic screen adapter. See [Dynamic Admin Shell](DYNAMIC-ADMIN-SHELL.md) and [Navigation/Menu Composition](NAVIGATION-MENU-COMPOSITION.md).

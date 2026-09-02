@@ -45,3 +45,5 @@ The Composition Tree is universal data containing identifiers, props and node re
 ## Route and limits
 
 The server route is `/runtime/[sourceType]/[namespace]/[sourceId]`; the initial demonstration is `/runtime/page/system/admin-overview` and uses `force-dynamic`. This implementation is not a site preview, publishing renderer, visual Builder or platform Runtime Adapter. Future work may add more visual-only Admin components after an approved implementation plan, while universal publishing remains governed by RFC-0008.
+
+The route now participates in the Dynamic Admin Shell from IMP-0030 and passes its server-known path for active navigation. Menu rendering remains a separate Admin navigation concern and does not contaminate the screen Composition Tree or component mapping.
