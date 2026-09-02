@@ -10,3 +10,4 @@ export {
   normalizeMetadataFailure
 } from "./metadata-diagnostics.js";
 export type * from "./metadata-types.js";
+export * from "./persistence/index.js";

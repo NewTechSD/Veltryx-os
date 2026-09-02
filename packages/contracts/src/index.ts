@@ -122,6 +122,8 @@ export type {
 } from "./kernel-status.js";
 export type {
   IMetadataEngine,
+  HydrateMetadataRegistryInput,
+  IMetadataPersistenceService,
   IMetadataRegistry,
   IMetadataResolver,
   IMetadataSnapshotService,
@@ -144,6 +146,12 @@ export type {
   MetadataListColumn,
   MetadataMenu,
   MetadataMenuItem,
+  MetadataPersistenceOperation,
+  MetadataPersistenceResult,
+  MetadataPersistenceSnapshot,
+  MetadataPersistenceStatus,
+  MetadataPersistenceSummary,
+  MetadataHydrationResult,
   MetadataNamespace,
   MetadataNamespaceSnapshot,
   MetadataPage,
@@ -164,7 +172,11 @@ export type {
   MetadataValidationRule,
   MetadataView,
   MetadataViewType,
-  MetadataWarning
+  MetadataWarning,
+  ListMetadataResourcesInput,
+  LoadMetadataResourceInput,
+  PersistMetadataNamespaceInput,
+  PersistMetadataResourceInput
 } from "./metadata.js";
 export type {
   IModuleCatalog,

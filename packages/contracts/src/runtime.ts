@@ -10,7 +10,7 @@ import type {
   IDependencyInjectionContainer
 } from "./dependency-injection.js";
 import type { ModuleSystemSnapshot } from "./module-system-status.js";
-import type { IMetadataSnapshotService, MetadataEngineSnapshot } from "./metadata.js";
+import type { IMetadataSnapshotService, MetadataEngineSnapshot, MetadataPersistenceSnapshot, MetadataPersistenceSummary } from "./metadata.js";
 import type { ComponentRegistrySnapshot } from "./components.js";
 import type { UICompositionSnapshot } from "./ui-composition.js";
 import type { IModuleLoader } from "./modules.js";
@@ -81,6 +81,7 @@ export interface RuntimeBootstrapDependencies {
   readonly componentRegistry?: { snapshot(): ComponentRegistrySnapshot };
   readonly uiComposition?: { snapshot(): UICompositionSnapshot };
   readonly persistence?: { snapshot(): PersistenceSnapshot };
+  readonly metadataPersistence?: { snapshot(): MetadataPersistenceSnapshot };
 }
 export interface IRuntimeBootstrapService {
   bootstrap(execution?: ExecutionContextSnapshot): Promise<RuntimeStructuralBootstrapResult>;
@@ -157,6 +158,7 @@ export interface RuntimeContext {
   readonly componentRegistry?: RuntimeComponentRegistryContext;
   readonly uiComposition?: RuntimeUICompositionContext;
   readonly persistence?: PersistenceSummary;
+  readonly metadataPersistence?: MetadataPersistenceSummary;
   readonly execution?: RuntimeExecutionContextSummary;
   readonly warnings: readonly RuntimeWarning[];
   readonly errors: readonly RuntimeError[];
@@ -185,6 +187,7 @@ export interface RuntimeStatusSnapshot {
   readonly uiCompositionStatus?: string;
   readonly compositionsGenerated?: number;
   readonly persistence?: PersistenceSummary;
+  readonly metadataPersistence?: MetadataPersistenceSummary;
   readonly servicesAvailable: number;
   readonly providersRegistered: number;
   readonly providersResolved: number;
@@ -206,6 +209,7 @@ export interface RuntimeContextFactoryInput {
   readonly componentRegistry?: ComponentRegistrySnapshot;
   readonly uiComposition?: UICompositionSnapshot;
   readonly persistence?: PersistenceSnapshot;
+  readonly metadataPersistence?: MetadataPersistenceSnapshot;
   readonly bootstrap: RuntimeBootstrapStatus;
   readonly execution?: ExecutionContextSnapshot;
 }

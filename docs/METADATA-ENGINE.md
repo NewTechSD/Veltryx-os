@@ -1,5 +1,7 @@
 ﻿# Metadata Engine
 
+> TASK-0315B adds explicit persistence through `IMetadataPersistenceService`; existing synchronous Engine APIs remain unchanged. See `METADATA-PERSISTENCE-INTEGRATION.md`.
+
 ## Objetivo
 
 O Metadata Engine e o subsistema estrutural do Kernel responsavel por declarar, validar, registrar, resolver e expor metadados publicos seguros. Ele prepara o caminho para Component Registry, UI Composition Runtime, Dynamic Screen Renderer, Builder Foundation e modulos de negocio.

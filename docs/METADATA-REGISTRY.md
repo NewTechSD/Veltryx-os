@@ -1,5 +1,7 @@
 ﻿# Metadata Registry
 
+> The Registry remains the operational index. Explicit hydration preserves existing entries on conflict and skips invalid stored entries with safe warnings.
+
 ## Objetivo
 
 O Metadata Registry e o catalogo governado de metadata validada no Kernel. Ele armazena namespaces e resources estruturais, oferece resolucao publica e gera um read model seguro para Kernel, Runtime e consumidores futuros.

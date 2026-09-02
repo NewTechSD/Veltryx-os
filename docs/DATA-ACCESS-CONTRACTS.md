@@ -1,5 +1,7 @@
 # Data Access Contracts
 
+> `IMetadataPersistenceService` is the first structural consumer and maps declarative metadata to repository contracts without ORM or driver types.
+
 Status: Implemented  
 Authorization: RFC-0015 + IMP-0031
 

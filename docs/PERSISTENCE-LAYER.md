@@ -1,5 +1,7 @@
 # Persistence Layer
 
+> TASK-0315B validates the layer with a Metadata bridge that depends only on `IPersistenceService`, never on the in-memory implementation.
+
 Status: Implemented  
 Authorization: RFC-0015 + IMP-0031
 

@@ -1,5 +1,7 @@
 ﻿# Kernel Bootstrap
 
+> `kernel.metadataPersistence` is registered as a singleton DI provider over the public Metadata Registry and Persistence Service contracts.
+
 ## Objetivo
 
 Documentar o bootstrap do Kernel e os contratos iniciais adicionados nas sprints de Kernel Core Services e First Online Shell.

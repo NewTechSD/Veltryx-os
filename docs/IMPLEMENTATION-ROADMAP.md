@@ -62,6 +62,7 @@ Implementacoes:
 | IMP-0029 | Admin Composition Adapter + Dynamic Screen Renderer | Renderizar Composition Tree somente dentro do Admin, sem constituir adapter de publicacao.                    | RFC-0007, RFC-0099                                                   | Alta       | Alta         | Approved | ADR-0004, TASK-0312                    |
 | IMP-0030 | Dynamic Admin Shell + Navigation/Menu Composition   | Derivar a navegacao interna do Admin de metadata/menu/composition sem implementar adapter de publicacao.      | RFC-0005, RFC-0006, RFC-0007, RFC-0099                               | Alta       | Alta         | Approved | IMP-0029, TASK-0313, ADR-0004          |
 | IMP-0031 | Persistence Layer + Data Access Contracts           | Criar contratos agnosticos, provider in-memory e snapshots publicos sem banco, ORM, driver ou SQL.            | RFC-0001, RFC-0002, RFC-0004, RFC-0005, RFC-0006, RFC-0015, RFC-0099 | Critica    | Alta         | Approved | RFC-0015                               |
+| IMP-0031B | Metadata Registry Persistence Integration           | Usar IPersistenceService como backing store explicito do Metadata Registry, com hidratacao segura.           | RFC-0005, RFC-0015, RFC-0099                                         | Alta       | Alta         | Approved | IMP-0031, TASK-0315                    |
 
 ### Fase 3
 
@@ -230,3 +231,13 @@ A TASK-0315 esta aprovada como **Persistence Layer + Data Access Contracts** sob
 - Does Not Depend On: aprovacao da RFC-0008.
 
 A implementacao limita-se a contratos publicos, Persistence Service, provider in-memory, repository e snapshots seguros. Banco real, Prisma, PostgreSQL, ORM, driver, SQL e migrations permanecem fora de escopo.
+
+## TASK-0315B / IMP-0031B
+
+- Status: Approved.
+- Authorized By: RFC-0005, RFC-0015 e RFC-0099.
+- Depends On: TASK-0315 e IMP-0031.
+- Does Not Depend On: RFC-0008.
+- Does Not Replace: RFC-0009.
+
+A integracao usa `IPersistenceService` como backing store abstrato e mantem o Metadata Registry como indice operacional sincrono. Ela nao implementa banco, ORM, driver, SQL, migrations ou persistencia automatica oculta.

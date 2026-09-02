@@ -18,6 +18,8 @@ Runtime Context
 
 ## Runtime Context e Execution Context
 
+The public context may include an aggregate `metadataPersistence` summary; metadata resources and persistence records are excluded.
+
 O Execution Context descreve quem, onde e sob qual execuÃ§Ã£o uma operaÃ§Ã£o ocorre. O Runtime Context descreve como a plataforma estÃ¡ configurada e disponÃ­vel. O resumo opcional de execuÃ§Ã£o contÃ©m apenas request/correlation IDs e indicadores de disponibilidade de tenant, workspace e user. Roles, permissions, metadata e dados de usuÃ¡rio nÃ£o sÃ£o copiados.
 
 ## ComposiÃ§Ã£o

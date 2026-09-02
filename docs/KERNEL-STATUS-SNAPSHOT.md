@@ -1,5 +1,7 @@
 ﻿# Kernel Public Status Snapshot
 
+> Kernel Status projects only the public aggregate Metadata Persistence snapshot and excludes payloads and internals.
+
 ## Objetivo
 
 O Kernel Public Status Snapshot define a fronteira publica para leitura do estado atual do `@veltryx/kernel`.

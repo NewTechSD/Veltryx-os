@@ -270,6 +270,26 @@ export interface MetadataDiagnosticEntry {
 export type MetadataWarning = Omit<MetadataDiagnosticEntry, "severity">;
 export type MetadataError = Omit<MetadataDiagnosticEntry, "severity">;
 
+export type MetadataPersistenceStatus = "ready" | "empty" | "warning" | "error";
+export type MetadataPersistenceOperation = "persistNamespace" | "persistResource" | "loadResource" | "listResources" | "hydrateRegistry";
+export interface PersistMetadataNamespaceInput { readonly namespace: MetadataNamespace }
+export interface PersistMetadataResourceInput { readonly resource: MetadataResource }
+export interface LoadMetadataResourceInput { readonly namespace: string; readonly id: string }
+export interface ListMetadataResourcesInput { readonly namespace?: string; readonly limit?: number; readonly offset?: number }
+export interface HydrateMetadataRegistryInput { readonly namespace?: string }
+export interface MetadataHydrationResult { readonly namespacesHydrated: number; readonly resourcesHydrated: number; readonly conflicts: number; readonly invalidRecords: number }
+export interface MetadataPersistenceResult<T = undefined> { readonly ok: boolean; readonly data?: T; readonly warnings: readonly MetadataWarning[]; readonly errors: readonly MetadataError[]; readonly diagnostics: readonly MetadataDiagnosticEntry[] }
+export interface MetadataPersistenceSummary { readonly status: MetadataPersistenceStatus; readonly providerId: string; readonly providerKind: import("./persistence.js").PersistenceProviderKind; readonly namespacesPersisted: number; readonly resourcesPersisted: number; readonly hydratedResources: number; readonly warnings: number; readonly errors: number; readonly diagnostics: number }
+export interface MetadataPersistenceSnapshot { readonly status: MetadataPersistenceStatus; readonly generatedAt: string; readonly provider: { readonly id: string; readonly kind: import("./persistence.js").PersistenceProviderKind }; readonly namespacesPersisted: number; readonly resourcesPersisted: number; readonly hydratedResources: number; readonly warnings: readonly MetadataWarning[]; readonly errors: readonly MetadataError[]; readonly diagnostics: readonly MetadataDiagnosticEntry[] }
+export interface IMetadataPersistenceService {
+  persistNamespace(input: PersistMetadataNamespaceInput): Promise<MetadataPersistenceResult<MetadataNamespace>>;
+  persistResource(input: PersistMetadataResourceInput): Promise<MetadataPersistenceResult<MetadataResource>>;
+  loadResource(input: LoadMetadataResourceInput): Promise<MetadataPersistenceResult<MetadataResource | null>>;
+  listResources(input?: ListMetadataResourcesInput): Promise<MetadataPersistenceResult<readonly MetadataResource[]>>;
+  hydrateRegistry(input?: HydrateMetadataRegistryInput): Promise<MetadataPersistenceResult<MetadataHydrationResult>>;
+  snapshot(): MetadataPersistenceSnapshot;
+}
+
 export interface MetadataNamespaceSnapshot {
   readonly id: string;
   readonly name: string;

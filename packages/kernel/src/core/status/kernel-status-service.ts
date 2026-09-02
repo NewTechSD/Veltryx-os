@@ -7,6 +7,7 @@
   IModuleLoader,
   IRuntime,
   IPersistenceService,
+  IMetadataPersistenceService,
   IServiceRegistry,
   KernelBootStatus,
   KernelDiagnosticEntry,
@@ -31,6 +32,7 @@ export interface KernelStatusServiceDependencies {
   readonly components?: IComponentRegistry;
   readonly uiComposition?: IUICompositionRuntime;
   readonly persistence?: IPersistenceService;
+  readonly metadataPersistence?: IMetadataPersistenceService;
   readonly runtime: IRuntime;
   readonly container?: import("@veltryx/contracts").IDependencyInjectionContainer;
 }
@@ -65,6 +67,7 @@ export class KernelStatusService implements IKernelStatusService {
     const components = this.collectComponentSnapshot(errors);
     const uiComposition = this.collectUICompositionSnapshot(errors);
     const persistence = this.collectPersistenceSnapshot(errors);
+    const metadataPersistence = this.collectMetadataPersistenceSnapshot(errors);
 
     return createKernelStatusSnapshot({
       kernelStatus: errors.length > 0 ? "error" : this.options.kernelState(),
@@ -94,6 +97,7 @@ export class KernelStatusService implements IKernelStatusService {
       uiCompositionStatus: uiComposition.status,
       compositionsGenerated: uiComposition.compositionsGenerated,
       persistence,
+      metadataPersistence,
       runtimeStatus,
       dependencyInjectionStatus: dependencyInjection?.status,
       providersRegistered: dependencyInjection?.providersRegistered,
@@ -310,6 +314,29 @@ export class KernelStatusService implements IKernelStatusService {
       return Object.freeze({ status: snapshot.status, providerId: snapshot.provider.id, providerKind: snapshot.provider.kind, namespaces: snapshot.namespaces, collections: snapshot.collections, records: snapshot.records, warnings: snapshot.warnings.length, errors: snapshot.errors.length, diagnostics: snapshot.diagnostics.length });
     } catch (error) {
       errors.push(this.toDiagnostic(error, "KERNEL_PERSISTENCE_SNAPSHOT_FAILED", "persistence"));
+      return undefined;
+    }
+  }
+
+  private collectMetadataPersistenceSnapshot(
+    errors: KernelDiagnosticEntry[]
+  ): KernelStatusSnapshot["metadataPersistence"] {
+    try {
+      if (!this.dependencies.metadataPersistence) return undefined;
+      const snapshot = this.dependencies.metadataPersistence.snapshot();
+      return Object.freeze({
+        status: snapshot.status,
+        providerId: snapshot.provider.id,
+        providerKind: snapshot.provider.kind,
+        namespacesPersisted: snapshot.namespacesPersisted,
+        resourcesPersisted: snapshot.resourcesPersisted,
+        hydratedResources: snapshot.hydratedResources,
+        warnings: snapshot.warnings.length,
+        errors: snapshot.errors.length,
+        diagnostics: snapshot.diagnostics.length
+      });
+    } catch (error) {
+      errors.push(this.toDiagnostic(error, "KERNEL_METADATA_PERSISTENCE_SNAPSHOT_FAILED", "metadata"));
       return undefined;
     }
   }

@@ -61,6 +61,7 @@ export interface KernelStatusSnapshot {
   readonly uiCompositionStatus?: KernelRegistryStatus;
   readonly compositionsGenerated?: number;
   readonly persistence?: import("./persistence.js").PersistenceSummary;
+  readonly metadataPersistence?: import("./metadata.js").MetadataPersistenceSummary;
   readonly runtimeStatus: RuntimeState | KernelSnapshotAvailability;
   readonly dependencyInjectionStatus?: import("./dependency-injection.js").DependencyInjectionStatus;
   readonly providersRegistered?: number;

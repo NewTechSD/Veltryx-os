@@ -84,6 +84,9 @@ export class RuntimeContextFactory implements IRuntimeContextFactory {
         compositionsGenerated: input.uiComposition?.compositionsGenerated ?? 0
       }),
       persistence: input.persistence ? summary(input.persistence) : undefined,
+      metadataPersistence: input.metadataPersistence
+        ? metadataPersistenceSummary(input.metadataPersistence)
+        : undefined,
       execution: input.execution
         ? Object.freeze({
             requestId: input.execution.requestId,
@@ -207,6 +210,22 @@ export class RuntimeContextFactory implements IRuntimeContextFactory {
 
 function summary(snapshot: NonNullable<RuntimeContextFactoryInput["persistence"]>) {
   return Object.freeze({ status: snapshot.status, providerId: snapshot.provider.id, providerKind: snapshot.provider.kind, namespaces: snapshot.namespaces, collections: snapshot.collections, records: snapshot.records, warnings: snapshot.warnings.length, errors: snapshot.errors.length, diagnostics: snapshot.diagnostics.length });
+}
+
+function metadataPersistenceSummary(
+  snapshot: NonNullable<RuntimeContextFactoryInput["metadataPersistence"]>
+) {
+  return Object.freeze({
+    status: snapshot.status,
+    providerId: snapshot.provider.id,
+    providerKind: snapshot.provider.kind,
+    namespacesPersisted: snapshot.namespacesPersisted,
+    resourcesPersisted: snapshot.resourcesPersisted,
+    hydratedResources: snapshot.hydratedResources,
+    warnings: snapshot.warnings.length,
+    errors: snapshot.errors.length,
+    diagnostics: snapshot.diagnostics.length
+  });
 }
 
 

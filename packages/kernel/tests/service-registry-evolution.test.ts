@@ -354,6 +354,7 @@ describe("Kernel Service Registry integration", () => {
         KERNEL_SERVICE_TOKENS.eventBus,
         KERNEL_SERVICE_TOKENS.executionContextFactory,
         KERNEL_SERVICE_TOKENS.metadataEngine,
+        KERNEL_SERVICE_TOKENS.metadataPersistence,
         KERNEL_SERVICE_TOKENS.metadataRegistry,
         KERNEL_SERVICE_TOKENS.moduleSystem,
         KERNEL_SERVICE_TOKENS.persistence,
@@ -362,11 +363,11 @@ describe("Kernel Service Registry integration", () => {
         KERNEL_SERVICE_TOKENS.uiCompositionRuntime
       ].sort()
     );
-    expect(snapshot.services).toHaveLength(12);
+    expect(snapshot.services).toHaveLength(13);
     expect(
       snapshot.services.some((service) => service.token === KERNEL_SERVICE_TOKENS.status)
     ).toBe(false);
-    expect(status.servicesRegistered).toMatchObject({ status: "available", value: 12 });
+    expect(status.servicesRegistered).toMatchObject({ status: "available", value: 13 });
     expect(status.dependencyInjectionStatus).toBe("ready");
     expect(status.serviceRegistryStatus).toMatchObject({ status: "available" });
     expect(kernel.state()).toBe(before);

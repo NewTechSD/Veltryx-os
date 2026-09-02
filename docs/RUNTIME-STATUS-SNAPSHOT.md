@@ -33,6 +33,8 @@ NÃ£o hÃ¡ observabilidade externa, histÃ³rico de snapshots, persistÃªncia
 
 ## Metadata Summary
 
+Runtime Status also includes safe metadata-persistence provider, counter and diagnostic-count fields when configured.
+
 O Runtime Status Snapshot expoe somente contadores resumidos de metadata:
 
 - `metadataStatus`
