@@ -158,6 +158,8 @@ Estas RFCs formam o nucleo imutavel do Veltryx OS.
 
 O IMP-0029 autoriza a TASK-0313 somente como renderizacao interna de Composition Tree em `apps/admin`. A aprovacao da RFC-0008 nao e dependencia dessa task porque o Admin Composition Adapter nao e um Runtime Adapter de publicacao.
 
+Implementation references: [Admin Composition Adapter](ADMIN-COMPOSITION-ADAPTER.md) and [Dynamic Screen Renderer](DYNAMIC-SCREEN-RENDERER.md). Both remain restricted to `apps/admin`.
+
 A RFC-0008 permanece Draft. Next Runtime Adapter, WordPress Runtime Adapter, Static Runtime Adapter, Publishing Pipeline, Preview, Publish, Rollback e deploy targets reais continuam bloqueados ate sua aprovacao.
 
 ## Fluxo Arquitetural

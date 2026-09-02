@@ -4,6 +4,7 @@
   { label: "Diagnostics", href: "/diagnostics" },
   { label: "Kernel", href: "/#dashboard" },
   { label: "Modules", href: "/modules" },
+  { label: "Dynamic Screen", href: "/runtime/page/system/admin-overview" },
   { label: "Services", href: "/#dashboard" },
   { label: "Metadata", href: "/#dashboard" },
   { label: "Runtime", href: "/#dashboard" }

@@ -1,0 +1,30 @@
+import type { ReactNode } from "react";
+
+export interface DynamicComponentProps {
+  readonly nodeId: string;
+  readonly props: Readonly<Record<string, unknown>>;
+  readonly children: ReactNode;
+  readonly slots: Readonly<Record<string, ReactNode>>;
+}
+
+const text = (value: unknown, fallback = ""): string => typeof value === "string" ? value.slice(0, 500) : fallback;
+const number = (value: unknown, fallback: number, min: number, max: number): number => typeof value === "number" && Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : fallback;
+
+export function DynamicPage({ props, children, slots }: DynamicComponentProps) {
+  return <section className="space-y-6" data-dynamic-component="system.page"><header><p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">Dynamic screen</p><h1 className="mt-2 text-3xl font-semibold text-zinc-950">{text(props.title, "Untitled page")}</h1>{text(props.description) && <p className="mt-2 text-zinc-600">{text(props.description)}</p>}</header>{slots.header}<div className="space-y-5">{children}{slots.default}</div>{slots.footer}</section>;
+}
+export function DynamicSection({ props, children, slots }: DynamicComponentProps) { return <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-5" data-dynamic-component="system.section">{text(props.title) && <h2 className="text-xl font-semibold">{text(props.title)}</h2>}{children}{Object.values(slots)}</section>; }
+export function DynamicContainer({ props, children, slots }: DynamicComponentProps) { return <div className="space-y-4" data-dynamic-component="system.container">{text(props.title) && <h2 className="text-xl font-semibold">{text(props.title)}</h2>}<div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{children}{Object.values(slots)}</div></div>; }
+export function DynamicCard({ props, children, slots }: DynamicComponentProps) { return <article className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm" data-dynamic-component="system.card"><h3 className="font-semibold text-zinc-900">{text(props.title, text(props.label, "Card"))}</h3>{text(props.resource) && <p className="mt-3 text-3xl font-semibold text-emerald-700">{text(props.resource)}</p>}{text(props.description) && <p className="mt-2 text-sm text-zinc-600">{text(props.description)}</p>}{children}{Object.values(slots)}</article>; }
+export function DynamicGrid({ props, children, slots }: DynamicComponentProps) { const columns = number(props.columns, 2, 1, 4); return <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }} data-dynamic-component="system.grid">{children}{Object.values(slots)}</div>; }
+export function DynamicStack({ props, children, slots }: DynamicComponentProps) { const direction = props.direction === "horizontal" ? "flex-row" : "flex-col"; return <div className={`flex ${direction} gap-3`} data-dynamic-component="system.stack">{children}{Object.values(slots)}</div>; }
+export function DynamicHeading({ props }: DynamicComponentProps) { const level = number(props.level, 2, 1, 4); const value = text(props.text, text(props.title, "Heading")); if (level === 1) return <h1 className="text-3xl font-semibold">{value}</h1>; if (level === 3) return <h3 className="text-lg font-semibold">{value}</h3>; if (level === 4) return <h4 className="font-semibold">{value}</h4>; return <h2 className="text-2xl font-semibold">{value}</h2>; }
+export function DynamicText({ props }: DynamicComponentProps) { return <p className="text-sm leading-6 text-zinc-600" data-dynamic-component="system.text">{text(props.text, text(props.content, ""))}</p>; }
+export function DynamicBadge({ props }: DynamicComponentProps) { const allowed = ["neutral", "success", "warning", "error"]; const variant = allowed.includes(text(props.variant)) ? text(props.variant) : "neutral"; return <span className="inline-flex rounded-full border border-zinc-300 px-2.5 py-1 text-xs font-medium" data-variant={variant}>{text(props.label, text(props.text, "Badge"))}</span>; }
+export function DynamicButton({ props }: DynamicComponentProps) { const label = text(props.label, "Button"); const href = safeInternalHref(props.href); return href ? <a className="inline-flex rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white" href={href}>{label}</a> : <button className="inline-flex rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white" disabled type="button">{label}</button>; }
+export function DynamicEmptyState({ props }: DynamicComponentProps) { return <div className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50 p-6 text-center"><h3 className="font-semibold">{text(props.title, "Nothing to show")}</h3><p className="mt-1 text-sm text-zinc-600">{text(props.description, "No dynamic content is available.")}</p></div>; }
+export function DynamicErrorState({ props }: DynamicComponentProps) { return <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-red-900" role="alert"><h3 className="font-semibold">{text(props.title, "Unable to render content")}</h3><p className="mt-1 text-sm">{text(props.description, "A controlled rendering error occurred.")}</p></div>; }
+export function DynamicStatusIndicator({ props }: DynamicComponentProps) { const status = ["ready", "warning", "error", "empty"].includes(text(props.status)) ? text(props.status) : "empty"; return <span className="inline-flex items-center gap-2 text-sm"><span aria-hidden className="h-2.5 w-2.5 rounded-full bg-emerald-500" />{text(props.label, status)}</span>; }
+export function UnsupportedComponent({ componentKey }: Readonly<{ componentKey: string }>) { return <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900" role="note">Unsupported component: {text(componentKey, "unknown")}</div>; }
+
+function safeInternalHref(value: unknown): string | undefined { if (typeof value !== "string" || !value.startsWith("/") || value.startsWith("//") || /[\\\r\n]/.test(value)) return undefined; return value.slice(0, 500); }
