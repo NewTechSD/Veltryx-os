@@ -7,3 +7,4 @@ export * from "./composition-tree.js";
 export * from "./composition-validator.js";
 export * from "./metadata-composition-mapper.js";
 export * from "./ui-composition-runtime.js";
+export * from "./persistence/index.js";

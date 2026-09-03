@@ -146,3 +146,6 @@ O bootstrap padrao registra os servicos reais kernel.componentRegistry e kernel.
 ## Persistence structural service
 
 Kernel dependency creation installs the in-memory Persistence Service as a singleton, registers `kernel.persistence` in Service Registry and DI, and supplies its public snapshot to Runtime Bootstrap. No external connection is opened during bootstrap.
+## UI Composition Persistence provider
+
+Bootstrap registers the singleton `kernel.uiCompositionPersistence` with public UI Composition Runtime, Component Registry, Metadata Registry and Persistence dependencies. Registration does not trigger composition, persistence or loading.

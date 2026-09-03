@@ -53,3 +53,6 @@ O Runtime Context expõe somente componentRegistry.status, componentRegistry.com
 ## Persistence context
 
 Runtime Context may contain an optional `PersistenceSummary` derived exclusively from the public provider snapshot. The context does not carry repositories, provider instances, maps or record payloads.
+## UI Composition Persistence summary
+
+Runtime Context may include status, provider identity, persisted/loaded snapshot counts, latest count and diagnostic counts. It never contains Composition Trees or persistence records.

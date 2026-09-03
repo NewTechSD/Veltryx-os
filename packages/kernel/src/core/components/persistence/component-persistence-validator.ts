@@ -6,6 +6,7 @@ const FORBIDDEN_KEYS = [
   ["implemen", "tation"], ["implementation", "Path"], ["component", "File"],
   ["t", "sxPath"], ["j", "sxPath"], ["react", "Component"], ["next", "Component"],
   ["component", "Factory"], ["render", "Function"], ["tem", "plate"],
+  ["dangerously", "SetInnerHTML"],
   ["p", "hpTemplate"], ["short", "code"], ["block", "Json"],
   ["$$", "typeof"], ["node", "Type"], ["owner", "Document"]
 ].map((parts) => parts.join("").toLowerCase());

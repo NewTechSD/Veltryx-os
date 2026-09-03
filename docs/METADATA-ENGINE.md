@@ -205,3 +205,6 @@ A implementacao registra os codigos de registro e snapshot. Warnings/errors de v
 ## Proximos Passos
 
 A proxima implementacao recomendada e TASK-0312 Component Registry + UI Composition Runtime, consumindo apenas os contratos publicos do Metadata Engine.
+## Composition snapshot source validation
+
+IMP-0031E resolves non-custom composition sources through the public Metadata Registry before persistence and after load. Metadata remains source data; the derived snapshot does not replace it.

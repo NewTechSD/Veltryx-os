@@ -115,3 +115,27 @@ export interface IUICompositionRuntime {
   validate(tree: CompositionTree): CompositionValidationResult;
   snapshot(): UICompositionSnapshot;
 }
+
+export type UICompositionPersistenceStatus = "ready" | "empty" | "warning" | "error";
+export type UICompositionPersistenceOperation = "persistCompositionSnapshot" | "composeAndPersist" | "loadCompositionSnapshot" | "loadLatestCompositionSnapshot" | "listCompositionSnapshots" | "deleteCompositionSnapshot";
+export type CompositionSnapshotPurpose = "preview" | "cache" | "audit" | "diagnostic" | "test";
+export interface CompositionSnapshotEntry { readonly snapshotId: string; readonly sourceType: CompositionSourceType; readonly namespace: string; readonly sourceId: string; readonly purpose: CompositionSnapshotPurpose; readonly tree: CompositionTree; readonly generatedAt: string; readonly persistedAt: string; readonly checksum?: string; readonly metadata?: Readonly<{ persistedBy?: string; reason?: string }> }
+export type CompositionSnapshotEntrySummary = Omit<CompositionSnapshotEntry, "tree" | "metadata">;
+export interface PersistCompositionSnapshotInput { readonly tree: CompositionTree; readonly namespace: string; readonly sourceId: string; readonly purpose: CompositionSnapshotPurpose; readonly snapshotId?: string; readonly metadata?: Readonly<{ persistedBy?: string; reason?: string }> }
+export interface ComposeAndPersistInput { readonly composition: CompositionInput; readonly purpose: CompositionSnapshotPurpose; readonly snapshotId?: string; readonly metadata?: Readonly<{ persistedBy?: string; reason?: string }> }
+export interface LoadCompositionSnapshotInput { readonly snapshotId: string }
+export interface LoadLatestCompositionSnapshotInput { readonly sourceType: CompositionSourceType; readonly namespace: string; readonly sourceId: string }
+export interface ListCompositionSnapshotsInput { readonly sourceType?: CompositionSourceType; readonly namespace?: string; readonly sourceId?: string; readonly limit?: number; readonly offset?: number }
+export interface DeleteCompositionSnapshotInput { readonly snapshotId: string }
+export interface UICompositionPersistenceResult<T = undefined> { readonly ok: boolean; readonly data?: T; readonly warnings: readonly CompositionWarning[]; readonly errors: readonly CompositionError[]; readonly diagnostics: readonly CompositionDiagnosticEntry[] }
+export interface UICompositionPersistenceSummary { readonly status: UICompositionPersistenceStatus; readonly providerId: string; readonly providerKind: import("./persistence.js").PersistenceProviderKind; readonly snapshotsPersisted: number; readonly snapshotsLoaded: number; readonly latestSnapshotsTracked: number; readonly warnings: number; readonly errors: number; readonly diagnostics: number }
+export interface UICompositionPersistenceSnapshot { readonly status: UICompositionPersistenceStatus; readonly generatedAt: string; readonly provider: { readonly id: string; readonly kind: import("./persistence.js").PersistenceProviderKind }; readonly snapshotsPersisted: number; readonly snapshotsLoaded: number; readonly latestSnapshotsTracked: number; readonly warnings: readonly CompositionWarning[]; readonly errors: readonly CompositionError[]; readonly diagnostics: readonly CompositionDiagnosticEntry[] }
+export interface IUICompositionPersistenceService {
+  persistCompositionSnapshot(input: PersistCompositionSnapshotInput): Promise<UICompositionPersistenceResult<CompositionSnapshotEntry>>;
+  composeAndPersist(input: ComposeAndPersistInput): Promise<UICompositionPersistenceResult<CompositionSnapshotEntry>>;
+  loadCompositionSnapshot(input: LoadCompositionSnapshotInput): Promise<UICompositionPersistenceResult<CompositionTree | null>>;
+  loadLatestCompositionSnapshot(input: LoadLatestCompositionSnapshotInput): Promise<UICompositionPersistenceResult<CompositionTree | null>>;
+  listCompositionSnapshots(input?: ListCompositionSnapshotsInput): Promise<UICompositionPersistenceResult<readonly CompositionSnapshotEntrySummary[]>>;
+  deleteCompositionSnapshot(input: DeleteCompositionSnapshotInput): Promise<UICompositionPersistenceResult<boolean>>;
+  snapshot(): UICompositionPersistenceSnapshot;
+}

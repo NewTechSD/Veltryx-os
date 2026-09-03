@@ -56,3 +56,6 @@ A future PostgreSQL/Prisma adapter may implement the approved contracts in infra
 - no filters, sorting, joins, search or query language;
 - no persistence migration of Metadata, Configuration, modules or UI;
 - no Auth, permission or tenant enforcement.
+## UI Composition consumer
+
+IMP-0031E is the fourth structural consumer. It stores explicitly generated, derived Composition Snapshots and an auxiliary latest index through `IPersistenceService`; no snapshot becomes source of truth or publishing artifact.

@@ -36,3 +36,6 @@ Inputs are cloned. Records, nested data, metadata, tag arrays, list results, iss
 ## Guardrails
 
 Contracts and Kernel have no Prisma, PostgreSQL, ORM, driver, SQL, migration, connection-string or `DATABASE_URL` dependency. A pure-Node filesystem test scans central source files without relying on external commands.
+## UI Composition repositories
+
+The UI Composition integration uses `composition.snapshots` and `composition.latest` under namespace `ui-composition`. Repository records stay behind `IUICompositionPersistenceService`; public list operations expose summaries rather than record or tree internals.

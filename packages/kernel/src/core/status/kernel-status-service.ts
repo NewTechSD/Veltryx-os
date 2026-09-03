@@ -10,6 +10,7 @@
   IMetadataPersistenceService,
   IConfigurationPersistenceService,
   IComponentPersistenceService,
+  IUICompositionPersistenceService,
   IServiceRegistry,
   KernelBootStatus,
   KernelDiagnosticEntry,
@@ -37,6 +38,7 @@ export interface KernelStatusServiceDependencies {
   readonly metadataPersistence?: IMetadataPersistenceService;
   readonly configurationPersistence?: IConfigurationPersistenceService;
   readonly componentPersistence?: IComponentPersistenceService;
+  readonly uiCompositionPersistence?: IUICompositionPersistenceService;
   readonly runtime: IRuntime;
   readonly container?: import("@veltryx/contracts").IDependencyInjectionContainer;
 }
@@ -74,6 +76,7 @@ export class KernelStatusService implements IKernelStatusService {
     const metadataPersistence = this.collectMetadataPersistenceSnapshot(errors);
     const configurationPersistence = this.collectConfigurationPersistenceSnapshot(errors);
     const componentPersistence = this.collectComponentPersistenceSnapshot(errors);
+    const uiCompositionPersistence = this.collectUICompositionPersistenceSnapshot(errors);
 
     return createKernelStatusSnapshot({
       kernelStatus: errors.length > 0 ? "error" : this.options.kernelState(),
@@ -106,6 +109,7 @@ export class KernelStatusService implements IKernelStatusService {
       metadataPersistence,
       configurationPersistence,
       componentPersistence,
+      uiCompositionPersistence,
       runtimeStatus,
       dependencyInjectionStatus: dependencyInjection?.status,
       providersRegistered: dependencyInjection?.providersRegistered,
@@ -389,6 +393,29 @@ export class KernelStatusService implements IKernelStatusService {
       });
     } catch (error) {
       errors.push(this.toDiagnostic(error, "KERNEL_COMPONENT_PERSISTENCE_SNAPSHOT_FAILED", "components"));
+      return undefined;
+    }
+  }
+
+  private collectUICompositionPersistenceSnapshot(
+    errors: KernelDiagnosticEntry[]
+  ): KernelStatusSnapshot["uiCompositionPersistence"] {
+    try {
+      if (!this.dependencies.uiCompositionPersistence) return undefined;
+      const snapshot = this.dependencies.uiCompositionPersistence.snapshot();
+      return Object.freeze({
+        status: snapshot.status,
+        providerId: snapshot.provider.id,
+        providerKind: snapshot.provider.kind,
+        snapshotsPersisted: snapshot.snapshotsPersisted,
+        snapshotsLoaded: snapshot.snapshotsLoaded,
+        latestSnapshotsTracked: snapshot.latestSnapshotsTracked,
+        warnings: snapshot.warnings.length,
+        errors: snapshot.errors.length,
+        diagnostics: snapshot.diagnostics.length
+      });
+    } catch (error) {
+      errors.push(this.toDiagnostic(error, "KERNEL_UI_COMPOSITION_PERSISTENCE_SNAPSHOT_FAILED", "ui-composition"));
       return undefined;
     }
   }

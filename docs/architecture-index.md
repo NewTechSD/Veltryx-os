@@ -160,6 +160,7 @@ Estas RFCs formam o nucleo imutavel do Veltryx OS.
 | IMP-0031B | [Metadata Registry Persistence Integration](IMP-0031B-metadata-registry-persistence-integration.md)                  | Approved | RFC-0005 + RFC-0015 + RFC-0099 | Metadata Engine + Data Layer           |
 | IMP-0031C | [Configuration Provider Persistence Integration](IMP-0031C-configuration-provider-persistence-integration.md)       | Approved | RFC-0002 + RFC-0015 + RFC-0099 | Configuration Provider + Data Layer    |
 | IMP-0031D | [Component Registry Persistence Integration](IMP-0031D-component-registry-persistence-integration.md)               | Approved | RFC-0007 + RFC-0015 + RFC-0099 + ADR-0004 | Component Registry + Data Layer     |
+| IMP-0031E | [UI Composition Persistence Integration](IMP-0031E-ui-composition-persistence-integration.md)                       | Approved | RFC-0005 + RFC-0007 + RFC-0015 + RFC-0099 + ADR-0004 | UI Composition Runtime + Data Layer |
 
 O IMP-0029 autoriza a TASK-0313 somente como renderizacao interna de Composition Tree em `apps/admin`. A aprovacao da RFC-0008 nao e dependencia dessa task porque o Admin Composition Adapter nao e um Runtime Adapter de publicacao.
 
@@ -174,6 +175,8 @@ O IMP-0031B prova o primeiro uso estrutural da Persistence Layer no Core por mei
 O IMP-0031C autoriza uma ponte explicita entre Configuration Provider e Data Layer. A precedencia segura e preservada; secrets e ambiente bruto permanecem fora da persistencia e dos snapshots.
 
 O IMP-0031D autoriza uma ponte explicita para definicoes declarativas do Component Registry. O Core continua runtime/platform agnostic e implementacoes visuais permanecem restritas aos apps/adapters apropriados.
+
+O IMP-0031E autoriza uma ponte explicita para snapshots derivados de UI Composition. Metadata e Component Registry continuam como source of truth; snapshots persistidos nao sao artifacts de publicacao, e Runtime/Platform Adapters continuam bloqueados pela RFC-0008 Draft.
 
 Implementation references: [Dynamic Admin Shell](DYNAMIC-ADMIN-SHELL.md) and [Navigation/Menu Composition](NAVIGATION-MENU-COMPOSITION.md).
 

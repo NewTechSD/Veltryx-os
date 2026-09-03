@@ -39,6 +39,9 @@
 } from "./components.js";
 export type {
   CompositionActionBinding,
+  CompositionSnapshotEntry,
+  CompositionSnapshotEntrySummary,
+  CompositionSnapshotPurpose,
   CompositionBinding,
   CompositionDiagnosticEntry,
   CompositionDiagnosticSeverity,
@@ -56,7 +59,19 @@ export type {
   ICompositionSnapshotService,
   ICompositionValidator,
   IUICompositionRuntime,
-  UICompositionSnapshot
+  IUICompositionPersistenceService,
+  UICompositionSnapshot,
+  UICompositionPersistenceOperation,
+  UICompositionPersistenceResult,
+  UICompositionPersistenceSnapshot,
+  UICompositionPersistenceStatus,
+  UICompositionPersistenceSummary,
+  ComposeAndPersistInput,
+  DeleteCompositionSnapshotInput,
+  ListCompositionSnapshotsInput,
+  LoadCompositionSnapshotInput,
+  LoadLatestCompositionSnapshotInput,
+  PersistCompositionSnapshotInput
 } from "./ui-composition.js";
 export type {
   IConfigurationProvider,

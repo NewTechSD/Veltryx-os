@@ -59,6 +59,7 @@ export class RuntimeBootstrapService implements IRuntimeBootstrapService {
       const metadataPersistence = this.dependencies.metadataPersistence?.snapshot();
       const configurationPersistence = this.dependencies.configurationPersistence?.snapshot();
       const componentPersistence = this.dependencies.componentPersistence?.snapshot();
+      const uiCompositionPersistence = this.dependencies.uiCompositionPersistence?.snapshot();
       const warnings: RuntimeWarning[] = [];
       if (repeated)
         warnings.push(
@@ -122,6 +123,7 @@ export class RuntimeBootstrapService implements IRuntimeBootstrapService {
           metadataPersistence,
           configurationPersistence,
           componentPersistence,
+          uiCompositionPersistence,
         bootstrap: this.current,
         execution
       });
@@ -142,6 +144,7 @@ export class RuntimeBootstrapService implements IRuntimeBootstrapService {
         metadataPersistence,
         configurationPersistence,
         componentPersistence,
+        uiCompositionPersistence,
           bootstrap: this.current,
           execution
         });

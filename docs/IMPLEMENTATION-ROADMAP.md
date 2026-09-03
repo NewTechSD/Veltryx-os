@@ -65,6 +65,7 @@ Implementacoes:
 | IMP-0031B | Metadata Registry Persistence Integration           | Usar IPersistenceService como backing store explicito do Metadata Registry, com hidratacao segura.           | RFC-0005, RFC-0015, RFC-0099                                         | Alta       | Alta         | Approved | IMP-0031, TASK-0315                    |
 | IMP-0031C | Configuration Provider Persistence Integration      | Persistir e hidratar explicitamente apenas configuracoes publicas, preservando precedencia e secrets.        | RFC-0002, RFC-0015, RFC-0099                                         | Alta       | Alta         | Approved | IMP-0031, IMP-0031B, TASK-0307         |
 | IMP-0031D | Component Registry Persistence Integration          | Persistir e hidratar definicoes declarativas de componentes sem implementacao visual ou plataforma.         | RFC-0007, RFC-0015, RFC-0099, ADR-0004                               | Alta       | Alta         | Approved | IMP-0031, TASK-0312, TASK-0315         |
+| IMP-0031E | UI Composition Persistence Integration              | Persistir snapshots derivados e controlados sem substituir metadata, components ou composition runtime.     | RFC-0005, RFC-0007, RFC-0015, RFC-0099, ADR-0004                     | Alta       | Alta         | Approved | IMP-0031, TASK-0312, TASK-0315D        |
 
 ### Fase 3
 
@@ -263,3 +264,13 @@ Esta task prova o uso da Persistence Layer no Configuration Provider. Somente co
 - Does Not Replace: RFC-0009.
 
 Esta task prova o uso da Persistence Layer no Component Registry somente para definicoes declarativas. Renderer, adapter visual, Builder, Marketplace, banco, ORM, Prisma, PostgreSQL, API e migrations permanecem fora de escopo.
+
+## TASK-0315E / IMP-0031E
+
+- Status: Approved.
+- Authorized By: RFC-0005, RFC-0007, RFC-0015, RFC-0099 e ADR-0004.
+- Depends On: TASK-0312, TASK-0315 e TASK-0315D.
+- Does Not Depend On: RFC-0008.
+- Does Not Replace: RFC-0009.
+
+Esta task prova o uso da Persistence Layer no UI Composition Runtime para snapshots controlados e derivados. Metadata e Component Registry permanecem como fonte principal; `compose` nao persiste automaticamente. Renderer, publishing, Runtime Adapter, Builder, banco, ORM, Prisma, PostgreSQL, API e migrations permanecem fora de escopo.

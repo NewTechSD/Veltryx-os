@@ -56,3 +56,6 @@ O Runtime Status Snapshot expoe apenas campos leves: componentRegistryStatus, co
 ## Persistence summary
 
 Runtime Status copies the immutable aggregate summary produced during structural bootstrap: status, provider identity/kind and counters only. Stored data and provider internals are excluded.
+## UI Composition Persistence
+
+Runtime Status mirrors only the aggregate `uiCompositionPersistence` summary. Complete trees, nodes and implementation details remain excluded.

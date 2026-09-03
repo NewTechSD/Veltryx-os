@@ -137,3 +137,6 @@ Conforme ADR-0004 e RFC-0008 Draft, UI Composition Runtime pertence ao Control P
 - TASK-0313 Admin Runtime Adapter + Dynamic Screen Renderer.
 - RFC futura para Runtime Adapter Contract.
 - Evolucao do Site Schema como contrato universal.
+## Persisted derived snapshots
+
+IMP-0031E adds an explicit UI Composition Persistence Service without changing `compose`. Metadata and Component Registry remain the source of truth; persisted snapshots are controlled derived artifacts only. See [UI Composition Persistence Integration](UI-COMPOSITION-PERSISTENCE-INTEGRATION.md).

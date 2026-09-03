@@ -37,3 +37,6 @@ Pure Node.js guardrails verify the persistence bridge contains no framework impo
 ## Limits and next steps
 
 The in-memory provider remains non-durable. There is no renderer, visual adapter, Builder, Marketplace, package upload, transaction, migration, distributed synchronization or database. A future approved task may add durable infrastructure behind the same contracts without moving implementation details into Core.
+## Relation to UI Composition Persistence
+
+Persisted component declarations remain independent source data. IMP-0031E uses the operational Component Registry to validate derived snapshot component keys; it does not embed component implementations in composition records.

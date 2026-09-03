@@ -114,3 +114,6 @@ O Kernel Status Snapshot inclui resumo leve de componentRegistryStatus, componen
 ## Persistence summary
 
 RFC-0015 adds an optional aggregate `persistence` summary containing status, provider id/kind, namespace/collection/record counters and issue counts. It never exposes records, maps, connections, clients, secrets or stack traces.
+## UI Composition Persistence
+
+Kernel Status exposes only the safe UI Composition Persistence counters and provider identity. It does not expose stored snapshots, latest records or source definitions.

@@ -32,4 +32,16 @@ describe("Persistence dependency guardrails", () => {
       expect(source).not.toMatch(/from\s+["'](?:@prisma\/client|pg|postgres|mysql|sqlite|mongodb|mongoose|typeorm|sequelize|knex)["']/i);
     }
   });
+
+  it("keeps UI composition snapshots free of platform, infrastructure and delivery implementations", () => {
+    const directory = resolve(process.cwd(), "src/core/ui-composition/persistence");
+    for (const file of sources(directory)) {
+      const source = readFileSync(file, "utf8");
+      expect(file).not.toMatch(/\.tsx$/);
+      expect(source).not.toMatch(/from\s+["'](?:react|next(?:\/[^"']*)?)["']/i);
+      expect(source).not.toMatch(/implementationPath|componentFile|tsxPath|jsxPath|phpTemplate|blockJson/i);
+      expect(source).not.toMatch(/from\s+["'](?:@prisma\/client|pg|postgres|mysql|sqlite|mongodb|mongoose|typeorm|sequelize|knex)["']/i);
+      expect(source).not.toMatch(/class\s+(?:Next|WordPress|Static|Hosting)RuntimeAdapter|class\s+Publishing/i);
+    }
+  });
 });

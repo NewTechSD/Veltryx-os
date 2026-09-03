@@ -223,3 +223,6 @@ Conforme ADR-0004 e RFC-0008 Draft, Component Registry permanece no Control Plan
 - Formalizar Runtime Adapter Contract.
 - Implementar Admin Runtime Adapter e Dynamic Screen Renderer em task futura.
 - Evoluir Site Schema como contrato universal de paginas e sites.
+## Composition snapshot validation
+
+UI Composition Persistence validates every node and requested version through the public Component Registry before persisting or returning a snapshot. The Registry remains an operational declarative catalog and never stores renderer implementations.

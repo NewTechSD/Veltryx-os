@@ -35,3 +35,6 @@ Only serializable primitives, arrays and plain objects are accepted. Functions, 
 ## Limits and next step
 
 The provider remains process-local and non-durable. There is no automatic write-through, transaction, migration, distributed synchronization, tenant enforcement or database adapter. A future approved task may supply durable infrastructure behind the unchanged contracts.
+## Relation to UI Composition Persistence
+
+Metadata persistence remains a backing store for declarative resources. UI Composition Persistence validates against the operational Registry and stores only derived snapshots; it does not use those snapshots to replace metadata.
