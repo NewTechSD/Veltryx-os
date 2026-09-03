@@ -8,6 +8,7 @@
   IRuntime,
   IPersistenceService,
   IMetadataPersistenceService,
+  IConfigurationPersistenceService,
   IServiceRegistry,
   KernelBootStatus,
   KernelDiagnosticEntry,
@@ -33,6 +34,7 @@ export interface KernelStatusServiceDependencies {
   readonly uiComposition?: IUICompositionRuntime;
   readonly persistence?: IPersistenceService;
   readonly metadataPersistence?: IMetadataPersistenceService;
+  readonly configurationPersistence?: IConfigurationPersistenceService;
   readonly runtime: IRuntime;
   readonly container?: import("@veltryx/contracts").IDependencyInjectionContainer;
 }
@@ -68,6 +70,7 @@ export class KernelStatusService implements IKernelStatusService {
     const uiComposition = this.collectUICompositionSnapshot(errors);
     const persistence = this.collectPersistenceSnapshot(errors);
     const metadataPersistence = this.collectMetadataPersistenceSnapshot(errors);
+    const configurationPersistence = this.collectConfigurationPersistenceSnapshot(errors);
 
     return createKernelStatusSnapshot({
       kernelStatus: errors.length > 0 ? "error" : this.options.kernelState(),
@@ -98,6 +101,7 @@ export class KernelStatusService implements IKernelStatusService {
       compositionsGenerated: uiComposition.compositionsGenerated,
       persistence,
       metadataPersistence,
+      configurationPersistence,
       runtimeStatus,
       dependencyInjectionStatus: dependencyInjection?.status,
       providersRegistered: dependencyInjection?.providersRegistered,
@@ -337,6 +341,28 @@ export class KernelStatusService implements IKernelStatusService {
       });
     } catch (error) {
       errors.push(this.toDiagnostic(error, "KERNEL_METADATA_PERSISTENCE_SNAPSHOT_FAILED", "metadata"));
+      return undefined;
+    }
+  }
+
+  private collectConfigurationPersistenceSnapshot(
+    errors: KernelDiagnosticEntry[]
+  ): KernelStatusSnapshot["configurationPersistence"] {
+    try {
+      if (!this.dependencies.configurationPersistence) return undefined;
+      const snapshot = this.dependencies.configurationPersistence.snapshot();
+      return Object.freeze({
+        status: snapshot.status,
+        providerId: snapshot.provider.id,
+        providerKind: snapshot.provider.kind,
+        keysPersisted: snapshot.keysPersisted,
+        keysHydrated: snapshot.keysHydrated,
+        warnings: snapshot.warnings.length,
+        errors: snapshot.errors.length,
+        diagnostics: snapshot.diagnostics.length
+      });
+    } catch (error) {
+      errors.push(this.toDiagnostic(error, "KERNEL_CONFIGURATION_PERSISTENCE_SNAPSHOT_FAILED", "kernel"));
       return undefined;
     }
   }

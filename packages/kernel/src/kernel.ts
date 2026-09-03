@@ -2,6 +2,7 @@
   EventMetadata,
   IComponentRegistry,
   IConfigurationProvider,
+  IConfigurationPersistenceService,
   IDependencyInjectionContainer,
   IEventBus,
   IExecutionContext,
@@ -18,7 +19,7 @@
   IUICompositionRuntime
 } from "@veltryx/contracts";
 
-import { CONFIGURATION_KEYS, ConfigurationProvider } from "./core/configuration/index.js";
+import { CONFIGURATION_KEYS, ConfigurationPersistenceService, ConfigurationProvider } from "./core/configuration/index.js";
 import { DependencyInjectionContainer } from "./core/di/index.js";
 import {
   KERNEL_STRUCTURAL_EVENTS,
@@ -52,6 +53,7 @@ export interface VeltryxKernelDependencies {
   readonly uiComposition: IUICompositionRuntime;
   readonly persistence?: IPersistenceService;
   readonly metadataPersistence?: IMetadataPersistenceService;
+  readonly configurationPersistence?: IConfigurationPersistenceService;
   readonly runtime: IRuntime;
   readonly container?: IDependencyInjectionContainer;
   readonly structuralEvents?: IStructuralEventPublisher;
@@ -75,6 +77,7 @@ export class VeltryxKernel {
   private runtimeBootstrapService: IRuntimeBootstrapService | undefined;
   private readonly persistenceService: IPersistenceService;
   private readonly metadataPersistenceService: IMetadataPersistenceService;
+  private readonly configurationPersistenceService: IConfigurationPersistenceService;
 
   constructor(
     private readonly dependencies: VeltryxKernelDependencies = createKernelDependencies()
@@ -87,6 +90,9 @@ export class VeltryxKernel {
     this.metadataPersistenceService =
       dependencies.metadataPersistence ??
       new MetadataPersistenceService(dependencies.metadata, this.persistenceService);
+    this.configurationPersistenceService =
+      dependencies.configurationPersistence ??
+      new ConfigurationPersistenceService(dependencies.configuration, this.persistenceService);
   }
 
   async bootstrap(context: IExecutionContext): Promise<void> {
@@ -209,6 +215,10 @@ export class VeltryxKernel {
     return this.metadataPersistenceService;
   }
 
+  configurationPersistence(): IConfigurationPersistenceService {
+    return this.configurationPersistenceService;
+  }
+
   runtime(): IRuntime {
     return this.dependencies.runtime;
   }
@@ -230,7 +240,8 @@ export class VeltryxKernel {
       {
         ...this.dependencies,
         persistence: this.persistenceService,
-        metadataPersistence: this.metadataPersistenceService
+        metadataPersistence: this.metadataPersistenceService,
+        configurationPersistence: this.configurationPersistenceService
       },
       {
         kernelState: () => this.currentState,
@@ -265,6 +276,7 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
   const uiComposition = new UICompositionRuntime(components);
   const persistence = new PersistenceService(new InMemoryPersistenceProvider());
   const metadataPersistence = new MetadataPersistenceService(metadata, persistence);
+  const configurationPersistence = new ConfigurationPersistenceService(configuration, persistence);
   const runtime = new KernelRuntime();
   const container = new DependencyInjectionContainer(services);
   const executionContextFactory = new KernelExecutionContextFactory();
@@ -290,6 +302,13 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
     dependencies: [KERNEL_SERVICE_TOKENS.metadataRegistry, KERNEL_SERVICE_TOKENS.persistence],
     useFactory: () => metadataPersistence
   });
+  container.registerProvider({
+    token: KERNEL_SERVICE_TOKENS.configurationPersistence,
+    kind: "factory",
+    lifecycle: "singleton",
+    dependencies: [KERNEL_SERVICE_TOKENS.configuration, KERNEL_SERVICE_TOKENS.persistence],
+    useFactory: () => configurationPersistence
+  });
   container.registerProvider({ token: KERNEL_SERVICE_TOKENS.runtime, kind: "value", lifecycle: "singleton", useValue: runtime });
   container.registerProvider({ token: KERNEL_SERVICE_TOKENS.dependencyInjection, kind: "value", lifecycle: "singleton", useValue: container });
   container.registerProvider({
@@ -305,9 +324,10 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
       KERNEL_SERVICE_TOKENS.componentRegistry,
       KERNEL_SERVICE_TOKENS.uiCompositionRuntime,
       KERNEL_SERVICE_TOKENS.persistence,
-      KERNEL_SERVICE_TOKENS.metadataPersistence
+      KERNEL_SERVICE_TOKENS.metadataPersistence,
+      KERNEL_SERVICE_TOKENS.configurationPersistence
     ],
-    useFactory: (resolvedConfiguration, resolvedServices, resolvedModules, resolvedContainer, resolvedMetadata, resolvedComponents, resolvedUIComposition, resolvedPersistence, resolvedMetadataPersistence) =>
+    useFactory: (resolvedConfiguration, resolvedServices, resolvedModules, resolvedContainer, resolvedMetadata, resolvedComponents, resolvedUIComposition, resolvedPersistence, resolvedMetadataPersistence, resolvedConfigurationPersistence) =>
       new RuntimeBootstrapService({
         configuration: resolvedConfiguration as IConfigurationProvider,
         services: resolvedServices as IServiceRegistry,
@@ -317,7 +337,8 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
         componentRegistry: resolvedComponents as IComponentRegistry,
         uiComposition: resolvedUIComposition as IUICompositionRuntime,
         persistence: resolvedPersistence as IPersistenceService,
-        metadataPersistence: resolvedMetadataPersistence as IMetadataPersistenceService
+        metadataPersistence: resolvedMetadataPersistence as IMetadataPersistenceService,
+        configurationPersistence: resolvedConfigurationPersistence as IConfigurationPersistenceService
       }),
     descriptor: {
       name: "Runtime Bootstrap",
@@ -340,6 +361,7 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
   registerStructuralService(services, KERNEL_SERVICE_TOKENS.uiCompositionRuntime, uiComposition, "UI Composition Runtime", "runtime", version);
   registerStructuralService(services, KERNEL_SERVICE_TOKENS.persistence, persistence, "Persistence Service", "system", version);
   registerStructuralService(services, KERNEL_SERVICE_TOKENS.metadataPersistence, metadataPersistence, "Metadata Persistence Service", "metadata", version);
+  registerStructuralService(services, KERNEL_SERVICE_TOKENS.configurationPersistence, configurationPersistence, "Configuration Persistence Service", "configuration", version);
   registerStructuralService(services, KERNEL_SERVICE_TOKENS.runtime, runtime, "Runtime", "runtime", version);
 
   return {
@@ -352,6 +374,7 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
     uiComposition,
     persistence,
     metadataPersistence,
+    configurationPersistence,
     runtime,
     container,
     structuralEvents

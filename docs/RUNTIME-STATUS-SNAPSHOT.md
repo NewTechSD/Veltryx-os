@@ -35,6 +35,8 @@ NÃ£o hÃ¡ observabilidade externa, histÃ³rico de snapshots, persistÃªncia
 
 Runtime Status also includes safe metadata-persistence provider, counter and diagnostic-count fields when configured.
 
+Configuration Persistence is represented by the same aggregate-only pattern without configuration values.
+
 O Runtime Status Snapshot expoe somente contadores resumidos de metadata:
 
 - `metadataStatus`

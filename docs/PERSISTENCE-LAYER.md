@@ -2,6 +2,8 @@
 
 > TASK-0315B validates the layer with a Metadata bridge that depends only on `IPersistenceService`, never on the in-memory implementation.
 
+> TASK-0315C adds Configuration as the second structural consumer, limited to public allowlisted values.
+
 Status: Implemented  
 Authorization: RFC-0015 + IMP-0031
 

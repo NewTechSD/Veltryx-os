@@ -17,6 +17,7 @@ export {
   type EnvironmentRecord
 } from "./environment-configuration-source.js";
 export { InMemoryConfigurationSource } from "./in-memory-configuration-source.js";
+export * from "./persistence/index.js";
 export type {
   ConfigurationSourceType,
   ConfigurationValues,

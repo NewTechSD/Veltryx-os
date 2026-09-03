@@ -1,5 +1,7 @@
 ﻿import type {
   ConfigurationSnapshot,
+  ConfigurationPersistenceSnapshot,
+  ConfigurationPersistenceSummary,
   IConfigurationProvider,
   RuntimeMode,
   VeltryxEnvironment
@@ -82,6 +84,7 @@ export interface RuntimeBootstrapDependencies {
   readonly uiComposition?: { snapshot(): UICompositionSnapshot };
   readonly persistence?: { snapshot(): PersistenceSnapshot };
   readonly metadataPersistence?: { snapshot(): MetadataPersistenceSnapshot };
+  readonly configurationPersistence?: { snapshot(): ConfigurationPersistenceSnapshot };
 }
 export interface IRuntimeBootstrapService {
   bootstrap(execution?: ExecutionContextSnapshot): Promise<RuntimeStructuralBootstrapResult>;
@@ -159,6 +162,7 @@ export interface RuntimeContext {
   readonly uiComposition?: RuntimeUICompositionContext;
   readonly persistence?: PersistenceSummary;
   readonly metadataPersistence?: MetadataPersistenceSummary;
+  readonly configurationPersistence?: ConfigurationPersistenceSummary;
   readonly execution?: RuntimeExecutionContextSummary;
   readonly warnings: readonly RuntimeWarning[];
   readonly errors: readonly RuntimeError[];
@@ -188,6 +192,7 @@ export interface RuntimeStatusSnapshot {
   readonly compositionsGenerated?: number;
   readonly persistence?: PersistenceSummary;
   readonly metadataPersistence?: MetadataPersistenceSummary;
+  readonly configurationPersistence?: ConfigurationPersistenceSummary;
   readonly servicesAvailable: number;
   readonly providersRegistered: number;
   readonly providersResolved: number;
@@ -210,6 +215,7 @@ export interface RuntimeContextFactoryInput {
   readonly uiComposition?: UICompositionSnapshot;
   readonly persistence?: PersistenceSnapshot;
   readonly metadataPersistence?: MetadataPersistenceSnapshot;
+  readonly configurationPersistence?: ConfigurationPersistenceSnapshot;
   readonly bootstrap: RuntimeBootstrapStatus;
   readonly execution?: ExecutionContextSnapshot;
 }

@@ -73,9 +73,17 @@ export type {
 export { CONFIGURATION_KEYS } from "./configuration.js";
 export type {
   ConfigurationDiagnosticEntry,
+  ConfigurationHydrationResult,
   ConfigurationDiagnosticSeverity,
   ConfigurationError,
   ConfigurationKey,
+  ConfigurationPersistenceEntry,
+  ConfigurationPersistenceOperation,
+  ConfigurationPersistenceResult,
+  ConfigurationPersistenceSnapshot,
+  ConfigurationPersistenceStatus,
+  ConfigurationPersistenceSummary,
+  ConfigurationPersistenceValue,
   ConfigurationResolutionResult,
   ConfigurationSnapshot,
   ConfigurationSourceSnapshot,
@@ -86,10 +94,16 @@ export type {
   ConfigurationValues,
   ConfigurationWarning,
   IConfigurationResolver,
+  IConfigurationPersistenceService,
   IConfigurationSource,
   IConfigurationValidator,
   RuntimeMode,
-  VeltryxEnvironment
+  VeltryxEnvironment,
+  HydrateConfigurationInput,
+  ListConfigurationKeysInput,
+  LoadConfigurationKeyInput,
+  PersistConfigurationInput,
+  PersistConfigurationKeyInput
 } from "./configuration.js";
 export type {
   EventDispatchError,

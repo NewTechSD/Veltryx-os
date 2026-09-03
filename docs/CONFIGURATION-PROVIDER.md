@@ -1,5 +1,7 @@
 # Configuration Provider
 
+> TASK-0315C adds explicit persistence for allowlisted public values. Operational precedence remains `defaults < persistence < environment < in-memory` unless a public override is explicitly requested.
+
 ## Objetivo
 
 O Configuration Provider é a fonte oficial, framework-agnostic e somente de leitura para configuração estrutural do Veltryx OS. Ele carrega fontes conhecidas, valida valores, aplica precedência e oferece um snapshot público seguro por `kernel.configuration().snapshot()`.

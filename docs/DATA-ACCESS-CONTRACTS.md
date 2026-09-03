@@ -2,6 +2,8 @@
 
 > `IMetadataPersistenceService` is the first structural consumer and maps declarative metadata to repository contracts without ORM or driver types.
 
+> `IConfigurationPersistenceService` uses the same contracts for explicit public configuration persistence and hydration.
+
 Status: Implemented  
 Authorization: RFC-0015 + IMP-0031
 

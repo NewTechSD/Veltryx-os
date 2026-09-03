@@ -1,12 +1,17 @@
 import {
   type ConfigurationKey,
   type ConfigurationQuery,
+  type ConfigurationResolutionResult,
   type ConfigurationSnapshot,
+  type ConfigurationValidationIssue,
+  type ConfigurationValidationResult,
+  type ConfigurationValues,
   type IConfigurationProvider,
   type IConfigurationResolver,
   type IConfigurationSource
 } from "@veltryx/contracts";
 import { ConfigurationResolver } from "./configuration-resolver.js";
+import { ConfigurationValidator } from "./configuration-validator.js";
 import { createConfigurationSnapshot } from "./configuration-snapshot.js";
 import { DefaultConfigurationSource } from "./default-configuration-source.js";
 import {
@@ -23,15 +28,18 @@ export interface ConfigurationProviderOptions {
   readonly now?: () => Date;
 }
 export class ConfigurationProvider implements IConfigurationProvider {
-  private readonly resolution;
+  private resolution: ConfigurationResolutionResult;
   private readonly now: () => Date;
+  private readonly resolver: IConfigurationResolver;
+  private readonly sources: readonly IConfigurationSource[];
   constructor(options: ConfigurationProviderOptions = {}) {
-    const sources = options.sources ?? [
+    this.sources = options.sources ?? [
       new DefaultConfigurationSource(),
       new EnvironmentConfigurationSource(options.environment),
       new InMemoryConfigurationSource(options.overrides)
     ];
-    this.resolution = (options.resolver ?? new ConfigurationResolver()).resolve(sources);
+    this.resolver = options.resolver ?? new ConfigurationResolver();
+    this.resolution = this.resolver.resolve(this.sources);
     this.now = options.now ?? (() => new Date());
   }
   get<TValue>(query: ConfigurationQuery): Promise<TValue | undefined>;
@@ -61,7 +69,38 @@ export class ConfigurationProvider implements IConfigurationProvider {
   snapshot(): ConfigurationSnapshot {
     return createConfigurationSnapshot(this.resolution, this.now());
   }
+  applyPersistenceOverrides(
+    values: ConfigurationValues,
+    options: { readonly allowOverride?: boolean } = {}
+  ): ConfigurationValidationResult {
+    const validator = new ConfigurationValidator();
+    const issues: ConfigurationValidationIssue[] = [];
+    for (const [key, value] of Object.entries(values)) {
+      if (!validator.isKnownKey(key)) {
+        issues.push(Object.freeze({ code: "CONFIGURATION_KEY_UNKNOWN", message: `Unknown configuration key: ${key}.`, key, severity: "error" }));
+        continue;
+      }
+      issues.push(...validator.validateValue(key, value).issues);
+    }
+    if (issues.length) return Object.freeze({ valid: false, issues: Object.freeze(issues) });
+    const persistence = new PersistenceConfigurationSource(values);
+    const firstNonDefault = this.sources.findIndex((source) => source.type !== "default");
+    const insertion = firstNonDefault < 0 ? this.sources.length : firstNonDefault;
+    const sources = options.allowOverride
+      ? [...this.sources, persistence]
+      : [...this.sources.slice(0, insertion), persistence, ...this.sources.slice(insertion)];
+    this.resolution = this.resolver.resolve(sources);
+    return Object.freeze({ valid: true, issues: Object.freeze([]) });
+  }
 }
+
+class PersistenceConfigurationSource implements IConfigurationSource {
+  readonly name = "persistence";
+  readonly type = "persistence" as const;
+  constructor(private readonly values: ConfigurationValues) {}
+  load(): ConfigurationValues { return Object.freeze({ ...this.values }); }
+}
+
 export function createDefaultConfigurationProvider(
   options: ConfigurationProviderOptions = {}
 ): ConfigurationProvider {

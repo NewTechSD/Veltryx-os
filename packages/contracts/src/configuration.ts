@@ -5,7 +5,7 @@ export type ConfigurationScope =
 export type VeltryxEnvironment = "development" | "test" | "preview" | "production";
 export type RuntimeMode = "development" | "preview" | "production" | "test";
 export type ConfigurationValue = string | boolean | number;
-export type ConfigurationSourceType = "default" | "environment" | "in-memory";
+export type ConfigurationSourceType = "default" | "environment" | "in-memory" | "persistence";
 export type ConfigurationDiagnosticSeverity = "info" | "warning" | "error";
 
 export const CONFIGURATION_KEYS = {
@@ -101,4 +101,27 @@ export interface IConfigurationProvider {
   getNumber(key: string): number | undefined;
   has(key: string): boolean;
   snapshot(): ConfigurationSnapshot;
+  applyPersistenceOverrides?(values: ConfigurationValues, options?: { readonly allowOverride?: boolean }): ConfigurationValidationResult;
+}
+
+export type ConfigurationPersistenceStatus = "ready" | "empty" | "warning" | "error";
+export type ConfigurationPersistenceOperation = "persistConfiguration" | "persistKey" | "loadKey" | "listKeys" | "hydrateConfiguration";
+export type ConfigurationPersistenceValue = import("./persistence.js").PersistenceValue;
+export interface ConfigurationPersistenceEntry { readonly key: string; readonly value: ConfigurationPersistenceValue; readonly source: "persistence"; readonly persistedAt: string; readonly metadata?: { readonly persistedBy?: string; readonly reason?: string } }
+export interface PersistConfigurationInput { readonly keys?: readonly ConfigurationKey[] }
+export interface PersistConfigurationKeyInput { readonly key: string; readonly value: ConfigurationPersistenceValue; readonly metadata?: ConfigurationPersistenceEntry["metadata"] }
+export interface LoadConfigurationKeyInput { readonly key: string }
+export interface ListConfigurationKeysInput { readonly limit?: number; readonly offset?: number }
+export interface HydrateConfigurationInput { readonly allowOverride?: boolean }
+export interface ConfigurationHydrationResult { readonly keysHydrated: number; readonly conflicts: number; readonly invalidEntries: number; readonly blockedEntries: number }
+export interface ConfigurationPersistenceResult<T = undefined> { readonly ok: boolean; readonly data?: T; readonly warnings: readonly ConfigurationWarning[]; readonly errors: readonly ConfigurationError[]; readonly diagnostics: readonly ConfigurationDiagnosticEntry[] }
+export interface ConfigurationPersistenceSummary { readonly status: ConfigurationPersistenceStatus; readonly providerId: string; readonly providerKind: import("./persistence.js").PersistenceProviderKind; readonly keysPersisted: number; readonly keysHydrated: number; readonly warnings: number; readonly errors: number; readonly diagnostics: number }
+export interface ConfigurationPersistenceSnapshot { readonly status: ConfigurationPersistenceStatus; readonly generatedAt: string; readonly provider: { readonly id: string; readonly kind: import("./persistence.js").PersistenceProviderKind }; readonly keysPersisted: number; readonly keysHydrated: number; readonly allowedKeys: readonly string[]; readonly blockedKeysCount: number; readonly warnings: readonly ConfigurationWarning[]; readonly errors: readonly ConfigurationError[]; readonly diagnostics: readonly ConfigurationDiagnosticEntry[] }
+export interface IConfigurationPersistenceService {
+  persistConfiguration(input?: PersistConfigurationInput): Promise<ConfigurationPersistenceResult<ConfigurationPersistenceSummary>>;
+  persistKey(input: PersistConfigurationKeyInput): Promise<ConfigurationPersistenceResult<ConfigurationPersistenceEntry>>;
+  loadKey(input: LoadConfigurationKeyInput): Promise<ConfigurationPersistenceResult<ConfigurationPersistenceEntry | null>>;
+  listKeys(input?: ListConfigurationKeysInput): Promise<ConfigurationPersistenceResult<readonly ConfigurationPersistenceEntry[]>>;
+  hydrateConfiguration(input?: HydrateConfigurationInput): Promise<ConfigurationPersistenceResult<ConfigurationHydrationResult>>;
+  snapshot(): ConfigurationPersistenceSnapshot;
 }

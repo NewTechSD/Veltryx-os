@@ -63,6 +63,7 @@ Implementacoes:
 | IMP-0030 | Dynamic Admin Shell + Navigation/Menu Composition   | Derivar a navegacao interna do Admin de metadata/menu/composition sem implementar adapter de publicacao.      | RFC-0005, RFC-0006, RFC-0007, RFC-0099                               | Alta       | Alta         | Approved | IMP-0029, TASK-0313, ADR-0004          |
 | IMP-0031 | Persistence Layer + Data Access Contracts           | Criar contratos agnosticos, provider in-memory e snapshots publicos sem banco, ORM, driver ou SQL.            | RFC-0001, RFC-0002, RFC-0004, RFC-0005, RFC-0006, RFC-0015, RFC-0099 | Critica    | Alta         | Approved | RFC-0015                               |
 | IMP-0031B | Metadata Registry Persistence Integration           | Usar IPersistenceService como backing store explicito do Metadata Registry, com hidratacao segura.           | RFC-0005, RFC-0015, RFC-0099                                         | Alta       | Alta         | Approved | IMP-0031, TASK-0315                    |
+| IMP-0031C | Configuration Provider Persistence Integration      | Persistir e hidratar explicitamente apenas configuracoes publicas, preservando precedencia e secrets.        | RFC-0002, RFC-0015, RFC-0099                                         | Alta       | Alta         | Approved | IMP-0031, IMP-0031B, TASK-0307         |
 
 ### Fase 3
 
@@ -241,3 +242,13 @@ A implementacao limita-se a contratos publicos, Persistence Service, provider in
 - Does Not Replace: RFC-0009.
 
 A integracao usa `IPersistenceService` como backing store abstrato e mantem o Metadata Registry como indice operacional sincrono. Ela nao implementa banco, ORM, driver, SQL, migrations ou persistencia automatica oculta.
+
+## TASK-0315C / IMP-0031C
+
+- Status: Approved.
+- Authorized By: RFC-0002, RFC-0015 e RFC-0099.
+- Depends On: TASK-0307, TASK-0315 e TASK-0315B.
+- Does Not Depend On: RFC-0008.
+- Does Not Replace: RFC-0009.
+
+Esta task prova o uso da Persistence Layer no Configuration Provider. Somente configuracoes publicas allowlisted podem ser persistidas; secrets, env bruto, banco, ORM, driver, SQL, API e migrations permanecem fora de escopo.

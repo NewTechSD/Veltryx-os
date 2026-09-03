@@ -12,4 +12,13 @@ describe("Persistence dependency guardrails", () => {
     const forbiddenCode = /PrismaClient|DATABASE_URL|connectionString|\bsql`|\b(?:SELECT|INSERT|UPDATE|DELETE)\s+.+\s+(?:FROM|INTO|SET)\b/i;
     for (const folder of ["packages/kernel/src", "packages/contracts/src"]) for (const file of sources(resolve(workspace, folder))) { const source = readFileSync(file, "utf8"); expect(file).not.toMatch(/\.tsx$/); expect(source).not.toMatch(forbiddenImport); expect(source).not.toMatch(platformImport); expect(source).not.toMatch(forbiddenCode); }
   });
+
+  it("keeps raw environment and sensitive infrastructure access out of configuration persistence", () => {
+    const directory = resolve(process.cwd(), "src/core/configuration/persistence");
+    for (const file of sources(directory)) {
+      const source = readFileSync(file, "utf8");
+      expect(source).not.toMatch(/process\.env|DATABASE_URL|connectionString/);
+      expect(source).not.toMatch(/from\s+["'](?:@prisma\/client|pg|postgres|mysql|sqlite|mongodb|mongoose|typeorm|sequelize|knex)["']/i);
+    }
+  });
 });

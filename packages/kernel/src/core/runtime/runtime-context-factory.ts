@@ -87,6 +87,9 @@ export class RuntimeContextFactory implements IRuntimeContextFactory {
       metadataPersistence: input.metadataPersistence
         ? metadataPersistenceSummary(input.metadataPersistence)
         : undefined,
+      configurationPersistence: input.configurationPersistence
+        ? configurationPersistenceSummary(input.configurationPersistence)
+        : undefined,
       execution: input.execution
         ? Object.freeze({
             requestId: input.execution.requestId,
@@ -222,6 +225,21 @@ function metadataPersistenceSummary(
     namespacesPersisted: snapshot.namespacesPersisted,
     resourcesPersisted: snapshot.resourcesPersisted,
     hydratedResources: snapshot.hydratedResources,
+    warnings: snapshot.warnings.length,
+    errors: snapshot.errors.length,
+    diagnostics: snapshot.diagnostics.length
+  });
+}
+
+function configurationPersistenceSummary(
+  snapshot: NonNullable<RuntimeContextFactoryInput["configurationPersistence"]>
+) {
+  return Object.freeze({
+    status: snapshot.status,
+    providerId: snapshot.provider.id,
+    providerKind: snapshot.provider.kind,
+    keysPersisted: snapshot.keysPersisted,
+    keysHydrated: snapshot.keysHydrated,
     warnings: snapshot.warnings.length,
     errors: snapshot.errors.length,
     diagnostics: snapshot.diagnostics.length
