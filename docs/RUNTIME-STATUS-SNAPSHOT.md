@@ -37,6 +37,8 @@ Runtime Status also includes safe metadata-persistence provider, counter and dia
 
 Configuration Persistence is represented by the same aggregate-only pattern without configuration values.
 
+Component Persistence follows the aggregate-only pattern and excludes complete component declarations.
+
 O Runtime Status Snapshot expoe somente contadores resumidos de metadata:
 
 - `metadataStatus`

@@ -5,3 +5,4 @@ export * from "./component-resolver.js";
 export * from "./component-snapshot.js";
 export * from "./component-validator.js";
 export * from "./system-components.js";
+export * from "./persistence/index.js";

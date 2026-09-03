@@ -2,6 +2,8 @@
 
 ## Objetivo
 
+> UI Composition can consume Component Registry declarations hydrated through the Data Layer; the Composition Tree and Runtime remain platform-agnostic.
+
 O UI Composition Runtime transforma metadata publica em uma Composition Tree segura, validavel e serializavel. Ele nao renderiza interface, nao acessa DOM e nao conhece implementacoes concretas de componentes.
 
 ```text

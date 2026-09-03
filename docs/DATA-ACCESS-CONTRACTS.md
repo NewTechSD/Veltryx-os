@@ -4,6 +4,8 @@
 
 > `IConfigurationPersistenceService` uses the same contracts for explicit public configuration persistence and hydration.
 
+> `IComponentPersistenceService` persists only validated runtime-agnostic component declarations.
+
 Status: Implemented  
 Authorization: RFC-0015 + IMP-0031
 

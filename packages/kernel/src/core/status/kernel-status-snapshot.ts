@@ -60,6 +60,7 @@ export function createKernelStatusSnapshot(input: {
   readonly persistence?: KernelStatusSnapshot["persistence"];
   readonly metadataPersistence?: KernelStatusSnapshot["metadataPersistence"];
   readonly configurationPersistence?: KernelStatusSnapshot["configurationPersistence"];
+  readonly componentPersistence?: KernelStatusSnapshot["componentPersistence"];
   readonly runtimeStatus: KernelStatusSnapshot["runtimeStatus"];
   readonly dependencyInjectionStatus?: KernelStatusSnapshot["dependencyInjectionStatus"];
   readonly providersRegistered?: number;
@@ -102,6 +103,7 @@ export function createKernelStatusSnapshot(input: {
     persistence: input.persistence,
     metadataPersistence: input.metadataPersistence,
     configurationPersistence: input.configurationPersistence,
+    componentPersistence: input.componentPersistence,
     runtimeStatus: input.runtimeStatus,
     dependencyInjectionStatus: input.dependencyInjectionStatus,
     providersRegistered: input.providersRegistered,

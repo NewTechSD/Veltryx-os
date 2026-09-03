@@ -21,4 +21,15 @@ describe("Persistence dependency guardrails", () => {
       expect(source).not.toMatch(/from\s+["'](?:@prisma\/client|pg|postgres|mysql|sqlite|mongodb|mongoose|typeorm|sequelize|knex)["']/i);
     }
   });
+
+  it("keeps platform and implementation details out of component persistence", () => {
+    const directory = resolve(process.cwd(), "src/core/components/persistence");
+    for (const file of sources(directory)) {
+      const source = readFileSync(file, "utf8");
+      expect(file).not.toMatch(/\.tsx$/);
+      expect(source).not.toMatch(/from\s+["'](?:react|next(?:\/[^"']*)?)["']/i);
+      expect(source).not.toMatch(/implementationPath|componentFile|tsxPath|jsxPath|phpTemplate|blockJson/i);
+      expect(source).not.toMatch(/from\s+["'](?:@prisma\/client|pg|postgres|mysql|sqlite|mongodb|mongoose|typeorm|sequelize|knex)["']/i);
+    }
+  });
 });

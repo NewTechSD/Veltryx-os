@@ -159,6 +159,7 @@ Estas RFCs formam o nucleo imutavel do Veltryx OS.
 | IMP-0031 | [Persistence Layer + Data Access Contracts](IMP-0031-persistence-layer-data-access-contracts.md)                     | Approved | RFC-0001 + RFC-0002 + RFC-0004 + RFC-0005 + RFC-0006 + RFC-0015 + RFC-0099 | RFC-0008 Draft, not required           |
 | IMP-0031B | [Metadata Registry Persistence Integration](IMP-0031B-metadata-registry-persistence-integration.md)                  | Approved | RFC-0005 + RFC-0015 + RFC-0099 | Metadata Engine + Data Layer           |
 | IMP-0031C | [Configuration Provider Persistence Integration](IMP-0031C-configuration-provider-persistence-integration.md)       | Approved | RFC-0002 + RFC-0015 + RFC-0099 | Configuration Provider + Data Layer    |
+| IMP-0031D | [Component Registry Persistence Integration](IMP-0031D-component-registry-persistence-integration.md)               | Approved | RFC-0007 + RFC-0015 + RFC-0099 + ADR-0004 | Component Registry + Data Layer     |
 
 O IMP-0029 autoriza a TASK-0313 somente como renderizacao interna de Composition Tree em `apps/admin`. A aprovacao da RFC-0008 nao e dependencia dessa task porque o Admin Composition Adapter nao e um Runtime Adapter de publicacao.
 
@@ -171,6 +172,8 @@ O IMP-0031 autoriza a Persistence Layer agnostica e o provider in-memory sob a R
 O IMP-0031B prova o primeiro uso estrutural da Persistence Layer no Core por meio do Metadata Registry. A integracao nao implementa banco real, ORM, Prisma, PostgreSQL, API ou migrations.
 
 O IMP-0031C autoriza uma ponte explicita entre Configuration Provider e Data Layer. A precedencia segura e preservada; secrets e ambiente bruto permanecem fora da persistencia e dos snapshots.
+
+O IMP-0031D autoriza uma ponte explicita para definicoes declarativas do Component Registry. O Core continua runtime/platform agnostic e implementacoes visuais permanecem restritas aos apps/adapters apropriados.
 
 Implementation references: [Dynamic Admin Shell](DYNAMIC-ADMIN-SHELL.md) and [Navigation/Menu Composition](NAVIGATION-MENU-COMPOSITION.md).
 

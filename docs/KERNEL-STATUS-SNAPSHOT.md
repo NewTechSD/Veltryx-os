@@ -4,6 +4,8 @@
 
 > Configuration Persistence contributes only provider identity, counters and diagnostic counts.
 
+> Component Persistence contributes only provider identity, counters and diagnostic counts.
+
 ## Objetivo
 
 O Kernel Public Status Snapshot define a fronteira publica para leitura do estado atual do `@veltryx/kernel`.

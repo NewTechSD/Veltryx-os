@@ -64,6 +64,7 @@ Implementacoes:
 | IMP-0031 | Persistence Layer + Data Access Contracts           | Criar contratos agnosticos, provider in-memory e snapshots publicos sem banco, ORM, driver ou SQL.            | RFC-0001, RFC-0002, RFC-0004, RFC-0005, RFC-0006, RFC-0015, RFC-0099 | Critica    | Alta         | Approved | RFC-0015                               |
 | IMP-0031B | Metadata Registry Persistence Integration           | Usar IPersistenceService como backing store explicito do Metadata Registry, com hidratacao segura.           | RFC-0005, RFC-0015, RFC-0099                                         | Alta       | Alta         | Approved | IMP-0031, TASK-0315                    |
 | IMP-0031C | Configuration Provider Persistence Integration      | Persistir e hidratar explicitamente apenas configuracoes publicas, preservando precedencia e secrets.        | RFC-0002, RFC-0015, RFC-0099                                         | Alta       | Alta         | Approved | IMP-0031, IMP-0031B, TASK-0307         |
+| IMP-0031D | Component Registry Persistence Integration          | Persistir e hidratar definicoes declarativas de componentes sem implementacao visual ou plataforma.         | RFC-0007, RFC-0015, RFC-0099, ADR-0004                               | Alta       | Alta         | Approved | IMP-0031, TASK-0312, TASK-0315         |
 
 ### Fase 3
 
@@ -252,3 +253,13 @@ A integracao usa `IPersistenceService` como backing store abstrato e mantem o Me
 - Does Not Replace: RFC-0009.
 
 Esta task prova o uso da Persistence Layer no Configuration Provider. Somente configuracoes publicas allowlisted podem ser persistidas; secrets, env bruto, banco, ORM, driver, SQL, API e migrations permanecem fora de escopo.
+
+## TASK-0315D / IMP-0031D
+
+- Status: Approved.
+- Authorized By: RFC-0007, RFC-0015, RFC-0099 e ADR-0004.
+- Depends On: TASK-0312 e TASK-0315.
+- Does Not Depend On: RFC-0008.
+- Does Not Replace: RFC-0009.
+
+Esta task prova o uso da Persistence Layer no Component Registry somente para definicoes declarativas. Renderer, adapter visual, Builder, Marketplace, banco, ORM, Prisma, PostgreSQL, API e migrations permanecem fora de escopo.

@@ -22,6 +22,8 @@ The public context may include an aggregate `metadataPersistence` summary; metad
 
 It may also include aggregate Configuration Persistence status and counters; configuration values are never included.
 
+Component Persistence contributes only provider identity and persisted/hydrated counters, never definitions.
+
 O Execution Context descreve quem, onde e sob qual execuÃ§Ã£o uma operaÃ§Ã£o ocorre. O Runtime Context descreve como a plataforma estÃ¡ configurada e disponÃ­vel. O resumo opcional de execuÃ§Ã£o contÃ©m apenas request/correlation IDs e indicadores de disponibilidade de tenant, workspace e user. Roles, permissions, metadata e dados de usuÃ¡rio nÃ£o sÃ£o copiados.
 
 ## ComposiÃ§Ã£o

@@ -13,7 +13,7 @@ import type {
 } from "./dependency-injection.js";
 import type { ModuleSystemSnapshot } from "./module-system-status.js";
 import type { IMetadataSnapshotService, MetadataEngineSnapshot, MetadataPersistenceSnapshot, MetadataPersistenceSummary } from "./metadata.js";
-import type { ComponentRegistrySnapshot } from "./components.js";
+import type { ComponentPersistenceSnapshot, ComponentPersistenceSummary, ComponentRegistrySnapshot } from "./components.js";
 import type { UICompositionSnapshot } from "./ui-composition.js";
 import type { IModuleLoader } from "./modules.js";
 import type { IServiceRegistry, ServiceRegistrySnapshot } from "./services.js";
@@ -85,6 +85,7 @@ export interface RuntimeBootstrapDependencies {
   readonly persistence?: { snapshot(): PersistenceSnapshot };
   readonly metadataPersistence?: { snapshot(): MetadataPersistenceSnapshot };
   readonly configurationPersistence?: { snapshot(): ConfigurationPersistenceSnapshot };
+  readonly componentPersistence?: { snapshot(): ComponentPersistenceSnapshot };
 }
 export interface IRuntimeBootstrapService {
   bootstrap(execution?: ExecutionContextSnapshot): Promise<RuntimeStructuralBootstrapResult>;
@@ -163,6 +164,7 @@ export interface RuntimeContext {
   readonly persistence?: PersistenceSummary;
   readonly metadataPersistence?: MetadataPersistenceSummary;
   readonly configurationPersistence?: ConfigurationPersistenceSummary;
+  readonly componentPersistence?: ComponentPersistenceSummary;
   readonly execution?: RuntimeExecutionContextSummary;
   readonly warnings: readonly RuntimeWarning[];
   readonly errors: readonly RuntimeError[];
@@ -193,6 +195,7 @@ export interface RuntimeStatusSnapshot {
   readonly persistence?: PersistenceSummary;
   readonly metadataPersistence?: MetadataPersistenceSummary;
   readonly configurationPersistence?: ConfigurationPersistenceSummary;
+  readonly componentPersistence?: ComponentPersistenceSummary;
   readonly servicesAvailable: number;
   readonly providersRegistered: number;
   readonly providersResolved: number;
@@ -216,6 +219,7 @@ export interface RuntimeContextFactoryInput {
   readonly persistence?: PersistenceSnapshot;
   readonly metadataPersistence?: MetadataPersistenceSnapshot;
   readonly configurationPersistence?: ConfigurationPersistenceSnapshot;
+  readonly componentPersistence?: ComponentPersistenceSnapshot;
   readonly bootstrap: RuntimeBootstrapStatus;
   readonly execution?: ExecutionContextSnapshot;
 }

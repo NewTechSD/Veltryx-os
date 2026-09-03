@@ -2,6 +2,8 @@
 
 ## Objetivo
 
+> TASK-0315D adds explicit persistence and hydration of safe declarative definitions. The Registry remains the operational catalog and existing definitions win hydration conflicts.
+
 O Component Registry e o catalogo estrutural de componentes declarativos do Kernel. Ele permite registrar, validar, listar e resolver componentes por chave e versao, sem renderizar interface e sem conhecer implementacoes concretas.
 
 ```text

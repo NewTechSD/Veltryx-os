@@ -4,6 +4,8 @@
 
 > TASK-0315C adds Configuration as the second structural consumer, limited to public allowlisted values.
 
+> TASK-0315D adds declarative Component Registry definitions as the third structural consumer.
+
 Status: Implemented  
 Authorization: RFC-0015 + IMP-0031
 

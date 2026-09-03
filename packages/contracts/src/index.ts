@@ -4,8 +4,15 @@
   ComponentDefinition,
   ComponentDefinitionInput,
   ComponentDefinitionSnapshot,
+  ComponentHydrationResult,
   ComponentDiagnosticSeverity,
   ComponentKey,
+  ComponentPersistenceEntry,
+  ComponentPersistenceOperation,
+  ComponentPersistenceResult,
+  ComponentPersistenceSnapshot,
+  ComponentPersistenceStatus,
+  ComponentPersistenceSummary,
   ComponentPropDefinition,
   ComponentPropsSchema,
   ComponentPropType,
@@ -20,9 +27,15 @@
   ComponentType,
   ComponentValidationResult,
   IComponentRegistry,
+  IComponentPersistenceService,
   IComponentResolver,
   IComponentSnapshotService,
-  IComponentValidator
+  IComponentValidator,
+  HydrateComponentRegistryInput,
+  ListPersistedComponentsInput,
+  LoadComponentInput,
+  PersistAllComponentsInput,
+  PersistComponentInput
 } from "./components.js";
 export type {
   CompositionActionBinding,

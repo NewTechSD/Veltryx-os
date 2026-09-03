@@ -167,3 +167,24 @@ export interface IComponentRegistry extends IComponentResolver {
   list(): readonly ComponentDefinition[];
   snapshot(): ComponentRegistrySnapshot;
 }
+
+export type ComponentPersistenceStatus = "ready" | "empty" | "warning" | "error";
+export type ComponentPersistenceOperation = "persistComponent" | "persistAllComponents" | "loadComponent" | "listComponents" | "hydrateRegistry";
+export interface ComponentPersistenceEntry { readonly key: ComponentKey; readonly version: string; readonly definition: ComponentDefinition; readonly persistedAt: string; readonly source: "persistence"; readonly metadata?: { readonly persistedBy?: string; readonly reason?: string } }
+export interface PersistComponentInput { readonly component: ComponentDefinition; readonly metadata?: ComponentPersistenceEntry["metadata"] }
+export interface PersistAllComponentsInput { readonly keys?: readonly ComponentKey[] }
+export interface LoadComponentInput { readonly key: ComponentKey; readonly version?: string }
+export interface ListPersistedComponentsInput { readonly limit?: number; readonly offset?: number }
+export interface HydrateComponentRegistryInput { readonly keys?: readonly ComponentKey[] }
+export interface ComponentHydrationResult { readonly componentsHydrated: number; readonly conflicts: number; readonly invalidEntries: number }
+export interface ComponentPersistenceResult<T = undefined> { readonly ok: boolean; readonly data?: T; readonly warnings: readonly ComponentRegistryWarning[]; readonly errors: readonly ComponentRegistryError[]; readonly diagnostics: readonly ComponentRegistryDiagnosticEntry[] }
+export interface ComponentPersistenceSummary { readonly status: ComponentPersistenceStatus; readonly providerId: string; readonly providerKind: import("./persistence.js").PersistenceProviderKind; readonly componentsPersisted: number; readonly componentsHydrated: number; readonly warnings: number; readonly errors: number; readonly diagnostics: number }
+export interface ComponentPersistenceSnapshot { readonly status: ComponentPersistenceStatus; readonly generatedAt: string; readonly provider: { readonly id: string; readonly kind: import("./persistence.js").PersistenceProviderKind }; readonly componentsPersisted: number; readonly componentsHydrated: number; readonly warnings: readonly ComponentRegistryWarning[]; readonly errors: readonly ComponentRegistryError[]; readonly diagnostics: readonly ComponentRegistryDiagnosticEntry[] }
+export interface IComponentPersistenceService {
+  persistComponent(input: PersistComponentInput): Promise<ComponentPersistenceResult<ComponentPersistenceEntry>>;
+  persistAllComponents(input?: PersistAllComponentsInput): Promise<ComponentPersistenceResult<ComponentPersistenceSummary>>;
+  loadComponent(input: LoadComponentInput): Promise<ComponentPersistenceResult<ComponentDefinition | null>>;
+  listComponents(input?: ListPersistedComponentsInput): Promise<ComponentPersistenceResult<readonly ComponentDefinition[]>>;
+  hydrateRegistry(input?: HydrateComponentRegistryInput): Promise<ComponentPersistenceResult<ComponentHydrationResult>>;
+  snapshot(): ComponentPersistenceSnapshot;
+}
