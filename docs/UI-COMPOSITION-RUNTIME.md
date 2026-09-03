@@ -140,3 +140,5 @@ Conforme ADR-0004 e RFC-0008 Draft, UI Composition Runtime pertence ao Control P
 ## Persisted derived snapshots
 
 IMP-0031E adds an explicit UI Composition Persistence Service without changing `compose`. Metadata and Component Registry remain the source of truth; persisted snapshots are controlled derived artifacts only. See [UI Composition Persistence Integration](UI-COMPOSITION-PERSISTENCE-INTEGRATION.md).
+
+IMP-0031F adds explicit retention, deterministic SHA-256 integrity checks, latest-pointer repair and structural audit. These policies do not run automatically.

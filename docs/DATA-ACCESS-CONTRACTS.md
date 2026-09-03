@@ -39,3 +39,5 @@ Contracts and Kernel have no Prisma, PostgreSQL, ORM, driver, SQL, migration, co
 ## UI Composition repositories
 
 The UI Composition integration uses `composition.snapshots` and `composition.latest` under namespace `ui-composition`. Repository records stay behind `IUICompositionPersistenceService`; public list operations expose summaries rather than record or tree internals.
+
+Retention uses `composition.audit` and `composition.retention-runs` through the same public repository contracts. Audit records are structural summaries only.

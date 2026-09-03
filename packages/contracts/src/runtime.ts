@@ -14,7 +14,7 @@ import type {
 import type { ModuleSystemSnapshot } from "./module-system-status.js";
 import type { IMetadataSnapshotService, MetadataEngineSnapshot, MetadataPersistenceSnapshot, MetadataPersistenceSummary } from "./metadata.js";
 import type { ComponentPersistenceSnapshot, ComponentPersistenceSummary, ComponentRegistrySnapshot } from "./components.js";
-import type { UICompositionPersistenceSnapshot, UICompositionPersistenceSummary, UICompositionSnapshot } from "./ui-composition.js";
+import type { SnapshotRetentionAuditSnapshot, SnapshotRetentionAuditSummary, UICompositionPersistenceSnapshot, UICompositionPersistenceSummary, UICompositionSnapshot } from "./ui-composition.js";
 import type { IModuleLoader } from "./modules.js";
 import type { IServiceRegistry, ServiceRegistrySnapshot } from "./services.js";
 import type { PersistenceSnapshot, PersistenceSummary } from "./persistence.js";
@@ -87,6 +87,7 @@ export interface RuntimeBootstrapDependencies {
   readonly configurationPersistence?: { snapshot(): ConfigurationPersistenceSnapshot };
   readonly componentPersistence?: { snapshot(): ComponentPersistenceSnapshot };
   readonly uiCompositionPersistence?: { snapshot(): UICompositionPersistenceSnapshot };
+  readonly snapshotRetentionAudit?: { snapshot(): SnapshotRetentionAuditSnapshot };
 }
 export interface IRuntimeBootstrapService {
   bootstrap(execution?: ExecutionContextSnapshot): Promise<RuntimeStructuralBootstrapResult>;
@@ -167,6 +168,7 @@ export interface RuntimeContext {
   readonly configurationPersistence?: ConfigurationPersistenceSummary;
   readonly componentPersistence?: ComponentPersistenceSummary;
   readonly uiCompositionPersistence?: UICompositionPersistenceSummary;
+  readonly snapshotRetentionAudit?: SnapshotRetentionAuditSummary;
   readonly execution?: RuntimeExecutionContextSummary;
   readonly warnings: readonly RuntimeWarning[];
   readonly errors: readonly RuntimeError[];
@@ -199,6 +201,7 @@ export interface RuntimeStatusSnapshot {
   readonly configurationPersistence?: ConfigurationPersistenceSummary;
   readonly componentPersistence?: ComponentPersistenceSummary;
   readonly uiCompositionPersistence?: UICompositionPersistenceSummary;
+  readonly snapshotRetentionAudit?: SnapshotRetentionAuditSummary;
   readonly servicesAvailable: number;
   readonly providersRegistered: number;
   readonly providersResolved: number;
@@ -224,6 +227,7 @@ export interface RuntimeContextFactoryInput {
   readonly configurationPersistence?: ConfigurationPersistenceSnapshot;
   readonly componentPersistence?: ComponentPersistenceSnapshot;
   readonly uiCompositionPersistence?: UICompositionPersistenceSnapshot;
+  readonly snapshotRetentionAudit?: SnapshotRetentionAuditSnapshot;
   readonly bootstrap: RuntimeBootstrapStatus;
   readonly execution?: ExecutionContextSnapshot;
 }

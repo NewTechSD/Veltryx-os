@@ -62,6 +62,7 @@ export function createKernelStatusSnapshot(input: {
   readonly configurationPersistence?: KernelStatusSnapshot["configurationPersistence"];
   readonly componentPersistence?: KernelStatusSnapshot["componentPersistence"];
   readonly uiCompositionPersistence?: KernelStatusSnapshot["uiCompositionPersistence"];
+  readonly snapshotRetentionAudit?: KernelStatusSnapshot["snapshotRetentionAudit"];
   readonly runtimeStatus: KernelStatusSnapshot["runtimeStatus"];
   readonly dependencyInjectionStatus?: KernelStatusSnapshot["dependencyInjectionStatus"];
   readonly providersRegistered?: number;
@@ -106,6 +107,7 @@ export function createKernelStatusSnapshot(input: {
     configurationPersistence: input.configurationPersistence,
     componentPersistence: input.componentPersistence,
     uiCompositionPersistence: input.uiCompositionPersistence,
+    snapshotRetentionAudit: input.snapshotRetentionAudit,
     runtimeStatus: input.runtimeStatus,
     dependencyInjectionStatus: input.dependencyInjectionStatus,
     providersRegistered: input.providersRegistered,

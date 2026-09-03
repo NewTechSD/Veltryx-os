@@ -41,6 +41,7 @@ export class RuntimeStatusSnapshotService implements IRuntimeStatusSnapshotServi
       configurationPersistence: context.configurationPersistence,
       componentPersistence: context.componentPersistence,
       uiCompositionPersistence: context.uiCompositionPersistence,
+      snapshotRetentionAudit: context.snapshotRetentionAudit,
       servicesAvailable: context.services.available,
       providersRegistered: context.dependencyInjection.providersRegistered,
       providersResolved: context.dependencyInjection.providersResolved,

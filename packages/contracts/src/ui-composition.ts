@@ -139,3 +139,34 @@ export interface IUICompositionPersistenceService {
   deleteCompositionSnapshot(input: DeleteCompositionSnapshotInput): Promise<UICompositionPersistenceResult<boolean>>;
   snapshot(): UICompositionPersistenceSnapshot;
 }
+
+export type SnapshotRetentionStatus = "ready" | "empty" | "warning" | "error";
+export type SnapshotAuditOperation = "persist" | "composeAndPersist" | "load" | "loadLatest" | "list" | "delete" | "prune" | "verifyChecksum" | "updateLatest" | "repairLatest";
+export type SnapshotAuditResultStatus = "success" | "warning" | "error" | "skipped";
+export type SnapshotRetentionScope = "source" | "global" | "purpose";
+export interface SnapshotRetentionPolicy { readonly maxSnapshotsPerSource: number; readonly maxSnapshotsPerPurpose?: Readonly<Record<string, number>>; readonly maxAgeMs?: number; readonly protectLatest: boolean; readonly dryRunDefault: boolean }
+export interface SnapshotAuditEntry { readonly id: string; readonly operation: SnapshotAuditOperation; readonly status: SnapshotAuditResultStatus; readonly sourceType?: string; readonly namespace?: string; readonly sourceId?: string; readonly snapshotId?: string; readonly purpose?: string; readonly checksum?: string; readonly message?: string; readonly occurredAt: string; readonly warnings: number; readonly errors: number; readonly diagnostics: number }
+export interface SnapshotRetentionRunSummary { readonly runId: string; readonly scope: SnapshotRetentionScope; readonly dryRun: boolean; readonly evaluatedSnapshots: number; readonly deletedSnapshots: number; readonly retainedSnapshots: number; readonly latestPointersUpdated: number; readonly warnings: number; readonly errors: number; readonly diagnostics: number }
+export interface SnapshotRetentionAuditSummary { readonly status: SnapshotRetentionStatus; readonly providerId: string; readonly providerKind: import("./persistence.js").PersistenceProviderKind; readonly auditEntries: number; readonly retentionRuns: number; readonly checksumsGenerated: number; readonly checksumVerifications: number; readonly latestPointersRepaired: number; readonly warnings: number; readonly errors: number; readonly diagnostics: number }
+export interface SnapshotRetentionAuditSnapshot { readonly status: SnapshotRetentionStatus; readonly generatedAt: string; readonly provider: { readonly id: string; readonly kind: import("./persistence.js").PersistenceProviderKind }; readonly policy: SnapshotRetentionPolicy; readonly auditEntries: number; readonly retentionRuns: number; readonly checksumsGenerated: number; readonly checksumVerifications: number; readonly latestPointersRepaired: number; readonly warnings: readonly CompositionWarning[]; readonly errors: readonly CompositionError[]; readonly diagnostics: readonly CompositionDiagnosticEntry[] }
+export interface SnapshotChecksumResult { readonly algorithm: "sha256"; readonly checksum: string; readonly computedAt: string }
+export interface SnapshotChecksumVerificationResult { readonly valid: boolean; readonly snapshotId: string; readonly expected?: string; readonly actual?: string }
+export interface SnapshotLatestRepairResult { readonly sourceType: CompositionSourceType; readonly namespace: string; readonly sourceId: string; readonly snapshotId?: string; readonly updated: boolean }
+export interface SnapshotRetentionResult<T = undefined> { readonly ok: boolean; readonly data?: T; readonly warnings: readonly CompositionWarning[]; readonly errors: readonly CompositionError[]; readonly diagnostics: readonly CompositionDiagnosticEntry[] }
+export type RecordSnapshotAuditEntryInput = Omit<SnapshotAuditEntry, "id" | "occurredAt"> & { readonly id?: string; readonly occurredAt?: string };
+export interface ListSnapshotAuditEntriesInput { readonly operation?: SnapshotAuditOperation; readonly sourceType?: string; readonly namespace?: string; readonly sourceId?: string; readonly limit?: number; readonly offset?: number }
+export interface ComputeSnapshotChecksumInput { readonly tree: CompositionTree }
+export interface VerifySnapshotChecksumInput { readonly snapshotId: string }
+export interface EnforceSnapshotRetentionForSourceInput { readonly sourceType: CompositionSourceType; readonly namespace: string; readonly sourceId: string; readonly purpose?: CompositionSnapshotPurpose; readonly dryRun?: boolean; readonly policy?: Partial<SnapshotRetentionPolicy>; readonly reason?: string }
+export interface EnforceSnapshotRetentionInput { readonly dryRun?: boolean; readonly policy?: Partial<SnapshotRetentionPolicy>; readonly reason?: string }
+export interface RepairLatestPointerInput { readonly sourceType: CompositionSourceType; readonly namespace: string; readonly sourceId: string }
+export interface ISnapshotRetentionAuditService {
+  recordAuditEntry(input: RecordSnapshotAuditEntryInput): Promise<SnapshotRetentionResult<SnapshotAuditEntry>>;
+  listAuditEntries(input?: ListSnapshotAuditEntriesInput): Promise<SnapshotRetentionResult<readonly SnapshotAuditEntry[]>>;
+  computeSnapshotChecksum(input: ComputeSnapshotChecksumInput): SnapshotRetentionResult<SnapshotChecksumResult>;
+  verifySnapshotChecksum(input: VerifySnapshotChecksumInput): Promise<SnapshotRetentionResult<SnapshotChecksumVerificationResult>>;
+  enforceRetentionForSource(input: EnforceSnapshotRetentionForSourceInput): Promise<SnapshotRetentionResult<SnapshotRetentionRunSummary>>;
+  enforceRetention(input?: EnforceSnapshotRetentionInput): Promise<SnapshotRetentionResult<SnapshotRetentionRunSummary>>;
+  repairLatestPointer(input: RepairLatestPointerInput): Promise<SnapshotRetentionResult<SnapshotLatestRepairResult>>;
+  snapshot(): SnapshotRetentionAuditSnapshot;
+}

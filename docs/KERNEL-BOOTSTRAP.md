@@ -149,3 +149,5 @@ Kernel dependency creation installs the in-memory Persistence Service as a singl
 ## UI Composition Persistence provider
 
 Bootstrap registers the singleton `kernel.uiCompositionPersistence` with public UI Composition Runtime, Component Registry, Metadata Registry and Persistence dependencies. Registration does not trigger composition, persistence or loading.
+
+The singleton `kernel.snapshotRetentionAudit` is registered alongside it. Registration does not execute pruning, scheduling or background work.

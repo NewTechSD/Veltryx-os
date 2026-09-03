@@ -15,6 +15,7 @@
   IModuleLoader,
   IRuntime,
   IRuntimeBootstrapService,
+  ISnapshotRetentionAuditService,
   IServiceRegistry,
   IStructuralEventPublisher,
   IUICompositionPersistenceService,
@@ -32,7 +33,7 @@ import { RuntimeBootstrapService } from "./core/runtime/index.js";
 import { KERNEL_SERVICE_TOKENS } from "./core/services/index.js";
 import { KernelStatusService } from "./core/status/index.js";
 import { ComponentPersistenceService, ComponentRegistry, registerSystemComponents } from "./core/components/index.js";
-import { UICompositionPersistenceService, UICompositionRuntime } from "./core/ui-composition/index.js";
+import { SnapshotRetentionAuditService, UICompositionPersistenceService, UICompositionRuntime } from "./core/ui-composition/index.js";
 import { InMemoryPersistenceProvider, PersistenceService } from "./core/persistence/index.js";
 import { MetadataPersistenceService } from "./core/metadata/persistence/index.js";
 import { InMemoryEventBus } from "./event-bus.js";
@@ -58,6 +59,7 @@ export interface VeltryxKernelDependencies {
   readonly configurationPersistence?: IConfigurationPersistenceService;
   readonly componentPersistence?: IComponentPersistenceService;
   readonly uiCompositionPersistence?: IUICompositionPersistenceService;
+  readonly snapshotRetentionAudit?: ISnapshotRetentionAuditService;
   readonly runtime: IRuntime;
   readonly container?: IDependencyInjectionContainer;
   readonly structuralEvents?: IStructuralEventPublisher;
@@ -84,6 +86,7 @@ export class VeltryxKernel {
   private readonly configurationPersistenceService: IConfigurationPersistenceService;
   private readonly componentPersistenceService: IComponentPersistenceService;
   private readonly uiCompositionPersistenceService: IUICompositionPersistenceService;
+  private readonly snapshotRetentionAuditService: ISnapshotRetentionAuditService;
 
   constructor(
     private readonly dependencies: VeltryxKernelDependencies = createKernelDependencies()
@@ -102,9 +105,11 @@ export class VeltryxKernel {
     this.componentPersistenceService =
       dependencies.componentPersistence ??
       new ComponentPersistenceService(dependencies.components, this.persistenceService);
+    this.snapshotRetentionAuditService =
+      dependencies.snapshotRetentionAudit ?? new SnapshotRetentionAuditService(this.persistenceService);
     this.uiCompositionPersistenceService =
       dependencies.uiCompositionPersistence ??
-      new UICompositionPersistenceService(dependencies.uiComposition, dependencies.metadata, this.persistenceService);
+      new UICompositionPersistenceService(dependencies.uiComposition, dependencies.metadata, this.persistenceService, undefined, undefined, this.snapshotRetentionAuditService);
   }
 
   async bootstrap(context: IExecutionContext): Promise<void> {
@@ -239,6 +244,10 @@ export class VeltryxKernel {
     return this.uiCompositionPersistenceService;
   }
 
+  snapshotRetentionAudit(): ISnapshotRetentionAuditService {
+    return this.snapshotRetentionAuditService;
+  }
+
   runtime(): IRuntime {
     return this.dependencies.runtime;
   }
@@ -263,7 +272,8 @@ export class VeltryxKernel {
         metadataPersistence: this.metadataPersistenceService,
         configurationPersistence: this.configurationPersistenceService,
         componentPersistence: this.componentPersistenceService,
-        uiCompositionPersistence: this.uiCompositionPersistenceService
+        uiCompositionPersistence: this.uiCompositionPersistenceService,
+        snapshotRetentionAudit: this.snapshotRetentionAuditService
       },
       {
         kernelState: () => this.currentState,
@@ -300,7 +310,8 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
   const metadataPersistence = new MetadataPersistenceService(metadata, persistence);
   const configurationPersistence = new ConfigurationPersistenceService(configuration, persistence);
   const componentPersistence = new ComponentPersistenceService(components, persistence);
-  const uiCompositionPersistence = new UICompositionPersistenceService(uiComposition, metadata, persistence);
+  const snapshotRetentionAudit = new SnapshotRetentionAuditService(persistence);
+  const uiCompositionPersistence = new UICompositionPersistenceService(uiComposition, metadata, persistence, undefined, undefined, snapshotRetentionAudit);
   const runtime = new KernelRuntime();
   const container = new DependencyInjectionContainer(services);
   const executionContextFactory = new KernelExecutionContextFactory();
@@ -347,6 +358,13 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
     dependencies: [KERNEL_SERVICE_TOKENS.uiCompositionRuntime, KERNEL_SERVICE_TOKENS.componentRegistry, KERNEL_SERVICE_TOKENS.metadataRegistry, KERNEL_SERVICE_TOKENS.persistence],
     useFactory: () => uiCompositionPersistence
   });
+  container.registerProvider({
+    token: KERNEL_SERVICE_TOKENS.snapshotRetentionAudit,
+    kind: "factory",
+    lifecycle: "singleton",
+    dependencies: [KERNEL_SERVICE_TOKENS.uiCompositionPersistence, KERNEL_SERVICE_TOKENS.persistence],
+    useFactory: () => snapshotRetentionAudit
+  });
   container.registerProvider({ token: KERNEL_SERVICE_TOKENS.runtime, kind: "value", lifecycle: "singleton", useValue: runtime });
   container.registerProvider({ token: KERNEL_SERVICE_TOKENS.dependencyInjection, kind: "value", lifecycle: "singleton", useValue: container });
   container.registerProvider({
@@ -365,9 +383,10 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
       KERNEL_SERVICE_TOKENS.metadataPersistence,
       KERNEL_SERVICE_TOKENS.configurationPersistence,
       KERNEL_SERVICE_TOKENS.componentPersistence,
-      KERNEL_SERVICE_TOKENS.uiCompositionPersistence
+      KERNEL_SERVICE_TOKENS.uiCompositionPersistence,
+      KERNEL_SERVICE_TOKENS.snapshotRetentionAudit
     ],
-    useFactory: (resolvedConfiguration, resolvedServices, resolvedModules, resolvedContainer, resolvedMetadata, resolvedComponents, resolvedUIComposition, resolvedPersistence, resolvedMetadataPersistence, resolvedConfigurationPersistence, resolvedComponentPersistence, resolvedUICompositionPersistence) =>
+    useFactory: (resolvedConfiguration, resolvedServices, resolvedModules, resolvedContainer, resolvedMetadata, resolvedComponents, resolvedUIComposition, resolvedPersistence, resolvedMetadataPersistence, resolvedConfigurationPersistence, resolvedComponentPersistence, resolvedUICompositionPersistence, resolvedSnapshotRetentionAudit) =>
       new RuntimeBootstrapService({
         configuration: resolvedConfiguration as IConfigurationProvider,
         services: resolvedServices as IServiceRegistry,
@@ -380,7 +399,8 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
         metadataPersistence: resolvedMetadataPersistence as IMetadataPersistenceService,
         configurationPersistence: resolvedConfigurationPersistence as IConfigurationPersistenceService,
         componentPersistence: resolvedComponentPersistence as IComponentPersistenceService,
-        uiCompositionPersistence: resolvedUICompositionPersistence as IUICompositionPersistenceService
+        uiCompositionPersistence: resolvedUICompositionPersistence as IUICompositionPersistenceService,
+        snapshotRetentionAudit: resolvedSnapshotRetentionAudit as ISnapshotRetentionAuditService
       }),
     descriptor: {
       name: "Runtime Bootstrap",
@@ -406,6 +426,7 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
   registerStructuralService(services, KERNEL_SERVICE_TOKENS.configurationPersistence, configurationPersistence, "Configuration Persistence Service", "configuration", version);
   registerStructuralService(services, KERNEL_SERVICE_TOKENS.componentPersistence, componentPersistence, "Component Persistence Service", "system", version);
   registerStructuralService(services, KERNEL_SERVICE_TOKENS.uiCompositionPersistence, uiCompositionPersistence, "UI Composition Persistence Service", "runtime", version);
+  registerStructuralService(services, KERNEL_SERVICE_TOKENS.snapshotRetentionAudit, snapshotRetentionAudit, "Snapshot Retention Audit Service", "runtime", version);
   registerStructuralService(services, KERNEL_SERVICE_TOKENS.runtime, runtime, "Runtime", "runtime", version);
 
   return {
@@ -421,6 +442,7 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
     configurationPersistence,
     componentPersistence,
     uiCompositionPersistence,
+    snapshotRetentionAudit,
     runtime,
     container,
     structuralEvents

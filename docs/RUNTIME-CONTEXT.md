@@ -56,3 +56,5 @@ Runtime Context may contain an optional `PersistenceSummary` derived exclusively
 ## UI Composition Persistence summary
 
 Runtime Context may include status, provider identity, persisted/loaded snapshot counts, latest count and diagnostic counts. It never contains Composition Trees or persistence records.
+
+It may also include aggregate Snapshot Retention/Audit counters, never audit entries or trees.

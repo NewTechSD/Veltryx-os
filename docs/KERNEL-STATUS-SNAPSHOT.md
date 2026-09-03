@@ -117,3 +117,5 @@ RFC-0015 adds an optional aggregate `persistence` summary containing status, pro
 ## UI Composition Persistence
 
 Kernel Status exposes only the safe UI Composition Persistence counters and provider identity. It does not expose stored snapshots, latest records or source definitions.
+
+Retention/Audit status is similarly aggregate-only: entries, trees and records are excluded.

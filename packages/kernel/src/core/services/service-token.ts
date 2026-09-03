@@ -18,7 +18,8 @@ export const KERNEL_SERVICE_TOKENS = Object.freeze({
   metadataPersistence: "kernel.metadataPersistence",
   configurationPersistence: "kernel.configurationPersistence",
   componentPersistence: "kernel.componentPersistence",
-  uiCompositionPersistence: "kernel.uiCompositionPersistence"
+  uiCompositionPersistence: "kernel.uiCompositionPersistence",
+  snapshotRetentionAudit: "kernel.snapshotRetentionAudit"
 } as const);
 
 const TOKEN_PATTERN = /^[a-z][a-z0-9]*(?:[._-][A-Za-z0-9]+)+$/;

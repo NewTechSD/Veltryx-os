@@ -66,6 +66,7 @@ Implementacoes:
 | IMP-0031C | Configuration Provider Persistence Integration      | Persistir e hidratar explicitamente apenas configuracoes publicas, preservando precedencia e secrets.        | RFC-0002, RFC-0015, RFC-0099                                         | Alta       | Alta         | Approved | IMP-0031, IMP-0031B, TASK-0307         |
 | IMP-0031D | Component Registry Persistence Integration          | Persistir e hidratar definicoes declarativas de componentes sem implementacao visual ou plataforma.         | RFC-0007, RFC-0015, RFC-0099, ADR-0004                               | Alta       | Alta         | Approved | IMP-0031, TASK-0312, TASK-0315         |
 | IMP-0031E | UI Composition Persistence Integration              | Persistir snapshots derivados e controlados sem substituir metadata, components ou composition runtime.     | RFC-0005, RFC-0007, RFC-0015, RFC-0099, ADR-0004                     | Alta       | Alta         | Approved | IMP-0031, TASK-0312, TASK-0315D        |
+| IMP-0031F | Snapshot Retention + Audit Policy                    | Aplicar retencao explicita, checksum deterministico, audit estrutural e reparo de latest.                    | RFC-0005, RFC-0007, RFC-0015, RFC-0099, ADR-0004                     | Alta       | Alta         | Approved | IMP-0031E, TASK-0315E                  |
 
 ### Fase 3
 
@@ -274,3 +275,13 @@ Esta task prova o uso da Persistence Layer no Component Registry somente para de
 - Does Not Replace: RFC-0009.
 
 Esta task prova o uso da Persistence Layer no UI Composition Runtime para snapshots controlados e derivados. Metadata e Component Registry permanecem como fonte principal; `compose` nao persiste automaticamente. Renderer, publishing, Runtime Adapter, Builder, banco, ORM, Prisma, PostgreSQL, API e migrations permanecem fora de escopo.
+
+## TASK-0315F / IMP-0031F
+
+- Status: Approved.
+- Authorized By: RFC-0005, RFC-0007, RFC-0015, RFC-0099 e ADR-0004.
+- Depends On: TASK-0315E.
+- Does Not Depend On: RFC-0008.
+- Does Not Replace: RFC-0009.
+
+Esta task adiciona retencao explicita, checksum deterministico, audit trail estrutural e reparo de latest para UI Composition Snapshots derivados. Banco real, scheduler, worker, publishing, Runtime Adapter, Prisma, PostgreSQL, ORM e driver permanecem fora de escopo.

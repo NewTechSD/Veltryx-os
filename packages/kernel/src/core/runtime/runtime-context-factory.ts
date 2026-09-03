@@ -96,6 +96,9 @@ export class RuntimeContextFactory implements IRuntimeContextFactory {
       uiCompositionPersistence: input.uiCompositionPersistence
         ? uiCompositionPersistenceSummary(input.uiCompositionPersistence)
         : undefined,
+      snapshotRetentionAudit: input.snapshotRetentionAudit
+        ? snapshotRetentionAuditSummary(input.snapshotRetentionAudit)
+        : undefined,
       execution: input.execution
         ? Object.freeze({
             requestId: input.execution.requestId,
@@ -277,6 +280,24 @@ function uiCompositionPersistenceSummary(
     snapshotsPersisted: snapshot.snapshotsPersisted,
     snapshotsLoaded: snapshot.snapshotsLoaded,
     latestSnapshotsTracked: snapshot.latestSnapshotsTracked,
+    warnings: snapshot.warnings.length,
+    errors: snapshot.errors.length,
+    diagnostics: snapshot.diagnostics.length
+  });
+}
+
+function snapshotRetentionAuditSummary(
+  snapshot: NonNullable<RuntimeContextFactoryInput["snapshotRetentionAudit"]>
+) {
+  return Object.freeze({
+    status: snapshot.status,
+    providerId: snapshot.provider.id,
+    providerKind: snapshot.provider.kind,
+    auditEntries: snapshot.auditEntries,
+    retentionRuns: snapshot.retentionRuns,
+    checksumsGenerated: snapshot.checksumsGenerated,
+    checksumVerifications: snapshot.checksumVerifications,
+    latestPointersRepaired: snapshot.latestPointersRepaired,
     warnings: snapshot.warnings.length,
     errors: snapshot.errors.length,
     diagnostics: snapshot.diagnostics.length

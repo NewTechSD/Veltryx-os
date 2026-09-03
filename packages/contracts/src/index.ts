@@ -72,6 +72,27 @@ export type {
   LoadCompositionSnapshotInput,
   LoadLatestCompositionSnapshotInput,
   PersistCompositionSnapshotInput
+  , SnapshotRetentionStatus
+  , SnapshotAuditOperation
+  , SnapshotAuditResultStatus
+  , SnapshotRetentionScope
+  , SnapshotRetentionPolicy
+  , SnapshotAuditEntry
+  , SnapshotRetentionRunSummary
+  , SnapshotRetentionAuditSummary
+  , SnapshotRetentionAuditSnapshot
+  , SnapshotChecksumResult
+  , SnapshotChecksumVerificationResult
+  , SnapshotLatestRepairResult
+  , SnapshotRetentionResult
+  , RecordSnapshotAuditEntryInput
+  , ListSnapshotAuditEntriesInput
+  , ComputeSnapshotChecksumInput
+  , VerifySnapshotChecksumInput
+  , EnforceSnapshotRetentionForSourceInput
+  , EnforceSnapshotRetentionInput
+  , RepairLatestPointerInput
+  , ISnapshotRetentionAuditService
 } from "./ui-composition.js";
 export type {
   IConfigurationProvider,
