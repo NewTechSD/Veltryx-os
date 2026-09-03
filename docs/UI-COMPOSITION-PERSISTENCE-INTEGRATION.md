@@ -71,3 +71,5 @@ Kernel and Contracts remain runtime/platform agnostic. No renderer, visual adapt
 A future approved task may define retention and audit policy for derived snapshots. Database adapters, publishing and delivery/runtime adapters require their own approved governance and remain outside this integration.
 
 IMP-0031F adds explicit retention, deterministic SHA-256 integrity checks, latest-pointer repair and structural audit. These policies do not run automatically.
+
+API v1 exposes UI composition summaries and never returns complete persisted trees.

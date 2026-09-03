@@ -132,7 +132,7 @@ Estas RFCs formam o nucleo imutavel do Veltryx OS.
 | RFC-0010 | Permission Engine                                                                                   | Planned  |
 | RFC-0011 | Authentication                                                                                      | Planned  |
 | RFC-0012 | Workflow Engine                                                                                     | Planned  |
-| RFC-0013 | API Engine                                                                                          | Planned  |
+| RFC-0013 | [API Layer + Runtime API Bridge](../rfc/RFC-0013-api-engine.md)                                      | Approved |
 | RFC-0014 | Query Engine                                                                                        | Planned  |
 | RFC-0015 | [Data Layer — Persistence & Data Access Contracts](../rfc/RFC-0015-data-layer.md)                   | Approved |
 | RFC-0016 | Event System                                                                                        | Planned  |
@@ -162,6 +162,7 @@ Estas RFCs formam o nucleo imutavel do Veltryx OS.
 | IMP-0031D | [Component Registry Persistence Integration](IMP-0031D-component-registry-persistence-integration.md)               | Approved | RFC-0007 + RFC-0015 + RFC-0099 + ADR-0004 | Component Registry + Data Layer     |
 | IMP-0031E | [UI Composition Persistence Integration](IMP-0031E-ui-composition-persistence-integration.md)                       | Approved | RFC-0005 + RFC-0007 + RFC-0015 + RFC-0099 + ADR-0004 | UI Composition Runtime + Data Layer |
 | IMP-0031F | [Snapshot Retention + Audit Policy](IMP-0031F-snapshot-retention-audit-policy.md)                                   | Approved | RFC-0005 + RFC-0007 + RFC-0015 + RFC-0099 + ADR-0004 | UI Composition Persistence + Data Layer |
+| IMP-0032 | [API Layer + Runtime API Bridge](IMP-0032-api-layer-runtime-api-bridge.md)                                           | Approved | RFC-0013 + RFC-0002 + RFC-0006 + RFC-0099 | Runtime Engine + Platform Core + Data Layer |
 
 O IMP-0029 autoriza a TASK-0313 somente como renderizacao interna de Composition Tree em `apps/admin`. A aprovacao da RFC-0008 nao e dependencia dessa task porque o Admin Composition Adapter nao e um Runtime Adapter de publicacao.
 
@@ -178,6 +179,8 @@ O IMP-0031C autoriza uma ponte explicita entre Configuration Provider e Data Lay
 O IMP-0031D autoriza uma ponte explicita para definicoes declarativas do Component Registry. O Core continua runtime/platform agnostic e implementacoes visuais permanecem restritas aos apps/adapters apropriados.
 
 O IMP-0031E autoriza uma ponte explicita para snapshots derivados de UI Composition. Metadata e Component Registry continuam como source of truth; snapshots persistidos nao sao artifacts de publicacao, e Runtime/Platform Adapters continuam bloqueados pela RFC-0008 Draft.
+
+RFC-0013 autoriza a API Layer read-only. O Runtime API Bridge permanece agnostico de transporte; o adapter HTTP inicial vive em apps/admin. Auth, writes, banco, publishing e Runtime Adapters permanecem fora do escopo.
 
 O IMP-0031F autoriza retencao e auditoria explicitas somente sobre snapshots derivados. A politica nao substitui Metadata Registry, Component Registry ou UI Composition Runtime e nao autoriza processamento em background ou publishing.
 

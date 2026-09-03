@@ -38,3 +38,5 @@ The provider remains process-local and non-durable. There is no automatic write-
 ## Relation to UI Composition Persistence
 
 Metadata persistence remains a backing store for declarative resources. UI Composition Persistence validates against the operational Registry and stores only derived snapshots; it does not use those snapshots to replace metadata.
+
+The API Layer exposes metadata summaries through the Runtime API Bridge without returning executable definitions.

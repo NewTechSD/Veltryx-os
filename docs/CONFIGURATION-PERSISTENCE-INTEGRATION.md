@@ -45,3 +45,5 @@ Only serializable values are accepted. Functions, undefined, symbols, bigint, no
 ## Limits and next steps
 
 The in-memory backing store is not durable. There is no automatic write-through, secrets management, encryption, database, transaction, migration, distributed synchronization, API or configuration editor. A future approved task may introduce durable public configuration infrastructure behind the same contracts.
+
+API v1 exposes only the public configuration allowlist; environment contents and secrets remain excluded.

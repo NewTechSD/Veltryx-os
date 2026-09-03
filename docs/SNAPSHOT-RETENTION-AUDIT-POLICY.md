@@ -45,3 +45,5 @@ SHA-256 is computed over canonical recursively sorted tree data. Persistence tim
 `kernel.snapshotRetentionAudit()` exposes aggregate counters only: audit entries, retention runs, checksums generated/verified and latest pointers repaired. Runtime and Kernel Status expose the same summary without entries or trees.
 
 There is no durable audit store, scheduler, cron, worker, queue, background cleanup, publishing or Runtime Adapter. Audit and retention records use the in-memory provider and are process-local.
+
+API v1 exposes retention/audit aggregate counters only; audit entries and trees remain private.

@@ -15,6 +15,7 @@
   IModuleLoader,
   IRuntime,
   IRuntimeBootstrapService,
+  IRuntimeApiBridge,
   ISnapshotRetentionAuditService,
   IServiceRegistry,
   IStructuralEventPublisher,
@@ -36,6 +37,7 @@ import { ComponentPersistenceService, ComponentRegistry, registerSystemComponent
 import { SnapshotRetentionAuditService, UICompositionPersistenceService, UICompositionRuntime } from "./core/ui-composition/index.js";
 import { InMemoryPersistenceProvider, PersistenceService } from "./core/persistence/index.js";
 import { MetadataPersistenceService } from "./core/metadata/persistence/index.js";
+import { RuntimeApiBridge } from "./core/api/index.js";
 import { InMemoryEventBus } from "./event-bus.js";
 import { createExecutionContext } from "./execution-context.js";
 import { KernelExecutionContextFactory } from "./core/execution-context/index.js";
@@ -87,6 +89,7 @@ export class VeltryxKernel {
   private readonly componentPersistenceService: IComponentPersistenceService;
   private readonly uiCompositionPersistenceService: IUICompositionPersistenceService;
   private readonly snapshotRetentionAuditService: ISnapshotRetentionAuditService;
+  private readonly runtimeApiBridge: IRuntimeApiBridge;
 
   constructor(
     private readonly dependencies: VeltryxKernelDependencies = createKernelDependencies()
@@ -110,6 +113,7 @@ export class VeltryxKernel {
     this.uiCompositionPersistenceService =
       dependencies.uiCompositionPersistence ??
       new UICompositionPersistenceService(dependencies.uiComposition, dependencies.metadata, this.persistenceService, undefined, undefined, this.snapshotRetentionAuditService);
+    this.runtimeApiBridge = new RuntimeApiBridge(this);
   }
 
   async bootstrap(context: IExecutionContext): Promise<void> {
@@ -248,6 +252,8 @@ export class VeltryxKernel {
     return this.snapshotRetentionAuditService;
   }
 
+  runtimeApi(): IRuntimeApiBridge { return this.runtimeApiBridge; }
+
   runtime(): IRuntime {
     return this.dependencies.runtime;
   }
@@ -320,6 +326,7 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
   registerStructuralService(services, KERNEL_SERVICE_TOKENS.configuration, configuration, "Configuration Provider", "configuration", version);
   registerStructuralService(services, KERNEL_SERVICE_TOKENS.serviceRegistry, services, "Service Registry", "system", version);
   registerStructuralService(services, KERNEL_SERVICE_TOKENS.dependencyInjection, container, "Dependency Injection Container", "system", version);
+  registerStructuralService(services, KERNEL_SERVICE_TOKENS.runtimeApi, { name: "Runtime API Bridge" }, "Runtime API Bridge", "runtime", version);
 
   container.registerProvider({ token: KERNEL_SERVICE_TOKENS.configuration, kind: "value", lifecycle: "singleton", useValue: configuration });
   container.registerProvider({ token: KERNEL_SERVICE_TOKENS.eventBus, kind: "value", lifecycle: "singleton", useValue: events });
@@ -337,6 +344,14 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
     dependencies: [KERNEL_SERVICE_TOKENS.metadataRegistry, KERNEL_SERVICE_TOKENS.persistence],
     useFactory: () => metadataPersistence
   });
+  container.registerProvider({ token: KERNEL_SERVICE_TOKENS.runtimeApi, kind: "factory", lifecycle: "singleton", dependencies: [KERNEL_SERVICE_TOKENS.persistence], useFactory: () => new RuntimeApiBridge({
+    status: () => new KernelStatusService({ configuration, services, modules, metadata, components, uiComposition, persistence, metadataPersistence, configurationPersistence, componentPersistence, uiCompositionPersistence, snapshotRetentionAudit, runtime }, { kernelState: () => "ready", bootTimestamp: () => undefined, environment: configuration.getString(CONFIGURATION_KEYS.environment), runtimeBootstrapStatus: () => undefined }),
+    runtime: () => runtime,
+    configuration: () => configuration,
+    metadata: () => metadata,
+    components: () => components,
+    uiComposition: () => uiComposition
+  }) });
   container.registerProvider({
     token: KERNEL_SERVICE_TOKENS.configurationPersistence,
     kind: "factory",

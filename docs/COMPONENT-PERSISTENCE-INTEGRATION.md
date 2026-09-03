@@ -40,3 +40,5 @@ The in-memory provider remains non-durable. There is no renderer, visual adapter
 ## Relation to UI Composition Persistence
 
 Persisted component declarations remain independent source data. IMP-0031E uses the operational Component Registry to validate derived snapshot component keys; it does not embed component implementations in composition records.
+
+API v1 exposes declarative component summaries only; visual implementations remain outside the Core.

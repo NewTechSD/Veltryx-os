@@ -67,6 +67,7 @@ Implementacoes:
 | IMP-0031D | Component Registry Persistence Integration          | Persistir e hidratar definicoes declarativas de componentes sem implementacao visual ou plataforma.         | RFC-0007, RFC-0015, RFC-0099, ADR-0004                               | Alta       | Alta         | Approved | IMP-0031, TASK-0312, TASK-0315         |
 | IMP-0031E | UI Composition Persistence Integration              | Persistir snapshots derivados e controlados sem substituir metadata, components ou composition runtime.     | RFC-0005, RFC-0007, RFC-0015, RFC-0099, ADR-0004                     | Alta       | Alta         | Approved | IMP-0031, TASK-0312, TASK-0315D        |
 | IMP-0031F | Snapshot Retention + Audit Policy                    | Aplicar retencao explicita, checksum deterministico, audit estrutural e reparo de latest.                    | RFC-0005, RFC-0007, RFC-0015, RFC-0099, ADR-0004                     | Alta       | Alta         | Approved | IMP-0031E, TASK-0315E                  |
+| IMP-0032 | API Layer + Runtime API Bridge                         | Criar API v1 read-only com bridge agnostica no Kernel e adapter HTTP inicial no Admin.                    | RFC-0013, RFC-0002, RFC-0006, RFC-0099                                  | Critica    | Alta         | Approved | IMP-0031F, TASK-0315F                  |
 
 ### Fase 3
 

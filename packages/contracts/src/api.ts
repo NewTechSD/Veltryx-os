@@ -1,0 +1,31 @@
+export type ApiResponseMeta = { readonly apiVersion: "v1"; readonly requestId: string; readonly generatedAt: string; readonly runtimeId?: string; readonly environment?: string };
+export type ApiWarning = { readonly code: string; readonly message: string };
+export type ApiDiagnostic = { readonly code: string; readonly message: string; readonly level: "info" | "warning" | "error"; readonly timestamp: string };
+export type ApiError = { readonly code: string; readonly message: string; readonly statusCode: number; readonly details?: Readonly<Record<string, string | number | boolean | null>> };
+export type ApiSuccessResponse<TData = unknown> = { readonly ok: true; readonly data: TData; readonly meta: ApiResponseMeta; readonly warnings: readonly ApiWarning[]; readonly diagnostics: readonly ApiDiagnostic[] };
+export type ApiErrorResponse = { readonly ok: false; readonly error: ApiError; readonly meta: ApiResponseMeta; readonly warnings: readonly ApiWarning[]; readonly diagnostics: readonly ApiDiagnostic[] };
+export type ApiResponse<TData = unknown> = ApiSuccessResponse<TData> | ApiErrorResponse;
+export type ApiRequestContext = { readonly requestId?: string; readonly correlationId?: string; readonly apiVersion?: "v1"; readonly locale?: string; readonly timezone?: string };
+export type ApiPaginationInput = { readonly limit?: number; readonly offset?: number };
+export type ApiSourceInput = { readonly sourceType: string; readonly namespace: string; readonly sourceId: string };
+export type HealthApiView = { readonly status: "ok" | "warning" | "error"; readonly appName: string; readonly appVersion: string; readonly environment: string; readonly uptimeMs?: number };
+export type KernelStatusApiView = Record<string, unknown>;
+export type RuntimeStatusApiView = Record<string, unknown>;
+export type DiagnosticsApiView = { readonly diagnostics: readonly ApiDiagnostic[]; readonly warnings: readonly ApiWarning[]; readonly errors: readonly ApiWarning[] };
+export type ConfigurationApiView = Record<string, unknown>;
+export type MetadataApiView = Record<string, unknown>;
+export type ComponentsApiView = Record<string, unknown>;
+export type UICompositionApiView = Record<string, unknown>;
+export type MetadataApiInput = ApiPaginationInput;
+export type ComponentsApiInput = ApiPaginationInput;
+export type UICompositionApiInput = ApiPaginationInput;
+export interface IRuntimeApiBridge {
+  health(context?: ApiRequestContext): Promise<ApiResponse<HealthApiView>>;
+  status(context?: ApiRequestContext): Promise<ApiResponse<KernelStatusApiView>>;
+  diagnostics(context?: ApiRequestContext): Promise<ApiResponse<DiagnosticsApiView>>;
+  runtimeStatus(context?: ApiRequestContext): Promise<ApiResponse<RuntimeStatusApiView>>;
+  configuration(context?: ApiRequestContext): Promise<ApiResponse<ConfigurationApiView>>;
+  metadata(input?: MetadataApiInput, context?: ApiRequestContext): Promise<ApiResponse<MetadataApiView>>;
+  components(input?: ComponentsApiInput, context?: ApiRequestContext): Promise<ApiResponse<ComponentsApiView>>;
+  uiComposition(input?: UICompositionApiInput, context?: ApiRequestContext): Promise<ApiResponse<UICompositionApiView>>;
+}

@@ -61,3 +61,5 @@ Runtime Status copies the immutable aggregate summary produced during structural
 Runtime Status mirrors only the aggregate `uiCompositionPersistence` summary. Complete trees, nodes and implementation details remain excluded.
 
 The aggregate `snapshotRetentionAudit` summary reports policy activity without exposing audit entries.
+
+The API Layer exposes a sanitized read-only view of Runtime Status.

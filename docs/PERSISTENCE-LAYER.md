@@ -61,3 +61,5 @@ A future PostgreSQL/Prisma adapter may implement the approved contracts in infra
 IMP-0031E is the fourth structural consumer. It stores explicitly generated, derived Composition Snapshots and an auxiliary latest index through `IPersistenceService`; no snapshot becomes source of truth or publishing artifact.
 
 IMP-0031F adds explicit audit and retention records for UI Composition Snapshots. No scheduler or durable audit implementation is introduced.
+
+API endpoints consume persistence summaries only; they do not expose records or mutation operations.
