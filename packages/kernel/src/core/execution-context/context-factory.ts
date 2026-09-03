@@ -31,7 +31,7 @@ export class KernelExecutionContextFactory implements IExecutionContextFactory {
     const tenantContext = createTenantContext(input);
     const workspaceContext = createWorkspaceContext(input);
     const userContext = createUserContext(input);
-    const roles = input.roles ?? userContext?.roles ?? [];
+    const roles = input.roles ?? input.auth?.principal.roles ?? userContext?.roles ?? [];
     const permissions = input.permissions ?? userContext?.permissions ?? [];
     const locale = input.locale ?? "en-US";
     const timezone = input.timezone ?? "UTC";
@@ -59,7 +59,8 @@ export class KernelExecutionContextFactory implements IExecutionContextFactory {
         userAgent: input.requestContext?.userAgent ?? input.userAgent
       },
       metadata: input.metadata ?? {},
-      createdAt
+      createdAt,
+      auth: input.auth
     };
     const validation = this.validator.validate(normalizedInput);
 
@@ -69,7 +70,7 @@ export class KernelExecutionContextFactory implements IExecutionContextFactory {
       );
     }
 
-    return new KernelExecutionContext(
+  return new KernelExecutionContext(
       tenantContext,
       workspaceContext,
       userContext,
@@ -85,22 +86,23 @@ export class KernelExecutionContextFactory implements IExecutionContextFactory {
       locale,
       timezone,
       input.metadata ?? {},
-      createdAt
+      createdAt,
+      input.auth
     );
   }
 }
 
 function createTenantContext(input: ExecutionContextInput): ITenantContext {
   return new KernelTenantContext(
-    input.tenantContext?.tenantId ?? input.tenantId ?? input.tenant ?? "system",
-    input.tenantContext?.tenantSlug ?? input.tenantSlug,
-    input.tenantContext?.tenantName ?? input.tenantName,
+    input.auth?.tenant.id ?? input.tenantContext?.tenantId ?? input.tenantId ?? input.tenant ?? "system",
+    input.auth?.tenant.slug ?? input.tenantContext?.tenantSlug ?? input.tenantSlug,
+    input.auth?.tenant.name ?? input.tenantContext?.tenantName ?? input.tenantName,
     input.tenantContext?.status ?? input.tenantStatus ?? "active"
   );
 }
 
 function createWorkspaceContext(input: ExecutionContextInput): IWorkspaceContext | undefined {
-  const workspaceId = input.workspaceContext?.workspaceId ?? input.workspaceId ?? input.workspace;
+  const workspaceId = input.auth?.workspace.id ?? input.workspaceContext?.workspaceId ?? input.workspaceId ?? input.workspace;
 
   if (!workspaceId) {
     return undefined;
@@ -108,13 +110,13 @@ function createWorkspaceContext(input: ExecutionContextInput): IWorkspaceContext
 
   return new KernelWorkspaceContext(
     workspaceId,
-    input.workspaceContext?.workspaceSlug ?? input.workspaceSlug,
-    input.workspaceContext?.workspaceName ?? input.workspaceName
+    input.auth?.workspace.slug ?? input.workspaceContext?.workspaceSlug ?? input.workspaceSlug,
+    input.auth?.workspace.name ?? input.workspaceContext?.workspaceName ?? input.workspaceName
   );
 }
 
 function createUserContext(input: ExecutionContextInput): IUserContext | undefined {
-  const userId = input.userContext?.userId ?? input.userId ?? input.user;
+  const userId = input.auth?.principal.kind === "anonymous" ? undefined : input.auth?.principal.id ?? input.userContext?.userId ?? input.userId ?? input.user;
 
   if (!userId) {
     return undefined;
@@ -124,7 +126,7 @@ function createUserContext(input: ExecutionContextInput): IUserContext | undefin
     userId,
     input.userContext?.email ?? input.email,
     input.userContext?.name ?? input.name,
-    input.userContext?.roles ?? input.roles ?? [],
+    input.auth?.principal.roles ?? input.userContext?.roles ?? input.roles ?? [],
     input.userContext?.permissions ?? input.permissions ?? []
   );
 }

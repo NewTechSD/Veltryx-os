@@ -2,7 +2,7 @@ import type { IRuntimeApiBridge, ApiRequestContext, ApiResponse, HealthApiView, 
 import type { VeltryxKernel } from "../../kernel.js";
 
 export class RuntimeApiBridge implements IRuntimeApiBridge {
-  constructor(private readonly kernel: Pick<VeltryxKernel, "status" | "runtime" | "configuration" | "metadata" | "components" | "uiComposition">, private readonly now: () => Date = () => new Date()) {}
+  constructor(private readonly kernel: Pick<VeltryxKernel, "status" | "runtime" | "configuration" | "metadata" | "components" | "uiComposition" | "auth">, private readonly now: () => Date = () => new Date()) {}
 
   async health(context?: ApiRequestContext): Promise<ApiResponse<HealthApiView>> {
     const configuration = this.kernel.configuration().snapshot();
@@ -46,11 +46,11 @@ export class RuntimeApiBridge implements IRuntimeApiBridge {
     return this.success({ status: value.status, compositionsGenerated: value.compositionsGenerated, lastSourceType: value.lastSourceType, lastSourceId: value.lastSourceId }, context);
   }
 
-  private success<T>(data: T, context?: ApiRequestContext): ApiResponse<T> { return Object.freeze({ ok: true as const, data: freeze(data), meta: meta(context, this.now()), warnings: [], diagnostics: [] }); }
-  private error<T>(code: string, message: string, statusCode: number, context?: ApiRequestContext): ApiResponse<T> { return Object.freeze({ ok: false as const, error: { code, message, statusCode }, meta: meta(context, this.now()), warnings: [], diagnostics: [] }); }
+  private success<T>(data: T, context?: ApiRequestContext): ApiResponse<T> { return Object.freeze({ ok: true as const, data: freeze(data), meta: meta(context, this.now(), this.kernel.auth()), warnings: [], diagnostics: [] }); }
+  private error<T>(code: string, message: string, statusCode: number, context?: ApiRequestContext): ApiResponse<T> { return Object.freeze({ ok: false as const, error: { code, message, statusCode }, meta: meta(context, this.now(), this.kernel.auth()), warnings: [], diagnostics: [] }); }
 }
 
-function meta(context: ApiRequestContext | undefined, now: Date) { return Object.freeze({ apiVersion: "v1" as const, requestId: safeId(context?.requestId) ?? `req-${now.getTime()}`, ...(safeId(context?.correlationId) ? { correlationId: safeId(context?.correlationId) } : {}), generatedAt: now.toISOString() }); }
+function meta(context: ApiRequestContext | undefined, now: Date, auth: { snapshot(): { defaultPrincipalKind: "anonymous" | "system" | "user" | "service"; defaultSessionStatus: "anonymous" | "authenticated" | "system" | "expired" | "invalid"; defaultTenantId: string; defaultWorkspaceId: string } }) { const value = auth.snapshot(); return Object.freeze({ apiVersion: "v1" as const, requestId: safeId(context?.requestId) ?? `req-${now.getTime()}`, generatedAt: now.toISOString(), auth: { principalKind: value.defaultPrincipalKind, sessionStatus: value.defaultSessionStatus, tenantId: safeId(context?.tenantId) ?? value.defaultTenantId, workspaceId: safeId(context?.workspaceId) ?? value.defaultWorkspaceId } }); }
 function safeId(value?: string): string | undefined { return value && /^[a-zA-Z0-9._:-]{1,128}$/.test(value) ? value : undefined; }
 function validPage(input: { limit?: number; offset?: number }): boolean { return (input.limit === undefined || (Number.isInteger(input.limit) && input.limit >= 1 && input.limit <= 100)) && (input.offset === undefined || (Number.isInteger(input.offset) && input.offset >= 0)); }
 function publicKey(key: string): boolean { return !/(secret|token|password|credential|private|apikey|connection|string|database|jwt|session|cookie)/i.test(key); }

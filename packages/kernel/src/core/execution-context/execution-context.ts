@@ -1,4 +1,5 @@
 import type {
+  AuthContext,
   ExecutionContextSnapshot,
   IExecutionContext,
   IRequestContext,
@@ -30,6 +31,7 @@ export class KernelExecutionContext implements IExecutionContext {
     readonly timezone: string,
     metadata: Readonly<Record<string, unknown>>,
     readonly createdAt: Date
+    , readonly auth?: AuthContext
   ) {
     this.tenant = tenantContext.tenantId;
     this.workspace = workspaceContext?.workspaceId;

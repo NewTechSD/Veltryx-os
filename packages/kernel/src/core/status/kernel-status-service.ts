@@ -12,6 +12,7 @@
   IComponentPersistenceService,
   IUICompositionPersistenceService,
   ISnapshotRetentionAuditService,
+  IAuthBridge,
   IServiceRegistry,
   KernelBootStatus,
   KernelDiagnosticEntry,
@@ -41,6 +42,7 @@ export interface KernelStatusServiceDependencies {
   readonly componentPersistence?: IComponentPersistenceService;
   readonly uiCompositionPersistence?: IUICompositionPersistenceService;
   readonly snapshotRetentionAudit?: ISnapshotRetentionAuditService;
+  readonly auth?: IAuthBridge;
   readonly runtime: IRuntime;
   readonly container?: import("@veltryx/contracts").IDependencyInjectionContainer;
 }
@@ -80,6 +82,7 @@ export class KernelStatusService implements IKernelStatusService {
     const componentPersistence = this.collectComponentPersistenceSnapshot(errors);
     const uiCompositionPersistence = this.collectUICompositionPersistenceSnapshot(errors);
     const snapshotRetentionAudit = this.collectSnapshotRetentionAuditSnapshot(errors);
+    const auth = this.dependencies.auth?.snapshot();
 
     return createKernelStatusSnapshot({
       kernelStatus: errors.length > 0 ? "error" : this.options.kernelState(),
@@ -114,6 +117,7 @@ export class KernelStatusService implements IKernelStatusService {
       componentPersistence,
       uiCompositionPersistence,
       snapshotRetentionAudit,
+      auth: auth ? { status: auth.status, principalKind: auth.defaultPrincipalKind, tenantId: auth.defaultTenantId, workspaceId: auth.defaultWorkspaceId, resolvedContexts: auth.resolvedContexts, anonymousContexts: auth.anonymousContexts, systemContexts: auth.systemContexts } : undefined,
       runtimeStatus,
       dependencyInjectionStatus: dependencyInjection?.status,
       providersRegistered: dependencyInjection?.providersRegistered,

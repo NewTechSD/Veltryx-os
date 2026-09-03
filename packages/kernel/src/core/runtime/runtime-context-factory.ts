@@ -83,6 +83,7 @@ export class RuntimeContextFactory implements IRuntimeContextFactory {
         status: input.uiComposition?.status ?? "empty",
         compositionsGenerated: input.uiComposition?.compositionsGenerated ?? 0
       }),
+      auth: input.auth ? Object.freeze({ status: input.auth.status, principalKind: input.auth.defaultPrincipalKind, tenantId: input.auth.defaultTenantId, workspaceId: input.auth.defaultWorkspaceId, resolvedContexts: input.auth.resolvedContexts, anonymousContexts: input.auth.anonymousContexts, systemContexts: input.auth.systemContexts }) : undefined,
       persistence: input.persistence ? summary(input.persistence) : undefined,
       metadataPersistence: input.metadataPersistence
         ? metadataPersistenceSummary(input.metadataPersistence)

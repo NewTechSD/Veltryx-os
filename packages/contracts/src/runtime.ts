@@ -7,6 +7,7 @@
   VeltryxEnvironment
 } from "./configuration.js";
 import type { ExecutionContextSnapshot, IExecutionContext } from "./context.js";
+import type { AuthBridgeSnapshot } from "./auth.js";
 import type {
   DependencyInjectionSnapshot,
   IDependencyInjectionContainer
@@ -75,6 +76,7 @@ export interface RuntimeStructuralBootstrapResult {
   readonly success: boolean;
 }
 export interface RuntimeBootstrapDependencies {
+  readonly auth?: { snapshot(): AuthBridgeSnapshot };
   readonly configuration: IConfigurationProvider;
   readonly services: IServiceRegistry;
   readonly modules: IModuleLoader;
@@ -150,6 +152,7 @@ export interface RuntimeExecutionContextSummary {
   readonly userAvailable: boolean;
 }
 export interface RuntimeContext {
+  readonly auth?: { readonly status: string; readonly principalKind: string; readonly tenantId: string; readonly workspaceId: string; readonly resolvedContexts: number; readonly anonymousContexts: number; readonly systemContexts: number };
   readonly runtimeId: string;
   readonly lifecycle: RuntimeLifecycleStatus;
   readonly environment: VeltryxEnvironment;
@@ -176,6 +179,7 @@ export interface RuntimeContext {
 }
 export type RuntimeContextSnapshot = RuntimeContext;
 export interface RuntimeStatusSnapshot {
+  readonly auth?: RuntimeContext["auth"];
   readonly status: RuntimeLifecycleStatus;
   readonly generatedAt: string;
   readonly runtimeId: string;
@@ -213,6 +217,7 @@ export interface RuntimeStatusSnapshot {
   readonly diagnostics: readonly RuntimeDiagnosticEntry[];
 }
 export interface RuntimeContextFactoryInput {
+  readonly auth?: AuthBridgeSnapshot;
   readonly runtimeId: string;
   readonly lifecycle: RuntimeLifecycleStatus;
   readonly configuration: ConfigurationSnapshot;

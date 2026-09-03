@@ -2,6 +2,7 @@ import type { ExecutionContextSnapshot, IExecutionContext } from "@veltryx/contr
 
 export function createExecutionContextSnapshot(context: IExecutionContext): ExecutionContextSnapshot {
   return deepFreeze({
+    auth: context.auth,
     tenant: context.tenant,
     workspace: context.workspace,
     user: context.user,

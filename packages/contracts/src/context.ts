@@ -63,6 +63,7 @@ export interface LocaleContext {
 }
 
 export interface ExecutionContextSnapshot {
+  readonly auth?: AuthContext;
   readonly tenant: string;
   readonly workspace?: string;
   readonly user?: string;
@@ -86,12 +87,14 @@ export interface IExecutionContext
     UserContext,
     RequestContext,
     LocaleContext {
+  readonly auth?: AuthContext;
   readonly metadata: Readonly<Record<string, unknown>>;
   readonly createdAt: Date;
   snapshot(): ExecutionContextSnapshot;
 }
 
 export interface ExecutionContextInput {
+  readonly auth?: AuthContext;
   readonly tenant?: string;
   readonly tenantContext?: Partial<ITenantContext>;
   readonly tenantId?: string;
@@ -139,3 +142,4 @@ export interface IExecutionContextValidator {
 export interface IExecutionContextFactory {
   create(input?: ExecutionContextInput): IExecutionContext;
 }
+import type { AuthContext } from "./auth.js";

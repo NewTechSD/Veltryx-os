@@ -1,11 +1,13 @@
-export type ApiResponseMeta = { readonly apiVersion: "v1"; readonly requestId: string; readonly generatedAt: string; readonly runtimeId?: string; readonly environment?: string };
+import type { AuthSessionStatus, PrincipalKind } from "./auth.js";
+export type ApiResponseMeta = { readonly apiVersion: "v1"; readonly requestId: string; readonly generatedAt: string; readonly runtimeId?: string; readonly environment?: string; readonly auth?: { readonly principalKind: PrincipalKind; readonly sessionStatus: AuthSessionStatus; readonly tenantId: string; readonly workspaceId: string } };
 export type ApiWarning = { readonly code: string; readonly message: string };
 export type ApiDiagnostic = { readonly code: string; readonly message: string; readonly level: "info" | "warning" | "error"; readonly timestamp: string };
 export type ApiError = { readonly code: string; readonly message: string; readonly statusCode: number; readonly details?: Readonly<Record<string, string | number | boolean | null>> };
 export type ApiSuccessResponse<TData = unknown> = { readonly ok: true; readonly data: TData; readonly meta: ApiResponseMeta; readonly warnings: readonly ApiWarning[]; readonly diagnostics: readonly ApiDiagnostic[] };
 export type ApiErrorResponse = { readonly ok: false; readonly error: ApiError; readonly meta: ApiResponseMeta; readonly warnings: readonly ApiWarning[]; readonly diagnostics: readonly ApiDiagnostic[] };
 export type ApiResponse<TData = unknown> = ApiSuccessResponse<TData> | ApiErrorResponse;
-export type ApiRequestContext = { readonly requestId?: string; readonly correlationId?: string; readonly apiVersion?: "v1"; readonly locale?: string; readonly timezone?: string };
+import type { AuthContext } from "./auth.js";
+export type ApiRequestContext = { readonly requestId?: string; readonly correlationId?: string; readonly apiVersion?: "v1"; readonly locale?: string; readonly timezone?: string; readonly auth?: AuthContext; readonly tenantId?: string; readonly workspaceId?: string };
 export type ApiPaginationInput = { readonly limit?: number; readonly offset?: number };
 export type ApiSourceInput = { readonly sourceType: string; readonly namespace: string; readonly sourceId: string };
 export type HealthApiView = { readonly status: "ok" | "warning" | "error"; readonly appName: string; readonly appVersion: string; readonly environment: string; readonly uptimeMs?: number };

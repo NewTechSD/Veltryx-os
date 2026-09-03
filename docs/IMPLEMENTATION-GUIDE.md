@@ -511,3 +511,4 @@ Documento sem codigo.
 
 Voltado para orientar toda a implementacao futura.
 
+TASK-0317 adds the approved Auth/Tenant Foundation (RFC-0011): identity and scope contracts are transport-agnostic, with anonymous/default/default public fallback and explicit internal system context. Login, JWT, authorization and persistence remain future implementations.

@@ -114,10 +114,10 @@ export type {
   IWorkspaceContext,
   LocaleContext,
   RequestContext,
-  TenantContext,
+  TenantContext as LegacyTenantContext,
   TenantStatus,
   UserContext,
-  WorkspaceContext
+  WorkspaceContext as LegacyWorkspaceContext
 } from "./context.js";
 export { CONFIGURATION_KEYS } from "./configuration.js";
 export type {
@@ -421,6 +421,8 @@ export type {
 } from "./structural-events.js";
 
 export * from "./api.js";
+export * from "./auth.js";
+export * from "./tenant.js";
 
 
 

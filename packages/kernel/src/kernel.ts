@@ -16,6 +16,7 @@
   IRuntime,
   IRuntimeBootstrapService,
   IRuntimeApiBridge,
+  IAuthBridge,
   ISnapshotRetentionAuditService,
   IServiceRegistry,
   IStructuralEventPublisher,
@@ -38,6 +39,7 @@ import { SnapshotRetentionAuditService, UICompositionPersistenceService, UICompo
 import { InMemoryPersistenceProvider, PersistenceService } from "./core/persistence/index.js";
 import { MetadataPersistenceService } from "./core/metadata/persistence/index.js";
 import { RuntimeApiBridge } from "./core/api/index.js";
+import { AuthBridge } from "./core/auth/index.js";
 import { InMemoryEventBus } from "./event-bus.js";
 import { createExecutionContext } from "./execution-context.js";
 import { KernelExecutionContextFactory } from "./core/execution-context/index.js";
@@ -62,6 +64,7 @@ export interface VeltryxKernelDependencies {
   readonly componentPersistence?: IComponentPersistenceService;
   readonly uiCompositionPersistence?: IUICompositionPersistenceService;
   readonly snapshotRetentionAudit?: ISnapshotRetentionAuditService;
+  readonly auth?: IAuthBridge;
   readonly runtime: IRuntime;
   readonly container?: IDependencyInjectionContainer;
   readonly structuralEvents?: IStructuralEventPublisher;
@@ -90,6 +93,7 @@ export class VeltryxKernel {
   private readonly uiCompositionPersistenceService: IUICompositionPersistenceService;
   private readonly snapshotRetentionAuditService: ISnapshotRetentionAuditService;
   private readonly runtimeApiBridge: IRuntimeApiBridge;
+  private readonly authBridge: IAuthBridge;
 
   constructor(
     private readonly dependencies: VeltryxKernelDependencies = createKernelDependencies()
@@ -110,6 +114,7 @@ export class VeltryxKernel {
       new ComponentPersistenceService(dependencies.components, this.persistenceService);
     this.snapshotRetentionAuditService =
       dependencies.snapshotRetentionAudit ?? new SnapshotRetentionAuditService(this.persistenceService);
+    this.authBridge = dependencies.auth ?? new AuthBridge();
     this.uiCompositionPersistenceService =
       dependencies.uiCompositionPersistence ??
       new UICompositionPersistenceService(dependencies.uiComposition, dependencies.metadata, this.persistenceService, undefined, undefined, this.snapshotRetentionAuditService);
@@ -254,6 +259,8 @@ export class VeltryxKernel {
 
   runtimeApi(): IRuntimeApiBridge { return this.runtimeApiBridge; }
 
+  auth(): IAuthBridge { return this.authBridge; }
+
   runtime(): IRuntime {
     return this.dependencies.runtime;
   }
@@ -280,6 +287,7 @@ export class VeltryxKernel {
         componentPersistence: this.componentPersistenceService,
         uiCompositionPersistence: this.uiCompositionPersistenceService,
         snapshotRetentionAudit: this.snapshotRetentionAuditService
+        , auth: this.authBridge
       },
       {
         kernelState: () => this.currentState,
@@ -318,6 +326,7 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
   const componentPersistence = new ComponentPersistenceService(components, persistence);
   const snapshotRetentionAudit = new SnapshotRetentionAuditService(persistence);
   const uiCompositionPersistence = new UICompositionPersistenceService(uiComposition, metadata, persistence, undefined, undefined, snapshotRetentionAudit);
+  const auth = new AuthBridge();
   const runtime = new KernelRuntime();
   const container = new DependencyInjectionContainer(services);
   const executionContextFactory = new KernelExecutionContextFactory();
@@ -327,6 +336,7 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
   registerStructuralService(services, KERNEL_SERVICE_TOKENS.serviceRegistry, services, "Service Registry", "system", version);
   registerStructuralService(services, KERNEL_SERVICE_TOKENS.dependencyInjection, container, "Dependency Injection Container", "system", version);
   registerStructuralService(services, KERNEL_SERVICE_TOKENS.runtimeApi, { name: "Runtime API Bridge" }, "Runtime API Bridge", "runtime", version);
+  registerStructuralService(services, KERNEL_SERVICE_TOKENS.auth, auth, "Auth Bridge", "system", version);
 
   container.registerProvider({ token: KERNEL_SERVICE_TOKENS.configuration, kind: "value", lifecycle: "singleton", useValue: configuration });
   container.registerProvider({ token: KERNEL_SERVICE_TOKENS.eventBus, kind: "value", lifecycle: "singleton", useValue: events });
@@ -350,8 +360,10 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
     configuration: () => configuration,
     metadata: () => metadata,
     components: () => components,
-    uiComposition: () => uiComposition
+    uiComposition: () => uiComposition,
+    auth: () => auth
   }) });
+  container.registerProvider({ token: KERNEL_SERVICE_TOKENS.auth, kind: "value", lifecycle: "singleton", useValue: auth });
   container.registerProvider({
     token: KERNEL_SERVICE_TOKENS.configurationPersistence,
     kind: "factory",
@@ -400,8 +412,9 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
       KERNEL_SERVICE_TOKENS.componentPersistence,
       KERNEL_SERVICE_TOKENS.uiCompositionPersistence,
       KERNEL_SERVICE_TOKENS.snapshotRetentionAudit
+      , KERNEL_SERVICE_TOKENS.auth
     ],
-    useFactory: (resolvedConfiguration, resolvedServices, resolvedModules, resolvedContainer, resolvedMetadata, resolvedComponents, resolvedUIComposition, resolvedPersistence, resolvedMetadataPersistence, resolvedConfigurationPersistence, resolvedComponentPersistence, resolvedUICompositionPersistence, resolvedSnapshotRetentionAudit) =>
+    useFactory: (resolvedConfiguration, resolvedServices, resolvedModules, resolvedContainer, resolvedMetadata, resolvedComponents, resolvedUIComposition, resolvedPersistence, resolvedMetadataPersistence, resolvedConfigurationPersistence, resolvedComponentPersistence, resolvedUICompositionPersistence, resolvedSnapshotRetentionAudit, resolvedAuth) =>
       new RuntimeBootstrapService({
         configuration: resolvedConfiguration as IConfigurationProvider,
         services: resolvedServices as IServiceRegistry,
@@ -415,7 +428,8 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
         configurationPersistence: resolvedConfigurationPersistence as IConfigurationPersistenceService,
         componentPersistence: resolvedComponentPersistence as IComponentPersistenceService,
         uiCompositionPersistence: resolvedUICompositionPersistence as IUICompositionPersistenceService,
-        snapshotRetentionAudit: resolvedSnapshotRetentionAudit as ISnapshotRetentionAuditService
+        snapshotRetentionAudit: resolvedSnapshotRetentionAudit as ISnapshotRetentionAuditService,
+        auth: resolvedAuth as IAuthBridge
       }),
     descriptor: {
       name: "Runtime Bootstrap",
@@ -458,6 +472,7 @@ export function createKernelDependencies(): VeltryxKernelDependencies {
     componentPersistence,
     uiCompositionPersistence,
     snapshotRetentionAudit,
+    auth,
     runtime,
     container,
     structuralEvents

@@ -39,6 +39,7 @@ export interface KernelDiagnosticEntry {
 }
 
 export interface KernelStatusSnapshot {
+  readonly auth?: { readonly status: string; readonly principalKind: string; readonly tenantId: string; readonly workspaceId: string; readonly resolvedContexts: number; readonly anonymousContexts: number; readonly systemContexts: number };
   readonly kernelStatus: KernelStatus;
   readonly bootStatus: KernelBootStatus;
   readonly bootTimestamp?: string;

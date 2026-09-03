@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { VeltryxKernel, createBootstrapContext } from "@veltryx/kernel";
-type ApiRequestContext = { readonly apiVersion?: "v1"; readonly correlationId?: string; readonly requestId?: string };
+type ApiRequestContext = { readonly apiVersion?: "v1"; readonly correlationId?: string; readonly requestId?: string; readonly tenantId?: string; readonly workspaceId?: string };
 type ApiResponse<T = unknown> = { readonly ok: true; readonly data: T; readonly [key: string]: unknown } | { readonly ok: false; readonly error: { readonly code: string; readonly message: string; readonly statusCode: number }; readonly [key: string]: unknown };
 
 export async function getRuntimeApiBridge() {
@@ -13,8 +13,8 @@ export async function getRuntimeApiBridge() {
 }
 
 export function requestContext(request: Request): ApiRequestContext {
-  const correlationId = request.headers.get("x-correlation-id") ?? undefined;
-  return { apiVersion: "v1", correlationId: /^[a-zA-Z0-9._:-]{1,128}$/.test(correlationId ?? "") ? correlationId : undefined };
+  const safe = (value: string | null) => value && /^[a-zA-Z0-9._:-]{1,128}$/.test(value) ? value : undefined;
+  return { apiVersion: "v1", requestId: safe(request.headers.get("x-request-id")), correlationId: safe(request.headers.get("x-correlation-id")), tenantId: safe(request.headers.get("x-tenant-id")), workspaceId: safe(request.headers.get("x-workspace-id")) };
 }
 
 export function jsonResponse<T>(response: ApiResponse<T>): NextResponse { return NextResponse.json(response, { status: response.ok ? 200 : response.error.statusCode, headers: { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" } }); }

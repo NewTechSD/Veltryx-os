@@ -130,7 +130,7 @@ Estas RFCs formam o nucleo imutavel do Veltryx OS.
 | RFC-0008 | [Runtime Abstraction & Platform Adapters](../rfc/RFC-0008-runtime-abstraction-platform-adapters.md) | Draft    |
 | RFC-0009 | Builder / Application Model                                                                         | Planned  |
 | RFC-0010 | Permission Engine                                                                                   | Planned  |
-| RFC-0011 | Authentication                                                                                      | Planned  |
+| RFC-0011 | [Auth + Tenant Foundation](../rfc/RFC-0011-auth-tenant-foundation.md)                                | Approved |
 | RFC-0012 | Workflow Engine                                                                                     | Planned  |
 | RFC-0013 | [API Layer + Runtime API Bridge](../rfc/RFC-0013-api-engine.md)                                      | Approved |
 | RFC-0014 | Query Engine                                                                                        | Planned  |
@@ -163,6 +163,7 @@ Estas RFCs formam o nucleo imutavel do Veltryx OS.
 | IMP-0031E | [UI Composition Persistence Integration](IMP-0031E-ui-composition-persistence-integration.md)                       | Approved | RFC-0005 + RFC-0007 + RFC-0015 + RFC-0099 + ADR-0004 | UI Composition Runtime + Data Layer |
 | IMP-0031F | [Snapshot Retention + Audit Policy](IMP-0031F-snapshot-retention-audit-policy.md)                                   | Approved | RFC-0005 + RFC-0007 + RFC-0015 + RFC-0099 + ADR-0004 | UI Composition Persistence + Data Layer |
 | IMP-0032 | [API Layer + Runtime API Bridge](IMP-0032-api-layer-runtime-api-bridge.md)                                           | Approved | RFC-0013 + RFC-0002 + RFC-0006 + RFC-0099 | Runtime Engine + Platform Core + Data Layer |
+| IMP-0033 | [Auth + Tenant Foundation](IMP-0033-auth-tenant-foundation.md)                                                       | Approved | RFC-0011 + RFC-0002 + RFC-0004 + RFC-0006 + RFC-0013 + RFC-0099 | Platform Core + Runtime Engine + API + Execution Context |
 
 O IMP-0029 autoriza a TASK-0313 somente como renderizacao interna de Composition Tree em `apps/admin`. A aprovacao da RFC-0008 nao e dependencia dessa task porque o Admin Composition Adapter nao e um Runtime Adapter de publicacao.
 

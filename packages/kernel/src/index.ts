@@ -9,6 +9,7 @@ export * from "./core/components/index.js";
 export * from "./core/ui-composition/index.js";
 export * from "./core/persistence/index.js";
 export * from "./core/api/index.js";
+export * from "./core/auth/index.js";
 export * from "./module-system/status/index.js";
 export {
   KernelLoadedModule,

@@ -1,0 +1,12 @@
+import type { TenantContext, WorkspaceContext } from "./tenant.js";
+export type PrincipalKind = "anonymous" | "system" | "user" | "service";
+export type PrincipalStatus = "active" | "inactive" | "unknown";
+export type Principal = { readonly id: string; readonly kind: PrincipalKind; readonly status: PrincipalStatus; readonly displayName?: string; readonly roles: readonly string[]; readonly claims: Readonly<Record<string, string | number | boolean | null>>; readonly createdAt?: string };
+export type AuthSessionStatus = "anonymous" | "authenticated" | "system" | "expired" | "invalid";
+export type AuthSession = { readonly id: string; readonly status: AuthSessionStatus; readonly principal: Principal; readonly issuedAt?: string; readonly expiresAt?: string; readonly metadata: Readonly<Record<string, string | number | boolean | null>> };
+export type AuthWarning = { readonly code: string; readonly message: string };
+export type AuthDiagnostic = { readonly code: string; readonly message: string; readonly level: "info" | "warning" | "error"; readonly timestamp: string };
+export type AuthResolutionInput = { readonly requestId?: string; readonly correlationId?: string; readonly principalHint?: { readonly id?: string; readonly kind?: PrincipalKind }; readonly tenantHint?: { readonly id?: string; readonly slug?: string }; readonly workspaceHint?: { readonly id?: string; readonly slug?: string }; readonly mode?: "public" | "system" | "internal" };
+export type AuthContext = { readonly session: AuthSession; readonly principal: Principal; readonly tenant: TenantContext; readonly workspace: WorkspaceContext; readonly resolvedAt: string; readonly warnings: readonly AuthWarning[]; readonly diagnostics: readonly AuthDiagnostic[] };
+export type AuthBridgeSnapshot = { readonly status: "ready" | "warning" | "error"; readonly generatedAt: string; readonly defaultPrincipalKind: PrincipalKind; readonly defaultSessionStatus: AuthSessionStatus; readonly defaultTenantId: string; readonly defaultWorkspaceId: string; readonly resolvedContexts: number; readonly anonymousContexts: number; readonly systemContexts: number; readonly warnings: readonly AuthWarning[]; readonly diagnostics: readonly AuthDiagnostic[] };
+export interface IAuthBridge { resolve(input?: AuthResolutionInput): AuthContext; anonymous(input?: AuthResolutionInput): AuthContext; system(input?: AuthResolutionInput): AuthContext; snapshot(): AuthBridgeSnapshot; }

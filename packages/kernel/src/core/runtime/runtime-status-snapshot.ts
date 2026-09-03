@@ -21,6 +21,7 @@ export class RuntimeStatusSnapshotService implements IRuntimeStatusSnapshotServi
       runtimeId: context.runtimeId,
       environment: context.environment,
       runtimeMode: context.runtimeMode,
+      auth: context.auth,
       bootstrappedAt: context.bootstrappedAt,
       uptimeMs,
       configurationStatus: context.configuration.status,
