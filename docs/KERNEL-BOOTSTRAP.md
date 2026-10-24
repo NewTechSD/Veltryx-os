@@ -1,4 +1,4 @@
-﻿# Kernel Bootstrap
+# Kernel Bootstrap
 
 > `kernel.metadataPersistence` is registered as a singleton DI provider over the public Metadata Registry and Persistence Service contracts.
 
@@ -133,7 +133,9 @@ Comandos esperados:
 
 O Kernel publica eventos estruturais de bootstrap e readiness via Event Bus em memoria: kernel.bootstrap.started, kernel.bootstrap.completed, kernel.bootstrap.failed e kernel.ready. O catalogo completo esta em docs/KERNEL-STRUCTURAL-EVENTS.md.
 
-`r`n## Module System Public Snapshot`r`n`r`nO Kernel expoe `kernel.modules().snapshot()` como read model publico do Module System. Gerar o snapshot nao executa bootstrap, discovery, resolution, loading ou Runtime.`r`n
+## Module System Public Snapshot
+
+O Kernel expoe `kernel.modules().snapshot()` como read model publico do Module System. Gerar o snapshot nao executa bootstrap, discovery, resolution, loading ou Runtime.
 
 ## Metadata Engine Services
 
@@ -146,6 +148,7 @@ O bootstrap padrao registra os servicos reais kernel.componentRegistry e kernel.
 ## Persistence structural service
 
 Kernel dependency creation installs the in-memory Persistence Service as a singleton, registers `kernel.persistence` in Service Registry and DI, and supplies its public snapshot to Runtime Bootstrap. No external connection is opened during bootstrap.
+
 ## UI Composition Persistence provider
 
 Bootstrap registers the singleton `kernel.uiCompositionPersistence` with public UI Composition Runtime, Component Registry, Metadata Registry and Persistence dependencies. Registration does not trigger composition, persistence or loading.

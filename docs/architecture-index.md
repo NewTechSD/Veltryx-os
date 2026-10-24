@@ -1,414 +1,107 @@
-﻿# Veltryx OS Architecture Index
-
-> Documento mestre da arquitetura do Veltryx OS.
->
-> Este documento funciona como indice oficial das RFCs, mostrando a organizacao da plataforma, dependencias arquiteturais, roadmap e status de cada especificacao.
-
-## Status
-
-Projeto em fase de especificacao arquitetural.
-
-Fase 0 Foundation: Frozen.
-
-Nenhuma implementacao deve ocorrer sem uma RFC aprovada.
-
-## Visao Geral
-
-O Veltryx OS e uma plataforma empresarial modular orientada a metadados.
-
-Seu objetivo e permitir a construcao de aplicacoes completas atraves de configuracao, contratos e metadados, reduzindo codigo repetitivo e promovendo extensibilidade.
-
-A plataforma e organizada em quatro grandes camadas conceituais:
-
-```text
-Applications
-    |
-Builder
-    |
-Runtime
-    |
-Metadata
-    |
-Platform Core
-    |
-Infrastructure
-```
-
-## Arquitetura Geral
-
-```text
-                           Veltryx OS
-                                |
-                         Applications
-                                |
-                            Builder
-                                |
-                        Runtime Engine
-                                |
-                        Metadata Engine
-                                |
-                         Platform Core
-                                |
-                         Infrastructure
-```
-
-## Dependencias entre RFCs
-
-```text
-RFC-0001 Foundation
-        |
-        v
-RFC-0002 Platform Core
-        |
-        v
-RFC-0003 Module System
-        |
-        v
-RFC-0004 Service Registry
-        |
-        v
-RFC-0005 Metadata Engine
-        |
-        v
-RFC-0006 Runtime Engine
-        |
-        v
-RFC-0007 UI Composition System
-        |
-        v
-RFC-0008 Runtime Abstraction & Platform Adapters
-        |
-        v
-RFC-0009 Application Model
-        |
-        v
-RFC-0010 Permission Engine
-        |
-        v
-RFC-0011 Authentication
-        |
-        v
-RFC-0012 Workflow Engine
-        |
-        v
-RFC-0013 API Engine
-        |
-        v
-RFC-0014 Query Engine
-        |
-        v
-RFC-0015 Data Layer
-        |
-        v
-RFC-0016 Event System
-        |
-        v
-RFC-0017 Observability
-        |
-        v
-RFC-0018 Deployment
-```
-
-## Nucleo da Plataforma (Kernel)
-
-Estas RFCs formam o nucleo imutavel do Veltryx OS.
-
-| RFC      | Documento                                                                    | Status |
-| -------- | ---------------------------------------------------------------------------- | ------ |
-| RFC-0001 | [Foundation](../rfc/RFC-0001-foundation.md)                                  | Frozen |
-| RFC-0002 | [Platform Core](../rfc/RFC-0002-platform-core.md)                            | Frozen |
-| RFC-0003 | [Module System](../rfc/RFC-0003-module-system-loader.md)                     | Frozen |
-| RFC-0004 | [Service Registry](../rfc/RFC-0004-service-registry-dependency-injection.md) | Frozen |
-| RFC-0005 | [Metadata Engine](../rfc/RFC-0005-metadata-engine.md)                        | Frozen |
-| RFC-0006 | [Runtime Engine](../rfc/RFC-0006-runtime-engine.md)                          | Frozen |
-
-## Plataforma
-
-| RFC      | Documento                                                                                           | Status   |
-| -------- | --------------------------------------------------------------------------------------------------- | -------- |
-| RFC-0007 | [UI Composition System](../rfc/RFC-0007-ui-composition-system.md)                                   | Frozen   |
-| RFC-0008 | [Runtime Abstraction & Platform Adapters](../rfc/RFC-0008-runtime-abstraction-platform-adapters.md) | Draft    |
-| RFC-0009 | Builder / Application Model                                                                         | Planned  |
-| RFC-0010 | Permission Engine                                                                                   | Planned  |
-| RFC-0011 | [Auth + Tenant Foundation](../rfc/RFC-0011-auth-tenant-foundation.md)                                | Approved |
-| RFC-0012 | Workflow Engine                                                                                     | Planned  |
-| RFC-0013 | [API Layer + Runtime API Bridge](../rfc/RFC-0013-api-engine.md)                                      | Approved |
-| RFC-0014 | Query Engine                                                                                        | Planned  |
-| RFC-0015 | [Data Layer — Persistence & Data Access Contracts](../rfc/RFC-0015-data-layer.md)                   | Approved |
-| RFC-0016 | Event System                                                                                        | Planned  |
-
-## Infraestrutura
-
-| RFC      | Documento     | Status  |
-| -------- | ------------- | ------- |
-| RFC-0017 | Observability | Planned |
-| RFC-0018 | Deployment    | Planned |
-
-## Governanca
-
-| RFC      | Documento                                                             | Status   |
-| -------- | --------------------------------------------------------------------- | -------- |
-| RFC-0099 | [Architecture Governance](../rfc/RFC-0099-architecture-governance.md) | Approved |
-
-### Autorizacoes de Implementacao
-
-| IMP      | Documento                                                                                                            | Status   | Autorizado por                                                             | Relacionado a                          |
-| -------- | -------------------------------------------------------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------- | -------------------------------------- |
-| IMP-0029 | [Admin Composition Adapter + Dynamic Screen Renderer](IMP-0029-admin-composition-adapter-dynamic-screen-renderer.md) | Approved | RFC-0007 + RFC-0099 + ADR-0004                                             | RFC-0008 Draft                         |
-| IMP-0030 | [Dynamic Admin Shell + Navigation/Menu Composition](IMP-0030-dynamic-admin-shell-navigation-menu-composition.md)     | Approved | RFC-0005 + RFC-0006 + RFC-0007 + RFC-0099 + ADR-0004                       | IMP-0029; RFC-0008 Draft, not required |
-| IMP-0031 | [Persistence Layer + Data Access Contracts](IMP-0031-persistence-layer-data-access-contracts.md)                     | Approved | RFC-0001 + RFC-0002 + RFC-0004 + RFC-0005 + RFC-0006 + RFC-0015 + RFC-0099 | RFC-0008 Draft, not required           |
-| IMP-0031B | [Metadata Registry Persistence Integration](IMP-0031B-metadata-registry-persistence-integration.md)                  | Approved | RFC-0005 + RFC-0015 + RFC-0099 | Metadata Engine + Data Layer           |
-| IMP-0031C | [Configuration Provider Persistence Integration](IMP-0031C-configuration-provider-persistence-integration.md)       | Approved | RFC-0002 + RFC-0015 + RFC-0099 | Configuration Provider + Data Layer    |
-| IMP-0031D | [Component Registry Persistence Integration](IMP-0031D-component-registry-persistence-integration.md)               | Approved | RFC-0007 + RFC-0015 + RFC-0099 + ADR-0004 | Component Registry + Data Layer     |
-| IMP-0031E | [UI Composition Persistence Integration](IMP-0031E-ui-composition-persistence-integration.md)                       | Approved | RFC-0005 + RFC-0007 + RFC-0015 + RFC-0099 + ADR-0004 | UI Composition Runtime + Data Layer |
-| IMP-0031F | [Snapshot Retention + Audit Policy](IMP-0031F-snapshot-retention-audit-policy.md)                                   | Approved | RFC-0005 + RFC-0007 + RFC-0015 + RFC-0099 + ADR-0004 | UI Composition Persistence + Data Layer |
-| IMP-0032 | [API Layer + Runtime API Bridge](IMP-0032-api-layer-runtime-api-bridge.md)                                           | Approved | RFC-0013 + RFC-0002 + RFC-0006 + RFC-0099 | Runtime Engine + Platform Core + Data Layer |
-| IMP-0033 | [Auth + Tenant Foundation](IMP-0033-auth-tenant-foundation.md)                                                       | Approved | RFC-0011 + RFC-0002 + RFC-0004 + RFC-0006 + RFC-0013 + RFC-0099 | Platform Core + Runtime Engine + API + Execution Context |
-
-O IMP-0029 autoriza a TASK-0313 somente como renderizacao interna de Composition Tree em `apps/admin`. A aprovacao da RFC-0008 nao e dependencia dessa task porque o Admin Composition Adapter nao e um Runtime Adapter de publicacao.
-
-Implementation references: [Admin Composition Adapter](ADMIN-COMPOSITION-ADAPTER.md) and [Dynamic Screen Renderer](DYNAMIC-SCREEN-RENDERER.md). Both remain restricted to `apps/admin`.
-
-O IMP-0030 autoriza a TASK-0314 a derivar a navegacao do Admin Shell de metadata/menu/composition exclusivamente em `apps/admin`. A Composition Tree permanece universal; a RFC-0008 continua Draft e nao e requerida por esta task.
-
-O IMP-0031 autoriza a Persistence Layer agnostica e o provider in-memory sob a RFC-0015. RFC-0009 permanece reservada para Builder/Application Model. Banco, ORM, driver, SQL e migrations nao sao autorizados.
-
-O IMP-0031B prova o primeiro uso estrutural da Persistence Layer no Core por meio do Metadata Registry. A integracao nao implementa banco real, ORM, Prisma, PostgreSQL, API ou migrations.
-
-O IMP-0031C autoriza uma ponte explicita entre Configuration Provider e Data Layer. A precedencia segura e preservada; secrets e ambiente bruto permanecem fora da persistencia e dos snapshots.
-
-O IMP-0031D autoriza uma ponte explicita para definicoes declarativas do Component Registry. O Core continua runtime/platform agnostic e implementacoes visuais permanecem restritas aos apps/adapters apropriados.
-
-O IMP-0031E autoriza uma ponte explicita para snapshots derivados de UI Composition. Metadata e Component Registry continuam como source of truth; snapshots persistidos nao sao artifacts de publicacao, e Runtime/Platform Adapters continuam bloqueados pela RFC-0008 Draft.
-
-RFC-0013 autoriza a API Layer read-only. O Runtime API Bridge permanece agnostico de transporte; o adapter HTTP inicial vive em apps/admin. Auth, writes, banco, publishing e Runtime Adapters permanecem fora do escopo.
-
-O IMP-0031F autoriza retencao e auditoria explicitas somente sobre snapshots derivados. A politica nao substitui Metadata Registry, Component Registry ou UI Composition Runtime e nao autoriza processamento em background ou publishing.
-
-Implementation references: [Dynamic Admin Shell](DYNAMIC-ADMIN-SHELL.md) and [Navigation/Menu Composition](NAVIGATION-MENU-COMPOSITION.md).
-
-A RFC-0008 permanece Draft. Next Runtime Adapter, WordPress Runtime Adapter, Static Runtime Adapter, Publishing Pipeline, Preview, Publish, Rollback e deploy targets reais continuam bloqueados ate sua aprovacao.
-
-## Fluxo Arquitetural
-
-```text
-Builder
-   |
-   v
-Metadata
-   |
-   v
-Metadata Registry
-   |
-   v
-Runtime
-   |
-   v
-Component Registry
-   |
-   v
-Application
-```
-
-## Principios
-
-Toda decisao arquitetural deve seguir:
-
-- Metadata First
-- Runtime First
-- Platform First
-- Clean Architecture
-- SOLID
-- API First
-- Contract First
-- Documentation First
-- Modularidade
-- Observabilidade
-- Seguranca
-
-## Processo de Desenvolvimento
-
-A ordem obrigatoria e:
-
-```text
-Problema
-   |
-   v
-RFC
-   |
-   v
-Architecture Review
-   |
-   v
-Approved
-   |
-   v
-Implementation
-   |
-   v
-Tests
-   |
-   v
-Documentation
-   |
-   v
-Release
-```
-
-Nenhuma implementacao deve ocorrer sem RFC aprovada.
-
-## Convencoes
-
-RFCs:
-
-- definem arquitetura.
-
-ADRs:
-
-- registram decisoes locais.
-
-IMPs:
-
-- implementam RFCs.
-
-TESTs:
-
-- validam implementacoes.
-
-## Estrutura do Repositorio
-
-```text
-docs/
-rfc/
-adr/
-tasks/
-apps/
-packages/
-modules/
-scripts/
-```
+# Veltryx OS Architecture Index
+
+Documento mestre de navegacao e status. Revisao editorial: 2026-10-24.
+
+## Estado atual
+
+Foundation v1.0 permanece Frozen. O repositorio ja possui implementacao ate IMP-0033, em vez de estar aguardando bootstrap. A evidencia e o commit `936ddd4`; o [Development Status](DEVELOPMENT-STATUS.md) detalha os limites de cada capacidade.
+
+Status de documento e status de implementacao sao independentes. `Approved` autoriza apenas o escopo descrito; nao prova conclusao, release ou seguranca operacional. Os documentos `Draft` e `Review` sao propostas para revisao e nao autorizam codigo.
+
+## Documentos oficiais e prioridade
+
+1. [Architecture Governance](../rfc/RFC-0099-architecture-governance.md).
+2. Este Architecture Index.
+3. RFCs.
+4. ADRs.
+5. Especificacoes tecnicas.
+6. Codigo.
+
+Divergencia do codigo nao altera contrato aprovado. Deve ser registrada e resolvida pelo processo de governanca. [AGENTS](../AGENTS.md) permanece aplicavel.
+
+## Registro de RFCs
+
+| RFC      | Documento                                                                                                                   | Status   |
+| -------- | --------------------------------------------------------------------------------------------------------------------------- | -------- |
+| RFC-0001 | [RFC-0001: Fundacao do Veltryx OS](../rfc/RFC-0001-foundation.md)                                                           | Frozen   |
+| RFC-0002 | [RFC-0002: Platform Core do Veltryx OS](../rfc/RFC-0002-platform-core.md)                                                   | Frozen   |
+| RFC-0003 | [RFC-0003: Module System & Module Loader do Veltryx OS](../rfc/RFC-0003-module-system-loader.md)                            | Frozen   |
+| RFC-0004 | [RFC-0004: Service Registry & Dependency Injection do Veltryx OS](../rfc/RFC-0004-service-registry-dependency-injection.md) | Frozen   |
+| RFC-0005 | [RFC-0005: Metadata Engine do Veltryx OS](../rfc/RFC-0005-metadata-engine.md)                                               | Frozen   |
+| RFC-0006 | [RFC-0006: Runtime Engine do Veltryx OS](../rfc/RFC-0006-runtime-engine.md)                                                 | Frozen   |
+| RFC-0007 | [RFC-0007: UI Composition System do Veltryx OS](../rfc/RFC-0007-ui-composition-system.md)                                   | Frozen   |
+| RFC-0008 | [RFC-0008 Runtime Abstraction & Platform Adapters](../rfc/RFC-0008-runtime-abstraction-platform-adapters.md)                | Draft    |
+| RFC-0009 | [RFC-0009: Builder e Application Model](../rfc/RFC-0009-builder-application-model.md)                                       | Draft    |
+| RFC-0010 | [RFC-0010: Permission Engine](../rfc/RFC-0010-permission-engine.md)                                                         | Review   |
+| RFC-0011 | [RFC-0011 Auth + Tenant Foundation](../rfc/RFC-0011-auth-tenant-foundation.md)                                              | Approved |
+| RFC-0012 | [RFC-0012: Workflow Engine](../rfc/RFC-0012-workflow-engine.md)                                                             | Draft    |
+| RFC-0013 | [RFC-0013 API Layer + Runtime API Bridge](../rfc/RFC-0013-api-engine.md)                                                    | Approved |
+| RFC-0014 | [RFC-0014: Query Engine](../rfc/RFC-0014-query-engine.md)                                                                   | Draft    |
+| RFC-0015 | [RFC-0015: Data Layer — Persistence & Data Access Contracts](../rfc/RFC-0015-data-layer.md)                                 | Approved |
+| RFC-0016 | [RFC-0016: Event System](../rfc/RFC-0016-event-system.md)                                                                   | Draft    |
+| RFC-0017 | [RFC-0017: Observability](../rfc/RFC-0017-observability.md)                                                                 | Draft    |
+| RFC-0018 | [RFC-0018: Deployment e Release](../rfc/RFC-0018-deployment.md)                                                             | Draft    |
+| RFC-0019 | [RFC-0019: Autenticacao operacional e tenancy](../rfc/RFC-0019-operational-auth-tenancy.md)                                 | Draft    |
+| RFC-0020 | [RFC-0020: Persistencia duravel e consistencia](../rfc/RFC-0020-durable-data-access.md)                                     | Draft    |
+| RFC-0099 | [RFC-0099: Architecture Governance do Veltryx OS](../rfc/RFC-0099-architecture-governance.md)                               | Approved |
+
+RFC-0008 permanece Draft. RFC-0009 identifica Builder/Application Model, nao Data Layer nem Finance Core. RFC-0011 autoriza somente identidade/contexto; RFC-0013 somente API estrutural read-only; RFC-0015 somente contratos e provider em memoria. RFC-0019 e RFC-0020 propoem complementos operacionais, sem substituir as aprovadas.
+
+## Registro de IMPs recentes
+
+| Documento                                                                                                                      | Status documental existente | Evidencia de implementacao                |
+| ------------------------------------------------------------------------------------------------------------------------------ | --------------------------- | ----------------------------------------- |
+| [IMP-0029: Admin Composition Adapter + Dynamic Screen Renderer](IMP-0029-admin-composition-adapter-dynamic-screen-renderer.md) | Approved                    | Codigo presente; ver evidencias no status |
+| [IMP-0030: Dynamic Admin Shell + Navigation/Menu Composition](IMP-0030-dynamic-admin-shell-navigation-menu-composition.md)     | Approved                    | Codigo presente; ver evidencias no status |
+| [IMP-0031: Persistence Layer + Data Access Contracts](IMP-0031-persistence-layer-data-access-contracts.md)                     | Approved                    | Codigo presente; ver evidencias no status |
+| [IMP-0031B: Metadata Registry Persistence Integration](IMP-0031B-metadata-registry-persistence-integration.md)                 | Approved                    | Codigo presente; ver evidencias no status |
+| [IMP-0031C: Configuration Provider Persistence Integration](IMP-0031C-configuration-provider-persistence-integration.md)       | Approved                    | Codigo presente; ver evidencias no status |
+| [IMP-0031D: Component Registry Persistence Integration](IMP-0031D-component-registry-persistence-integration.md)               | Approved                    | Codigo presente; ver evidencias no status |
+| [IMP-0031E: UI Composition Persistence Integration](IMP-0031E-ui-composition-persistence-integration.md)                       | Approved                    | Codigo presente; ver evidencias no status |
+| [IMP-0031F: Snapshot Retention + Audit Policy](IMP-0031F-snapshot-retention-audit-policy.md)                                   | Approved                    | Codigo presente; ver evidencias no status |
+| [IMP-0032 API Layer + Runtime API Bridge](IMP-0032-api-layer-runtime-api-bridge.md)                                            | Approved                    | Codigo presente; ver evidencias no status |
+| [IMP-0033 Auth + Tenant Foundation](IMP-0033-auth-tenant-foundation.md)                                                        | Approved                    | Codigo presente; ver evidencias no status |
+| [IMP-0034 Permission Engine Foundation](IMP-0034-permission-engine-foundation.md)                                              | Blocked                     | Proposta; depende da RFC-0010 Review      |
+
+Aprovacao de IMP-0029 e IMP-0030 nao depende da RFC-0008: o mapping React e a navegacao sao internos de `apps/admin`, sem publicar sites. IMP-0031B/C/D/E/F tratam integracoes explicitas e snapshots derivados, sem banco real, scheduler ou auditoria duravel.
+
+## Arquitetura e fronteiras
+
+Builder produz revisoes declarativas; Metadata Engine valida e resolve; Runtime consome contratos e gera composicao abstrata; adapters externos implementam transporte e apresentacao. Core nao depende de modulos de negocio. A ordem de numeracao das RFCs nao e ordem linear de execucao.
+
+Dependencias reais e propostas estao no [Dependency Graph](DEPENDENCY-GRAPH.md). Runtime nao depende do Builder. Component Registry armazena declaracoes; implementacao visual pertence ao adapter. Veltryx OS e Control Plane; delivery de sites e uma fronteira distinta sob RFC-0008.
+
+## Continuidade e validacao
+
+- [Development Status](DEVELOPMENT-STATUS.md): baseline, evidencias e restricoes.
+- [Documentation Review](DOCUMENTATION-REVIEW.md): achados, correcoes e revisao preliminar.
+- [Implementation Roadmap](IMPLEMENTATION-ROADMAP.md): proxima entrega e bloqueios.
+- [Implementation Guide](IMPLEMENTATION-GUIDE.md) e [Checklist](IMPLEMENTATION-CHECKLIST.md).
+- [Deploy Preview](DEPLOY-PREVIEW.md): operacao atual; nao prova deploy executado.
+
+## Documentacao tecnica por capacidade
+
+| Capacidade                   | Referencias                                                                                                                                                                                                                                                                                                                                      |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Bootstrap, contexto e status | [Kernel](KERNEL-BOOTSTRAP.md), [Execution Context](EXECUTION-CONTEXT.md), [Runtime Bootstrap](RUNTIME-BOOTSTRAP.md), [Runtime Context](RUNTIME-CONTEXT.md), [Kernel Status](KERNEL-STATUS-SNAPSHOT.md), [Runtime Status](RUNTIME-STATUS-SNAPSHOT.md)                                                                                             |
+| Modules                      | [Manifest](MODULE-MANIFEST.md), [Discovery](MODULE-DISCOVERY.md), [Resolver](DEPENDENCY-RESOLVER.md), [Loader](MODULE-LOADER.md), [Snapshot](MODULE-SYSTEM-SNAPSHOT.md)                                                                                                                                                                          |
+| Services e configuracao      | [Registry](SERVICE-REGISTRY.md), [DI](DEPENDENCY-INJECTION-CONTAINER.md), [Configuration](CONFIGURATION-PROVIDER.md)                                                                                                                                                                                                                             |
+| Eventos locais               | [Event Bus](EVENT-BUS.md), [Structural Events](KERNEL-STRUCTURAL-EVENTS.md)                                                                                                                                                                                                                                                                      |
+| Metadata e UI                | [Metadata Engine](METADATA-ENGINE.md), [Registry](METADATA-REGISTRY.md), [Components](COMPONENT-REGISTRY.md), [UI Composition](UI-COMPOSITION-RUNTIME.md)                                                                                                                                                                                        |
+| Admin                        | [Shell](ADMIN-SHELL.md), [Dynamic Shell](DYNAMIC-ADMIN-SHELL.md), [Navigation](NAVIGATION-MENU-COMPOSITION.md), [Composition Adapter](ADMIN-COMPOSITION-ADAPTER.md), [Renderer](DYNAMIC-SCREEN-RENDERER.md), [Modules Screen](ADMIN-MODULES-SCREEN.md), [Module Adapter](ADMIN-MODULE-SYSTEM-ADAPTER.md)                                         |
+| Persistencia                 | [Layer](PERSISTENCE-LAYER.md), [Contracts](DATA-ACCESS-CONTRACTS.md), [Metadata](METADATA-PERSISTENCE-INTEGRATION.md), [Configuration](CONFIGURATION-PERSISTENCE-INTEGRATION.md), [Components](COMPONENT-PERSISTENCE-INTEGRATION.md), [UI Snapshots](UI-COMPOSITION-PERSISTENCE-INTEGRATION.md), [Retention](SNAPSHOT-RETENTION-AUDIT-POLICY.md) |
+| API                          | [Layer](API-LAYER.md), [Bridge](RUNTIME-API-BRIDGE.md), [Endpoints](API-ENDPOINTS.md)                                                                                                                                                                                                                                                            |
+| Auth e scopes estruturais    | [Foundation](AUTH-TENANT-FOUNDATION.md), [Bridge](AUTH-BRIDGE.md), [Tenant/Workspace](TENANT-WORKSPACE-CONTEXT.md)                                                                                                                                                                                                                               |
+| Diagnosticos                 | [Health](HEALTH-DIAGNOSTICS.md), [Status Adapter](KERNEL-STATUS-ADAPTER.md)                                                                                                                                                                                                                                                                      |
+
+## Historico e identificadores
+
+O [roadmap](IMPLEMENTATION-ROADMAP.md) registra colisoes de numeros IMP em planos antigos. Identificar entregas antigas por caminho, titulo e task, preservando a trilha historica. O [IMP-0002 historico](IMP-0002-kernel-core-services.md) e a [SPRINT-0002 historica](SPRINT-0002-kernel-core-services.md) nao descrevem a proxima etapa atual.
+
+## Revisao desta edicao
 
-## Roadmap
+Autor editorial: Codex. Motivo: sincronizar navegacao com baseline existente e materializar propostas ausentes. Nenhuma RFC Approved/Frozen foi alterada, nenhum contrato foi implementado e nenhuma aprovacao arquitetural foi registrada nesta revisao.
 
-### Fundacao
+## Continuidade da revisao de permissions
 
-- Foundation
-- Core
-- Modules
-- Services
-- Metadata
-- Runtime
-
-### Plataforma
-
-- UI
-- Builder
-- Application Model
-- Auth
-- Workflow
-- API
-- Query
-
-### Infraestrutura
-
-- Observability
-- Deployment
-- Security
-
-### Producao
-
-- Marketplace
-- SDK
-- CLI
-- Kubernetes
-- Multi Region
-
-## Checklist antes de implementar
-
-- RFC existe?
-- Esta aprovada?
-- Nao existe conflito?
-- Ha dependencias definidas?
-- Existe Architecture Review?
-- Existe ADR necessaria?
-
-Se qualquer resposta for "nao", a implementacao nao deve comecar.
-
-## Documentos Tecnicos
-
-- [Event Bus](EVENT-BUS.md)
-- [Kernel Structural Events](KERNEL-STRUCTURAL-EVENTS.md)
-- [Module System Public Snapshot](MODULE-SYSTEM-SNAPSHOT.md)
-- [Admin Module System Adapter](ADMIN-MODULE-SYSTEM-ADAPTER.md)
-- [Admin Modules Screen](ADMIN-MODULES-SCREEN.md)
-- [Configuration Provider](CONFIGURATION-PROVIDER.md)
-- [Service Registry](SERVICE-REGISTRY.md)
-- [Dependency Injection Container](DEPENDENCY-INJECTION-CONTAINER.md)
-- [Runtime Bootstrap v1](RUNTIME-BOOTSTRAP.md)
-- [Runtime Context](RUNTIME-CONTEXT.md)
-- [Runtime Status Snapshot](RUNTIME-STATUS-SNAPSHOT.md)
-- [Component Registry](COMPONENT-REGISTRY.md)
-- [UI Composition Runtime](UI-COMPOSITION-RUNTIME.md)
-
-## Documentos Oficiais
-
-Ordem de prioridade:
-
-1. Architecture Governance
-2. Architecture Index
-3. RFCs
-4. ADRs
-5. Technical Specifications
-6. Codigo
-
-Em caso de conflito, prevalece o documento de maior prioridade.
-
-## Estado Atual
-
-Fase atual:
-
-Foundation v1.0 congelada.
-
-Objetivo:
-
-Iniciar a preparacao para IMP-0001 Bootstrap conforme governanca aprovada.
-
-Apos o freeze da fundacao e a revisao arquitetural, a proxima etapa autorizavel e IMP-0001 Bootstrap.
-
-## Metadata Engine Core Documentation
-
-Documentos tecnicos adicionados para a fundacao de metadata:
-
-- [Metadata Engine](METADATA-ENGINE.md)
-- [Metadata Registry](METADATA-REGISTRY.md)
-
-## Runtime Agnosticism Guardrail
-
-ADR-0004 estabelece que Builder, Site Schema, Component Registry e UI Composition Runtime devem permanecer runtime-agnostic e platform-agnostic.
-
-RFC-0008 nasce como Draft para formalizar Runtime Abstraction & Platform Adapters. Ate sua aprovacao, nenhuma implementacao pode acoplar o Core, Contracts, Component Registry ou UI Composition Runtime a um framework, DOM, plataforma de publicacao, template executavel ou mapping concreto de componente.
-
-O Admin Composition Adapter autorizado pelo IMP-0029 nao altera essa restricao: seu mapping React fica exclusivamente em `apps/admin`, consome a Composition Tree universal e serve apenas ao painel administrativo. Ele nao e adapter de publicacao ou delivery e, portanto, nao depende da aprovacao da RFC-0008.
-
-Fluxo arquitetural esperado:
-
-```text
-Veltryx OS
-    |
-    v
-Builder
-    |
-    v
-Site Schema
-    |
-    v
-Publishing Pipeline
-    |
-    v
-Runtime Adapter
-    |
-    v
-Site publicado
-```
-
-Veltryx OS permanece Control Plane. Sites publicados pertencem ao Delivery Plane.
+RFC-0010 v0.2 esta em Review apos [revisao cruzada tecnica](RFC-0010-CROSS-REVIEW.md). IMP-0034 v0.2 fixa contratos, tokens, reasonCodes, scopes e 26 cenarios de aceite; permanece Blocked para codigo, aguardando aprovacao nominal. Essa transicao editorial nao aprova a arquitetura nem indica implementacao.

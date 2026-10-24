@@ -1,4 +1,4 @@
-﻿# Module Discovery
+# Module Discovery
 
 ## Objetivo
 
@@ -93,4 +93,6 @@ Discovery nao valida resolucao de dependencias, nao calcula compatibilidade sema
 
 Esta etapa publica eventos estruturais internos por meio do Event Bus em memoria quando um IStructuralEventPublisher e fornecido. A publicacao e isolada e nao altera o resultado funcional da operacao. O catalogo esta em docs/KERNEL-STRUCTURAL-EVENTS.md.
 
-`r`n## Snapshot Publico`r`n`r`nResultados de discovery podem ser consolidados pelo Module System Public Snapshot. Consumidores externos ao Kernel devem ler `kernel.modules().snapshot()` em vez de acessar reports internos diretamente.`r`n
+## Snapshot Publico
+
+Resultados de discovery podem ser consolidados pelo Module System Public Snapshot. Consumidores externos ao Kernel devem ler `kernel.modules().snapshot()` em vez de acessar reports internos diretamente.
