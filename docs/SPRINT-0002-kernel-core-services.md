@@ -1,5 +1,7 @@
 # SPRINT-0002 Kernel Core Services
 
+> Registro historico de planejamento. Nao representa a fase atual nem comprova aceite. Consulte o [estado atual](DEVELOPMENT-STATUS.md) e o [registro de colisoes de IMPs](IMPLEMENTATION-ROADMAP.md#registro-historico-de-colisoes-imp) antes de reutilizar identificadores.
+
 ## Objetivo
 
 Transformar o bootstrap inicial em um Kernel extensivel, preparado para suportar modulos, runtime e metadata conforme definido nas RFCs.

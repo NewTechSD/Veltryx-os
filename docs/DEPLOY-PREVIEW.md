@@ -1,238 +1,107 @@
-﻿# Deploy Preview
+# Deploy do preview tecnico
 
-## Objetivo
+Baseline inspecionada: `936ddd4`. Referencia executavel: [ecosystem.config.cjs](../apps/admin/ecosystem.config.cjs). Este guia nao registra deploy realizado nem aprova producao com dados reais.
 
-Este documento prepara o primeiro deploy preview online do `apps/admin` do Veltryx OS em Ubuntu com Node.js, pnpm, PM2, CyberPanel, OpenLiteSpeed, SSL e subdominio dedicado.
+## Configuracao efetivamente versionada
 
-Rotas publicadas:
+| Item       | Valor no arquivo PM2                                               |
+| ---------- | ------------------------------------------------------------------ |
+| Processo   | `veltryx-admin`                                                    |
+| cwd        | `/opt/projects/Veltryx-os/apps/admin`                              |
+| Executavel | `/usr/bin/pnpm`                                                    |
+| Argumentos | `start` (script `next start`)                                      |
+| Porta      | `PORT=3100`                                                        |
+| Instancias | 1, fork                                                            |
+| Reinicio   | autorestart; max_memory_restart=512M                               |
+| Logs       | `apps/admin/logs/pm2-out.log` e `pm2-error.log` sob cwd versionado |
 
-- `/`
-- `/health`
-- `/status`
-- `/diagnostics`
+O arquivo **nao fixa hostname/bind**. Nao afirmar que o PM2 atual restringe o servidor a loopback. Conferir com `ss -ltnp` e restringir acesso ao backend via configuracao de bind ou firewall antes de expor pela borda. Alterar o PM2 e trabalho de configuracao separado desta revisao documental.
 
-Este fluxo nao cria API NestJS, banco, autenticacao, autorizacao, Runtime Renderer, Builder, Event Bus ou regra de negocio.
+## Pre-requisitos
 
-## Arquitetura do Preview
+Node e pnpm disponiveis, dependencias/build revisados, PM2 e proxy configurados pelo operador, DNS/SSL validos quando houver dominio. `packageManager` fixa pnpm 9.15.0; Node nao e fixado por engines no baseline. Registrar versoes usadas e confirmar o caminho real do executavel pnpm no servidor. Nao supor `/usr/bin/pnpm` sem verificar.
 
-```text
-Browser
-  |
-  v
-https://os.veltryx.com.br
-  |
-  v
-OpenLiteSpeed / CyberPanel
-  |
-  v
-Reverse Proxy
-  |
-  v
-127.0.0.1:3000
-  |
-  v
-apps/admin Next.js production server
-  |
-  v
-@veltryx/kernel public status snapshot
-```
+O path de instalacao deve corresponder ao `cwd` e aos caminhos de logs do arquivo PM2. Nao usar o antigo exemplo `Veltryx-so`.
 
-Subdominios sugeridos:
+## Preparacao e checks
 
-- `os.veltryx.com.br`
-- `admin.veltryx.com.br`
-- `preview.veltryx.com.br`
-
-## Pre-requisitos do Servidor
-
-- Ubuntu atualizado.
-- Node.js LTS instalado.
-- pnpm instalado.
-- PM2 instalado globalmente.
-- CyberPanel/OpenLiteSpeed instalado.
-- DNS do subdominio apontando para o servidor.
-- Repositorio clonado no servidor.
-
-Exemplo:
+Na raiz do checkout correspondente ao commit escolhido:
 
 ```bash
 corepack enable
 corepack prepare pnpm@9.15.0 --activate
-npm install -g pm2
-```
-
-## Variaveis de Ambiente
-
-Use apenas variaveis publicas e seguras no preview:
-
-```env
-NODE_ENV=production
-NEXT_PUBLIC_APP_NAME=Veltryx OS
-NEXT_PUBLIC_APP_ENV=preview
-NEXT_PUBLIC_APP_VERSION=0.1.0
-```
-
-Nao incluir tokens, senhas, secrets, chaves privadas, credenciais de banco ou qualquer dado sensivel.
-
-## Build Production
-
-Na raiz do repositorio:
-
-```bash
-pnpm install
+pnpm install --frozen-lockfile
 pnpm build
-pnpm --filter @veltryx/admin build
+pnpm lint
+pnpm typecheck
+pnpm test
+mkdir -p apps/admin/logs
 ```
 
-O Admin usa `next build` e `next start`. Esta task nao habilita `output: "standalone"`; o fluxo esperado e executar o app no workspace com pnpm e dependencias instaladas no servidor.
+Registrar commit, versoes e resultados. `.env.example` contem apenas configuracao de preview. Secrets nunca vao para `NEXT_PUBLIC_*`. Nenhum banco, login ou delivery adapter e habilitado por estas variaveis.
 
-## Start Manual
+## Validacao manual com bind explicito
 
-Para validar sem PM2:
+Para testar o build localmente com bind conhecido:
 
 ```bash
-pnpm --filter @veltryx/admin start -- -p 3000
+pnpm --filter @veltryx/admin exec next start -H 127.0.0.1 -p 3100
 ```
 
-Validar em outro terminal:
+Esse comando e uma alternativa manual; **nao e o comando que o arquivo PM2 versionado executa**. Encerrar o processo manual antes de iniciar PM2 na mesma porta.
 
 ```bash
-curl -i http://127.0.0.1:3000/health
-curl -i http://127.0.0.1:3000/status
-curl -i http://127.0.0.1:3000/diagnostics
+curl -i http://127.0.0.1:3100/health
+curl -i http://127.0.0.1:3100/api/v1/health
+curl -i http://127.0.0.1:3100/api/v1/status
 ```
 
 ## PM2
 
-Arquivo criado:
-
-```text
-apps/admin/ecosystem.config.cjs
-```
-
-A configuracao executa o Next.js production server em `127.0.0.1:3000` via `next start -p 3000`.
-
-Comandos:
+No host em que o repositorio esteja em `/opt/projects/Veltryx-os` e o executavel esteja correto:
 
 ```bash
-cd /home/veltryx/Veltryx-so/apps/admin
+cd /opt/projects/Veltryx-os/apps/admin
 pm2 start ecosystem.config.cjs
 pm2 status
-pm2 logs veltryx-admin
-pm2 restart veltryx-admin
-pm2 save
+pm2 logs veltryx-admin --lines 100
+ss -ltnp
 ```
 
-Para iniciar automaticamente apos reboot:
+Para configuracao ja existente, conferir se o processo aponta para o mesmo cwd e porta antes de reiniciar. Nao iniciar segundo processo na mesma porta. Salvar estado/startup somente apos validacao pelo operador; este guia nao executa mudancas no host.
 
-```bash
-pm2 startup
-pm2 save
-```
+## Proxy e HTTPS
 
-Logs esperados:
+Configurar o vhost autorizado do CyberPanel/OpenLiteSpeed para encaminhar ao backend `http://127.0.0.1:3100`. O dominio nao e fixado pelo repositorio: usar o dominio real do ambiente. Emitir/validar certificado, conferir HTTPS e redirecionamento se previsto. Nao usar porta 3000 por copiar instrucoes antigas.
 
-```text
-apps/admin/logs/pm2-out.log
-apps/admin/logs/pm2-error.log
-```
+Depois da mudanca, validar URL externa e backend; garantir que a porta de backend nao esteja aberta indevidamente. Recarregar o proxy pelo procedimento operacional do servidor, considerando outros sites hospedados.
 
-## CyberPanel / OpenLiteSpeed Reverse Proxy
+## Smoke tests
 
-1. Criar o subdominio no CyberPanel, por exemplo `os.veltryx.com.br`.
-2. Confirmar que o DNS do subdominio aponta para o servidor.
-3. Criar ou editar o Virtual Host do subdominio.
-4. Configurar proxy/rewrite para encaminhar trafego para:
+| Rota                               | Esperado                                             |
+| ---------------------------------- | ---------------------------------------------------- |
+| `/`                                | Dashboard do preview                                 |
+| `/health`                          | JSON de liveness                                     |
+| `/status`, `/diagnostics`          | Superficies estruturais sanitizadas                  |
+| `/modules`                         | Resumo do Module System                              |
+| `/api/v1/health`, `/api/v1/status` | Envelope seguro, no-store e nosniff                  |
+| Demais rotas API v1                | Escopo definido em [API Reference](API-ENDPOINTS.md) |
 
-```text
-http://127.0.0.1:3000
-```
+A rota dinamica `/runtime/[sourceType]/[namespace]/[sourceId]` depende de uma referencia demonstrativa valida e dos guardrails do adapter. Nao e uma API de publicacao de sites.
 
-Fluxo esperado:
+## Checklist operacional
 
-```text
-https://os.veltryx.com.br -> OpenLiteSpeed -> 127.0.0.1:3000 -> apps/admin
-```
+- [ ] Commit, Node/pnpm e checks registrados.
+- [ ] Cwd, executavel, logs e PORT=3100 conferidos.
+- [ ] Bind/rede inspecionados; acesso direto ao backend restrito.
+- [ ] Processo unico, proxy e HTTPS funcionando.
+- [ ] Smoke tests locais e externos aprovados.
+- [ ] Erros nao expoem stack, secrets ou env bruto.
+- [ ] Versao anterior e procedimento de retorno identificados.
+- [ ] Nenhum dado real de cliente e servido pelo preview sem auth/isolamento.
 
-Quando usar rewrite rules do OpenLiteSpeed, configurar regra equivalente a proxy pass para o backend local. A interface do CyberPanel pode variar por versao; manter o backend restrito a `127.0.0.1`.
+## Retorno e limites
 
-Reiniciar OpenLiteSpeed apos alterar o virtual host:
+Para regressao do preview sem banco, voltar ao commit/artefato anterior conhecido, reinstalar pelo lockfile quando necessario, rebuildar e reiniciar pelo procedimento do operador; repetir smoke tests. Isso nao define rollback de dados futuros.
 
-```bash
-systemctl restart lsws
-```
-
-ou pelo painel do CyberPanel em `LiteSpeed Status` / `Restart LiteSpeed`.
-
-## SSL
-
-No CyberPanel:
-
-1. Acessar o site/subdominio criado.
-2. Emitir SSL via Let's Encrypt.
-3. Confirmar que HTTPS esta ativo.
-4. Validar redirecionamento HTTP -> HTTPS se configurado.
-5. Abrir `https://os.veltryx.com.br/health` no navegador ou via `curl`.
-
-## Validacao de Rotas
-
-```bash
-curl -i https://os.veltryx.com.br/
-curl -i https://os.veltryx.com.br/health
-curl -i https://os.veltryx.com.br/status
-curl -i https://os.veltryx.com.br/diagnostics
-```
-
-Resultados esperados:
-
-- `/`: dashboard inicial do Veltryx OS.
-- `/health`: JSON seguro com `status`, `kernel` e `timestamp`.
-- `/status`: status publico do Kernel.
-- `/diagnostics`: diagnostico tecnico controlado.
-
-## Checklist Pos-Deploy
-
-- [ ] Dominio/subdominio resolve corretamente.
-- [ ] SSL ativo.
-- [ ] `/` abre o dashboard.
-- [ ] `/health` retorna JSON valido.
-- [ ] `/status` renderiza corretamente.
-- [ ] `/diagnostics` renderiza corretamente.
-- [ ] PM2 mantem `veltryx-admin` online.
-- [ ] Logs nao exibem erros criticos.
-- [ ] Stack trace nao aparece em producao.
-- [ ] Variaveis sensiveis nao aparecem no frontend.
-- [ ] Build production foi usado.
-- [ ] Nenhuma rota depende de banco, auth ou API externa.
-- [ ] OpenLiteSpeed encaminha para `127.0.0.1:3000`.
-
-## Troubleshooting
-
-Verificar processo:
-
-```bash
-pm2 status
-pm2 logs veltryx-admin
-```
-
-Verificar porta local:
-
-```bash
-curl -i http://127.0.0.1:3000/health
-```
-
-Reiniciar app:
-
-```bash
-pm2 restart veltryx-admin
-```
-
-Reiniciar OpenLiteSpeed:
-
-```bash
-systemctl restart lsws
-```
-
-## Limites
-
-Este deploy preview nao inclui Docker production, Kubernetes, CI/CD completo, Prometheus, OpenTelemetry, tracing distribuido, logs estruturados avancados, alertas, webhooks, banco, Auth, API NestJS, Runtime Renderer, Builder ou modulos de negocio.
+Persistencia atual e em memoria; restart perde dados desse provider. Liveness nao prova readiness nem login. Nao ha deploy de Runtime Adapter, WordPress, workflow, banco ou negocio neste procedimento. A proposta de release operacional esta na [RFC-0018](../rfc/RFC-0018-deployment.md).

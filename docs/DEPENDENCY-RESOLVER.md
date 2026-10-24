@@ -1,4 +1,4 @@
-﻿# Dependency Resolver
+# Dependency Resolver
 
 ## Objetivo
 
@@ -99,8 +99,11 @@ O resultado da resolucao contem:
 - YAML.
 - Enable, Disable, Install, Update ou Uninstall.
 - Resolucao semantica de intervalos de versao.
+
 ## Eventos Estruturais
 
 Esta etapa publica eventos estruturais internos por meio do Event Bus em memoria quando um IStructuralEventPublisher e fornecido. A publicacao e isolada e nao altera o resultado funcional da operacao. O catalogo esta em docs/KERNEL-STRUCTURAL-EVENTS.md.
 
-`r`n## Snapshot Publico`r`n`r`nResultados de resolution podem ser consolidados pelo Module System Public Snapshot, incluindo modulos resolvidos, dependencias ausentes, conflitos e ciclos em formato publico seguro.`r`n
+## Snapshot Publico
+
+Resultados de resolution podem ser consolidados pelo Module System Public Snapshot, incluindo modulos resolvidos, dependencias ausentes, conflitos e ciclos em formato publico seguro.

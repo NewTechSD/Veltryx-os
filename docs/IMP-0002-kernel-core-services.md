@@ -1,14 +1,25 @@
 # IMP-0002: Kernel Core Services
 
-Status: Planned  
-Version: 0.1  
-Type: Implementation Plan  
-Owner: Architecture Team  
-Reviewers: Architecture Review  
-Created: 2026-08-04  
-Last Updated: 2026-08-04  
-Depends On: IMP-0001, RFC-0001, RFC-0002, RFC-0004, RFC-0099  
-Impacts: packages/contracts, packages/kernel, docs/KERNEL-BOOTSTRAP.md, docs/IMPLEMENTATION-ROADMAP.md  
+> Registro historico de planejamento. Nao representa a fase atual nem comprova aceite. Consulte o [estado atual](DEVELOPMENT-STATUS.md) e o [registro de colisoes de IMPs](IMPLEMENTATION-ROADMAP.md#registro-historico-de-colisoes-imp) antes de reutilizar identificadores.
+
+Status: Planned
+
+Version: 0.1
+
+Type: Implementation Plan
+
+Owner: Architecture Team
+
+Reviewers: Architecture Review
+
+Created: 2026-08-04
+
+Last Updated: 2026-08-04
+
+Depends On: IMP-0001, RFC-0001, RFC-0002, RFC-0004, RFC-0099
+
+Impacts: packages/contracts, packages/kernel, docs/KERNEL-BOOTSTRAP.md, docs/IMPLEMENTATION-ROADMAP.md
+
 Supersedes: None
 
 ## Objetivo

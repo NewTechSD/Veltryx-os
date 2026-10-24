@@ -1,4 +1,4 @@
-﻿# Kernel Public Status Snapshot
+# Kernel Public Status Snapshot
 
 > Kernel Status projects only the public aggregate Metadata Persistence snapshot and excludes payloads and internals.
 
@@ -94,7 +94,9 @@ Stacks podem ser habilitados por `includeTechnicalDetails`, mas nao devem ser ob
 
 O snapshot nao cria API externa, REST, GraphQL, banco, Prisma, Redis, Auth, login, sessao, JWT, Runtime Renderer, Builder, CRUD, metricas Prometheus, tracing, observabilidade avancada ou Event Bus.
 
-`r`n## Module System Snapshot`r`n`r`nOs contadores de modulos do Kernel Status Snapshot devem ser alimentados pelo Module System Public Snapshot quando disponivel. O status geral nao deve recalcular discovery, resolution ou loading.`r`n
+## Module System Snapshot
+
+Os contadores de modulos do Kernel Status Snapshot devem ser alimentados pelo Module System Public Snapshot quando disponivel. O status geral nao deve recalcular discovery, resolution ou loading.
 
 ## Metadata Engine Summary
 
@@ -114,6 +116,7 @@ O Kernel Status Snapshot inclui resumo leve de componentRegistryStatus, componen
 ## Persistence summary
 
 RFC-0015 adds an optional aggregate `persistence` summary containing status, provider id/kind, namespace/collection/record counters and issue counts. It never exposes records, maps, connections, clients, secrets or stack traces.
+
 ## UI Composition Persistence
 
 Kernel Status exposes only the safe UI Composition Persistence counters and provider identity. It does not expose stored snapshots, latest records or source definitions.

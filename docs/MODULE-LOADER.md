@@ -1,4 +1,4 @@
-﻿# Module Loader
+# Module Loader
 
 ## Objetivo
 
@@ -108,8 +108,11 @@ O resultado de carregamento contem:
 - Execucao de codigo de modulo.
 - Chamada de providers.
 - Inicializacao de services.
+
 ## Eventos Estruturais
 
 Esta etapa publica eventos estruturais internos por meio do Event Bus em memoria quando um IStructuralEventPublisher e fornecido. A publicacao e isolada e nao altera o resultado funcional da operacao. O catalogo esta em docs/KERNEL-STRUCTURAL-EVENTS.md.
 
-`r`n## Snapshot Publico`r`n`r`nResultados de loading podem ser consolidados pelo Module System Public Snapshot, incluindo modulos carregados, rejeitados, warnings e errors controlados.`r`n
+## Snapshot Publico
+
+Resultados de loading podem ser consolidados pelo Module System Public Snapshot, incluindo modulos carregados, rejeitados, warnings e errors controlados.

@@ -1,4 +1,4 @@
-﻿# Execution Context
+# Execution Context
 
 ## Objetivo
 
@@ -115,5 +115,10 @@ O snapshot nao deve ser usado como mecanismo de autorizacao.
 
 ## Event Bus
 
-O Event Bus em memoria aceita ExecutionContextSnapshot em EventEnvelope.contextSnapshot e preserva campos estruturais como equestId, correlationId, 	enantId, workspaceId e userId quando informados. O contexto propagado em eventos nao implementa Auth, autorizacao ou Permission Engine.
+O Event Bus em memoria aceita `ExecutionContextSnapshot` em `EventEnvelope.contextSnapshot` e preserva campos estruturais como `requestId`, `correlationId`, `tenantId`, `workspaceId` e `userId` quando informados. O contexto propagado em eventos nao implementa Auth, autorizacao ou Permission Engine.
 
+## Atualizacao de contexto de auth (IMP-0033)
+
+Quando `AuthContext` e fornecido, tenant/workspace e principal sao incorporados pela factory. O fallback legado sem AuthContext continua `system`, enquanto `AuthBridge.anonymous()` usa `default/default`. Sao defaults estruturais diferentes; nenhum valida membership ou autoriza acesso protegido. Roles e permissions explicitamente passadas tambem sao dados de origem confiavel exigida do chamador, nao grants validados pelo Kernel atual.
+
+Ver [estado atual](DEVELOPMENT-STATUS.md) e propostas [Permission Engine](../rfc/RFC-0010-permission-engine.md) e [Auth operacional](../rfc/RFC-0019-operational-auth-tenancy.md).
