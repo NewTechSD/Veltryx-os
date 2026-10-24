@@ -32,3 +32,7 @@ Nao foram executados build de producao Next, lint/typecheck completo de todos os
 ## Revisao arquitetural
 
 A [Documentation Review](DOCUMENTATION-REVIEW.md) contem comparacao preliminar das propostas e decisoes pendentes. Nenhum resultado desta validacao promove RFC Draft ou IMP Blocked para Approved/Done. Aprovacao formal e responsabilidade dos owners pelo processo da RFC-0099.
+
+## Continuidade documental de permissions
+
+A revisao seguinte detalha RFC-0010/IMP-0034 v0.2 e adiciona RFC-0010-CROSS-REVIEW. Foram verificados 477 links relativos/anchors, sem erros, alem de formatacao e diff exclusivamente documental. Nenhum codigo mudou e as suites da baseline nao foram reexecutadas. A transicao Draft para Review significa proposta pronta para decisao; nenhuma RFC foi promovida para Approved e nenhum teste de permissions foi executado.

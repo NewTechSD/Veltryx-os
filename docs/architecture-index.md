@@ -6,7 +6,7 @@ Documento mestre de navegacao e status. Revisao editorial: 2026-10-24.
 
 Foundation v1.0 permanece Frozen. O repositorio ja possui implementacao ate IMP-0033, em vez de estar aguardando bootstrap. A evidencia e o commit `936ddd4`; o [Development Status](DEVELOPMENT-STATUS.md) detalha os limites de cada capacidade.
 
-Status de documento e status de implementacao sao independentes. `Approved` autoriza apenas o escopo descrito; nao prova conclusao, release ou seguranca operacional. Os novos documentos `Draft` sao propostas para revisao e nao autorizam codigo.
+Status de documento e status de implementacao sao independentes. `Approved` autoriza apenas o escopo descrito; nao prova conclusao, release ou seguranca operacional. Os documentos `Draft` e `Review` sao propostas para revisao e nao autorizam codigo.
 
 ## Documentos oficiais e prioridade
 
@@ -32,7 +32,7 @@ Divergencia do codigo nao altera contrato aprovado. Deve ser registrada e resolv
 | RFC-0007 | [RFC-0007: UI Composition System do Veltryx OS](../rfc/RFC-0007-ui-composition-system.md)                                   | Frozen   |
 | RFC-0008 | [RFC-0008 Runtime Abstraction & Platform Adapters](../rfc/RFC-0008-runtime-abstraction-platform-adapters.md)                | Draft    |
 | RFC-0009 | [RFC-0009: Builder e Application Model](../rfc/RFC-0009-builder-application-model.md)                                       | Draft    |
-| RFC-0010 | [RFC-0010: Permission Engine](../rfc/RFC-0010-permission-engine.md)                                                         | Draft    |
+| RFC-0010 | [RFC-0010: Permission Engine](../rfc/RFC-0010-permission-engine.md)                                                         | Review   |
 | RFC-0011 | [RFC-0011 Auth + Tenant Foundation](../rfc/RFC-0011-auth-tenant-foundation.md)                                              | Approved |
 | RFC-0012 | [RFC-0012: Workflow Engine](../rfc/RFC-0012-workflow-engine.md)                                                             | Draft    |
 | RFC-0013 | [RFC-0013 API Layer + Runtime API Bridge](../rfc/RFC-0013-api-engine.md)                                                    | Approved |
@@ -61,7 +61,7 @@ RFC-0008 permanece Draft. RFC-0009 identifica Builder/Application Model, nao Dat
 | [IMP-0031F: Snapshot Retention + Audit Policy](IMP-0031F-snapshot-retention-audit-policy.md)                                   | Approved                    | Codigo presente; ver evidencias no status |
 | [IMP-0032 API Layer + Runtime API Bridge](IMP-0032-api-layer-runtime-api-bridge.md)                                            | Approved                    | Codigo presente; ver evidencias no status |
 | [IMP-0033 Auth + Tenant Foundation](IMP-0033-auth-tenant-foundation.md)                                                        | Approved                    | Codigo presente; ver evidencias no status |
-| [IMP-0034 Permission Engine Foundation](IMP-0034-permission-engine-foundation.md)                                              | Blocked                     | Proposta; depende da RFC-0010 Draft       |
+| [IMP-0034 Permission Engine Foundation](IMP-0034-permission-engine-foundation.md)                                              | Blocked                     | Proposta; depende da RFC-0010 Review      |
 
 Aprovacao de IMP-0029 e IMP-0030 nao depende da RFC-0008: o mapping React e a navegacao sao internos de `apps/admin`, sem publicar sites. IMP-0031B/C/D/E/F tratam integracoes explicitas e snapshots derivados, sem banco real, scheduler ou auditoria duravel.
 
@@ -101,3 +101,7 @@ O [roadmap](IMPLEMENTATION-ROADMAP.md) registra colisoes de numeros IMP em plano
 ## Revisao desta edicao
 
 Autor editorial: Codex. Motivo: sincronizar navegacao com baseline existente e materializar propostas ausentes. Nenhuma RFC Approved/Frozen foi alterada, nenhum contrato foi implementado e nenhuma aprovacao arquitetural foi registrada nesta revisao.
+
+## Continuidade da revisao de permissions
+
+RFC-0010 v0.2 esta em Review apos [revisao cruzada tecnica](RFC-0010-CROSS-REVIEW.md). IMP-0034 v0.2 fixa contratos, tokens, reasonCodes, scopes e 26 cenarios de aceite; permanece Blocked para codigo, aguardando aprovacao nominal. Essa transicao editorial nao aprova a arquitetura nem indica implementacao.

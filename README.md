@@ -15,9 +15,9 @@ Auth Foundation fornece contratos e contexto; **login, autorizacao efetiva, isol
 1. Ler o [estado e evidencias](docs/DEVELOPMENT-STATUS.md).
 2. Consultar a [analise das lacunas e revisao](docs/DOCUMENTATION-REVIEW.md).
 3. Seguir o [roadmap de continuidade](docs/IMPLEMENTATION-ROADMAP.md).
-4. Revisar a [RFC-0010 Permission Engine](rfc/RFC-0010-permission-engine.md) e o [IMP-0034](docs/IMP-0034-permission-engine-foundation.md), propostos como proxima entrega.
+4. Revisar a [RFC-0010 Permission Engine](rfc/RFC-0010-permission-engine.md) e o [IMP-0034](docs/IMP-0034-permission-engine-foundation.md), na versao 0.2, com [revisao cruzada](docs/RFC-0010-CROSS-REVIEW.md), para decisao sobre a proxima entrega.
 
-Propostas Draft nao autorizam codigo. RFCs Approved/Frozen permanecem preservadas.
+Propostas Draft/Review nao autorizam codigo. RFCs Approved/Frozen permanecem preservadas.
 
 ## Desenvolvimento local
 

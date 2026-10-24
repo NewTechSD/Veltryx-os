@@ -25,25 +25,25 @@ Documentacao preparada para revisao nao significa arquitetura aprovada nem plata
 | Kernel novo por chamada API                          | getRuntimeApiBridge cria/bootstrappa Kernel                                    | Limite de estado/contadores documentado                            | Politica de lifecycle compartilhado se requerida        |
 | Defaults de contexto diferentes                      | Factory legado usa system; AuthBridge usa default/default                      | Nota tecnica em Execution Context e estado                         | Nao tratar defaults como autorizacao                    |
 | Artefatos literais de newline PowerShell             | Trechos `r`n em Markdown                                                       | Corrigidos em docs tecnicos afetados                               | Nenhum contrato alterado                                |
-| Plano de proxima etapa ausente                       | IMP-0033 e ultima autorizacao                                                  | IMP-0034/TASK-0318 proposto e Blocked                              | Aprovar RFC-0010 e o plano antes de codigo              |
+| Plano de proxima etapa ausente                       | IMP-0033 e ultima autorizacao                                                  | IMP-0034/TASK-0318 v0.2 detalhado e Blocked                        | Aprovar RFC-0010 e o plano antes de codigo              |
 | Finance Core de outro contexto nao localizado        | Tree, contratos e historico deste repositorio                                  | Separacao de escopo no README/status                               | Nao importar arquitetura/estado sem analise propria     |
 
 ## Cross Review preliminar das propostas
 
 Esta e uma comparacao documental preliminar com as decisoes registradas nas RFCs fundacionais, RFC-0011/0013/0015 e ADR-0004. Nao equivale ao Cross Review formal pelos owners exigido na RFC-0099.
 
-| Proposta      | Base comparada                             | Compatibilidade pretendida                                               | Bloqueio para aprovacao                                            |
-| ------------- | ------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------ |
-| RFC-0008 v0.2 | RFC-0005/0006/0007 + ADR-0004              | Schema e Composition Tree universais; mapping na borda                   | Artifact manifest, capabilities, primeiro target e secrets         |
-| RFC-0009      | RFC-0003/0005/0006/0007 + ADR-0004         | Builder edita declaracoes e nao instancia componentes                    | Persistencia de revisoes, ativacao, concorrencia e formato do MVP  |
-| RFC-0010      | RFC-0001/0002/0004/0006 + RFC-0011         | Negacao por padrao; identidade estrutural nao concede grant              | Contratos/tokens/reasonCodes e review de seguranca no IMP-0034     |
-| RFC-0012      | RFC-0004/0006 e propostas 0010/0016/0020   | Workflow coordena services publicos, sem regra de dominio no Core        | Atomicidade, idempotencia e recuperacao duravel                    |
-| RFC-0014      | RFC-0005/0006/0015 e proposta 0010         | Query e porta adicional; nao altera IRepository implicitamente           | Capabilities e scope; API de dados futura nao coberta pela 0013    |
-| RFC-0016      | RFC-0002/0003/0004 e Event Bus atual       | Preserva dispatch local; entrega duravel e capacidade distinta           | Outbox/relay/transport, dedupe e limites de retry                  |
-| RFC-0017      | RFC-0001/0002/0004 e snapshots atuais      | Portas sem SDK concreto no Kernel; no-op e falhas isoladas               | Sampling, retencao, acesso aos sinais e metas operacionais         |
-| RFC-0018      | RFC-0001 e proposta 0017; runbook PM2      | Release do Control Plane separada de delivery                            | SLO, RPO/RTO, backup/restore, artefato e rollout                   |
-| RFC-0019      | RFC-0001/0011 e propostas 0010/0020        | Complementa identity foundation; nao altera leitura publica por surpresa | Provider, sessoes, memberships, primeiro admin, CSRF e scoped data |
-| RFC-0020      | RFC-0001/0015 e guardrails de persistencia | Portas aditivas externas para durabilidade/consistencia                  | Adapter, tenancy fisica, isolation level, migrations e conexoes    |
+| Proposta      | Base comparada                             | Compatibilidade pretendida                                               | Bloqueio para aprovacao                                                                           |
+| ------------- | ------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| RFC-0008 v0.2 | RFC-0005/0006/0007 + ADR-0004              | Schema e Composition Tree universais; mapping na borda                   | Artifact manifest, capabilities, primeiro target e secrets                                        |
+| RFC-0009      | RFC-0003/0005/0006/0007 + ADR-0004         | Builder edita declaracoes e nao instancia componentes                    | Persistencia de revisoes, ativacao, concorrencia e formato do MVP                                 |
+| RFC-0010      | RFC-0001/0002/0004/0006 + RFC-0011         | Negacao por padrao; identidade estrutural nao concede grant              | Contratos/tokens/codigos fixados na v0.2; revisao tecnica registrada; aprovacao do owner pendente |
+| RFC-0012      | RFC-0004/0006 e propostas 0010/0016/0020   | Workflow coordena services publicos, sem regra de dominio no Core        | Atomicidade, idempotencia e recuperacao duravel                                                   |
+| RFC-0014      | RFC-0005/0006/0015 e proposta 0010         | Query e porta adicional; nao altera IRepository implicitamente           | Capabilities e scope; API de dados futura nao coberta pela 0013                                   |
+| RFC-0016      | RFC-0002/0003/0004 e Event Bus atual       | Preserva dispatch local; entrega duravel e capacidade distinta           | Outbox/relay/transport, dedupe e limites de retry                                                 |
+| RFC-0017      | RFC-0001/0002/0004 e snapshots atuais      | Portas sem SDK concreto no Kernel; no-op e falhas isoladas               | Sampling, retencao, acesso aos sinais e metas operacionais                                        |
+| RFC-0018      | RFC-0001 e proposta 0017; runbook PM2      | Release do Control Plane separada de delivery                            | SLO, RPO/RTO, backup/restore, artefato e rollout                                                  |
+| RFC-0019      | RFC-0001/0011 e propostas 0010/0020        | Complementa identity foundation; nao altera leitura publica por surpresa | Provider, sessoes, memberships, primeiro admin, CSRF e scoped data                                |
+| RFC-0020      | RFC-0001/0015 e guardrails de persistencia | Portas aditivas externas para durabilidade/consistencia                  | Adapter, tenancy fisica, isolation level, migrations e conexoes                                   |
 
 Nao foram identificadas contradicoes intencionais com as regras citadas na revisao preliminar. Isso nao certifica completude arquitetural. As dependencias Draft e escolhas de IMP continuam explicitas. As propostas nao introduzem tecnologia nova na stack; materializar PostgreSQL/Prisma fora do Kernel exige plano proprio, mesmo com a stack prevista na Foundation.
 
@@ -77,3 +77,7 @@ Ver [Development Status](DEVELOPMENT-STATUS.md) para caminhos de codigo e limita
 ## Registro de mudanca
 
 2026-10-24 — Codex: revisao documental; baseline `936ddd4`; documentos novos com status Draft/Blocked; sem promocao de status aprovado, breaking change de contrato ou migracao. A aprovacao arquitetural formal continua pendente.
+
+## Continuidade: RFC-0010 e IMP-0034 v0.2
+
+A [revisao cruzada de permissions](RFC-0010-CROSS-REVIEW.md) fechou as ambiguidades de roles escopadas, tenant/workspace sem heranca, system sem bypass, precedencia de deny, schema e versao de politica, concorrencia de chamadas e lifecycle de DI. A RFC foi promovida somente de Draft para Review. O IMP permanece Blocked para codigo ate aprovacao nominal do owner. Os 26 cenarios documentados sao testes planejados.

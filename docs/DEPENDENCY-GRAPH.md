@@ -38,9 +38,9 @@ RFC-0099 governa todos os documentos; essa relacao nao e dependencia de runtime.
 
 ## Dependencias propostas (nao aprovadas)
 
-Todas incluem RFC-0099 como governanca. Relacoes abaixo nao alteram as RFCs Approved/Frozen.
+RFC-0010 esta em Review; as demais propostas estao em Draft. Todas incluem RFC-0099 como governanca. Relacoes abaixo nao alteram as RFCs Approved/Frozen.
 
-| RFC Draft                    | Dependencias normativas propostas      | Relacoes condicionais / de integracao                                                      |
+| RFC proposta                 | Dependencias normativas propostas      | Relacoes condicionais / de integracao                                                      |
 | ---------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------ |
 | RFC-0008 Runtime Adapters    | RFC-0001, 0005, 0006, 0007 e ADR-0004  | Consome Application Model da 0009 quando disponivel; deploy operacional deve observar 0018 |
 | RFC-0009 Builder/Application | RFC-0001, 0003, 0005, 0006, 0007       | Publicacao externa exige 0008; ativacao protegida e duravel exige 0010/0019/0020           |

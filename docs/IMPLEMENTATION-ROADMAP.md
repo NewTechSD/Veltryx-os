@@ -31,10 +31,10 @@ As autorizacoes e referencias de RFC dos IMPs existentes permanecem no [indice](
 
 **IMP-0034 / TASK-0318 — Permission Engine Foundation** e a proxima proposta recomendada.
 
-- Prioridade: critica. Complexidade: alta. Estado: **Blocked** pela RFC-0010 Draft e revisao formal.
+- Prioridade: critica. Complexidade: alta. Estado: **Blocked** pela RFC-0010 Review e revisao formal.
 - Resultado: avaliador puro de permissoes com negacao por padrao, provider confiavel em memoria e testes de scope; sem login, banco ou mudanca de rotas atuais.
 - Plano completo: [IMP-0034](IMP-0034-permission-engine-foundation.md).
-- Para iniciar: aprovar RFC-0010 e IMP-0034 pelo fluxo da RFC-0099 e registrar owner/reviewers, contratos, riscos e aceite. Nao e necessario aprovar todo o roadmap para esta entrega isolada.
+- Para iniciar: aprovar RFC-0010 v0.2 e IMP-0034 v0.2 pelo fluxo da RFC-0099 e registrar owner/reviewers, contratos, riscos e aceite. Nao e necessario aprovar todo o roadmap para esta entrega isolada.
 
 Depois, fechar arquitetura de persistencia duravel e auth operacional antes de integrar dados reais. E possivel implementar/testar avaliador puro em memoria sem alegar seguranca multi-tenant end-to-end.
 
@@ -54,9 +54,9 @@ Depois, fechar arquitetura de persistencia duravel e auth operacional antes de i
 
 A ordem expressa prioridade para integracao operacional, nao uma cadeia de dependencias de compilacao. Observabilidade pode ser especificada e implementada em paralelo logico com as etapas anteriores, por IMP proprio, sem introduzir dependencia do Core em infraestrutura.
 
-## Arquitetura ainda em Draft
+## Arquitetura aguardando aprovacao
 
-RFC-0008, RFC-0009, RFC-0010, RFC-0012, RFC-0014, RFC-0016, RFC-0017, RFC-0018, RFC-0019 e RFC-0020 exigem revisao. Ver [analise preliminar e pendencias](DOCUMENTATION-REVIEW.md). Nao aprovar em lote sem avaliar dependencias e escopo de cada entrega.
+RFC-0010 v0.2 esta em Review com [revisao tecnica registrada](RFC-0010-CROSS-REVIEW.md). RFC-0008, RFC-0009, RFC-0012, RFC-0014, RFC-0016, RFC-0017, RFC-0018, RFC-0019 e RFC-0020 permanecem Draft. Todas exigem aprovacao antes de producao. Ver [analise preliminar e pendencias](DOCUMENTATION-REVIEW.md). Nao aprovar em lote sem avaliar dependencias e escopo de cada entrega.
 
 ## Registro historico de colisoes IMP
 
