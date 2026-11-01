@@ -1,6 +1,6 @@
 # ADR-0005: Module System Bootstrap Integration
 
-Status: Proposed  
+Status: Approved  
 Version: 0.1  
 Type: ADR  
 Owner: Architecture Team  
@@ -328,14 +328,14 @@ Esta emenda não cria uma abstração pública de source. O ingresso oficial do 
 
 ## 9. Compatibilidade com RFCs e ADRs
 
-| Documento | Compatibilidade |
-|---|---|
-| RFC-0003 | Compatível: fontes autorizadas, Module Loader como coordenador, Registry como estado, Runtime por contratos públicos, falhas observáveis e ordem determinística. O ADR delimita um slice; não altera o lifecycle oficial. |
-| RFC-0006 | Compatível: Runtime consome contexto/snapshot e não acessa internals do Module System. |
-| RFC-0004 | Compatível: composição usa Service Registry/DI por tokens e contracts; nenhum módulo acessa internals. |
-| RFC-0005/0007 | Compatível: metadata/components só são consumidos conforme o estágio permitido; nenhum registro de negócio é introduzido por este ADR. |
-| RFC-0099 | Compatível como ADR Proposed se a decisão permanecer local à composição da implementação; qualquer alteração de contrato, fronteira, lifecycle ou extensibilidade deve ser elevada a RFC. |
-| ADR-0004 | Compatível: nenhuma dependência de Builder, React, Next, DOM, Hosting ou Delivery Plane. |
+| Documento     | Compatibilidade                                                                                                                                                                                                           |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| RFC-0003      | Compatível: fontes autorizadas, Module Loader como coordenador, Registry como estado, Runtime por contratos públicos, falhas observáveis e ordem determinística. O ADR delimita um slice; não altera o lifecycle oficial. |
+| RFC-0006      | Compatível: Runtime consome contexto/snapshot e não acessa internals do Module System.                                                                                                                                    |
+| RFC-0004      | Compatível: composição usa Service Registry/DI por tokens e contracts; nenhum módulo acessa internals.                                                                                                                    |
+| RFC-0005/0007 | Compatível: metadata/components só são consumidos conforme o estágio permitido; nenhum registro de negócio é introduzido por este ADR.                                                                                    |
+| RFC-0099      | Compatível como ADR Proposed se a decisão permanecer local à composição da implementação; qualquer alteração de contrato, fronteira, lifecycle ou extensibilidade deve ser elevada a RFC.                                 |
+| ADR-0004      | Compatível: nenhuma dependência de Builder, React, Next, DOM, Hosting ou Delivery Plane.                                                                                                                                  |
 
 ## 10. Riscos
 
@@ -423,4 +423,3 @@ No checkout atual, esses gates estão bloqueados porque Corepack não conseguiu 
 ## 14. Status
 
 Este documento permanece **Proposed**. Não autoriza implementação, não aprova OS-IMP-0002 e não altera RFC-0003, RFC-0099, ADRs, IMPs ou contratos públicos.
-
