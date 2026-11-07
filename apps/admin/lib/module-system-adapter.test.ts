@@ -7,8 +7,25 @@ import {
 } from "./module-system-adapter";
 import { sanitizeModuleDiagnostics } from "./module-system-diagnostics";
 import { moduleDependencyStatusLabel } from "./module-system-labels";
+import type { HostModuleRegistration } from "./host-module-catalog";
 
 const generatedAt = "2026-08-18T12:00:00.000Z";
+
+const hostManifest: HostModuleRegistration["manifest"] = {
+  id: "admin.host.fixture",
+  name: "Admin Host Fixture",
+  version: "1.0.0",
+  dependencies: [],
+  compatibility: { kernel: "^1.0.0" },
+  permissions: [],
+  routes: [],
+  metadata: [],
+  events: [],
+  providers: [],
+  components: [],
+  migrations: [],
+  seeds: []
+};
 
 function snapshot(overrides: Partial<AdminModuleSystemSnapshot> = {}): AdminModuleSystemSnapshot {
   return {
@@ -84,6 +101,33 @@ function snapshot(overrides: Partial<AdminModuleSystemSnapshot> = {}): AdminModu
 }
 
 describe("getModuleSystemViewModel", () => {
+  it("registers an explicit host manifest before bootstrap and exposes the loaded snapshot", async () => {
+    const registrations: readonly HostModuleRegistration[] = [
+      {
+        manifest: hostManifest,
+        source: "admin-test-host"
+      }
+    ];
+
+    const viewModel = await getModuleSystemViewModel({
+      registrations,
+      environment: "test"
+    });
+
+    expect(viewModel.status).toBe("ready");
+    expect(viewModel.summary).toMatchObject({
+      modulesDiscovered: 1,
+      modulesValid: 1,
+      modulesResolved: 1,
+      modulesLoaded: 1
+    });
+    expect(viewModel.modules[0]).toMatchObject({
+      id: hostManifest.id,
+      state: "loaded",
+      loadingStatus: "loaded"
+    });
+  });
+
   it("consumes only kernel.modules().snapshot() and returns a valid ViewModel", async () => {
     const moduleSnapshot = snapshot();
     const snapshotSpy = vi.fn(async () => moduleSnapshot);
@@ -99,12 +143,13 @@ describe("getModuleSystemViewModel", () => {
 
     const viewModel = await getModuleSystemViewModel({
       createKernel: () => ({
-        modules: () => ({
-          snapshot: snapshotSpy,
-          discover: discoverSpy,
-          resolveDependencies: resolveSpy,
-          load: loadSpy
-        }) as never
+        modules: () =>
+          ({
+            snapshot: snapshotSpy,
+            discover: discoverSpy,
+            resolveDependencies: resolveSpy,
+            load: loadSpy
+          }) as never
       }),
       environment: "test"
     });
@@ -172,47 +217,51 @@ describe("getModuleSystemViewModel", () => {
   });
 });
 
-
-  it("returns an empty ViewModel from the default Kernel without running module lifecycle", async () => {
-    const viewModel = await getModuleSystemViewModel({ environment: "test", now: () => new Date(generatedAt) });
-
-    expect(viewModel.status).toBe("empty");
-    expect(viewModel.isEmpty).toBe(true);
-    expect(viewModel.modules).toEqual([]);
+it("returns an empty ViewModel from the default Kernel without running module lifecycle", async () => {
+  const viewModel = await getModuleSystemViewModel({
+    environment: "test",
+    now: () => new Date(generatedAt)
   });
 
-  it("normalizes non-Error adapter failures", async () => {
-    const viewModel = await getModuleSystemViewModel({
-      createKernel: () => ({
-        modules: () => ({
-          snapshot: async () => {
-            throw "snapshot-string-failure";
-          }
-        })
-      }),
-      environment: "production",
-      now: () => new Date(generatedAt)
-    });
+  expect(viewModel.status).toBe("empty");
+  expect(viewModel.isEmpty).toBe(true);
+  expect(viewModel.modules).toEqual([]);
+});
 
-    expect(viewModel.errors[0]).toEqual({
-      code: "ADMIN_MODULE_SYSTEM_SNAPSHOT_FAILED",
-      message: "Module System snapshot unavailable.",
-      severity: "error",
-      source: "admin"
-    });
+it("normalizes non-Error adapter failures", async () => {
+  const viewModel = await getModuleSystemViewModel({
+    createKernel: () => ({
+      modules: () => ({
+        snapshot: async () => {
+          throw "snapshot-string-failure";
+        }
+      })
+    }),
+    environment: "production",
+    now: () => new Date(generatedAt)
   });
+
+  expect(viewModel.errors[0]).toEqual({
+    code: "ADMIN_MODULE_SYSTEM_SNAPSHOT_FAILED",
+    message: "Module System snapshot unavailable.",
+    severity: "error",
+    source: "admin"
+  });
+});
 
 describe("mapModuleSystemSnapshotToViewModel", () => {
   it("maps summary counters without recalculating Kernel values", () => {
-    const viewModel = mapModuleSystemSnapshotToViewModel(snapshot({
-      modulesDiscovered: 10,
-      modulesValid: 8,
-      modulesInvalid: 1,
-      modulesDuplicated: 1,
-      modulesResolved: 6,
-      modulesLoaded: 5,
-      modulesRejected: 2
-    }));
+    const viewModel = mapModuleSystemSnapshotToViewModel(
+      snapshot({
+        modulesDiscovered: 10,
+        modulesValid: 8,
+        modulesInvalid: 1,
+        modulesDuplicated: 1,
+        modulesResolved: 6,
+        modulesLoaded: 5,
+        modulesRejected: 2
+      })
+    );
 
     expect(viewModel.summary).toEqual({
       modulesDiscovered: 10,
@@ -271,34 +320,51 @@ describe("mapModuleSystemSnapshotToViewModel", () => {
   });
 
   it("maps dependency statuses used by the public snapshot", () => {
-    expect(mapDependencyToViewModel({ moduleId: "resolved", required: true, status: "resolved" }).statusLabel).toBe("Resolved");
-    expect(mapDependencyToViewModel({ moduleId: "missing", required: true, status: "missing" }).statusLabel).toBe("Missing");
-    expect(mapDependencyToViewModel({ moduleId: "optional", required: false, status: "optionalMissing" }).statusLabel).toBe("Optional Missing");
-    expect(mapDependencyToViewModel({ moduleId: "incompatible", required: true, status: "incompatible" }).statusLabel).toBe("Incompatible");
-    expect(mapDependencyToViewModel({ moduleId: "unknown", required: true, status: "unknown" }).statusLabel).toBe("Unknown");
+    expect(
+      mapDependencyToViewModel({ moduleId: "resolved", required: true, status: "resolved" })
+        .statusLabel
+    ).toBe("Resolved");
+    expect(
+      mapDependencyToViewModel({ moduleId: "missing", required: true, status: "missing" })
+        .statusLabel
+    ).toBe("Missing");
+    expect(
+      mapDependencyToViewModel({ moduleId: "optional", required: false, status: "optionalMissing" })
+        .statusLabel
+    ).toBe("Optional Missing");
+    expect(
+      mapDependencyToViewModel({ moduleId: "incompatible", required: true, status: "incompatible" })
+        .statusLabel
+    ).toBe("Incompatible");
+    expect(
+      mapDependencyToViewModel({ moduleId: "unknown", required: true, status: "unknown" })
+        .statusLabel
+    ).toBe("Unknown");
   });
 
   it("maps warnings, errors and diagnostics safely", () => {
-    const viewModel = mapModuleSystemSnapshotToViewModel(snapshot({
-      status: "partial",
-      errors: [
-        {
-          code: "MODULE_REQUIRED_DEPENDENCY_MISSING",
-          message: "Required dependency is missing.",
-          source: "resolution",
-          detail: "dependency=admin.module.missing"
-        }
-      ],
-      diagnostics: [
-        {
-          code: "MODULE_RESOLUTION_REPORT",
-          message: "Last resolution report is available.",
-          severity: "warning",
-          source: "resolution",
-          detail: "resolved=0"
-        }
-      ]
-    }));
+    const viewModel = mapModuleSystemSnapshotToViewModel(
+      snapshot({
+        status: "partial",
+        errors: [
+          {
+            code: "MODULE_REQUIRED_DEPENDENCY_MISSING",
+            message: "Required dependency is missing.",
+            source: "resolution",
+            detail: "dependency=admin.module.missing"
+          }
+        ],
+        diagnostics: [
+          {
+            code: "MODULE_RESOLUTION_REPORT",
+            message: "Last resolution report is available.",
+            severity: "warning",
+            source: "resolution",
+            detail: "resolved=0"
+          }
+        ]
+      })
+    );
 
     expect(viewModel.hasWarnings).toBe(true);
     expect(viewModel.hasErrors).toBe(true);
@@ -324,29 +390,45 @@ describe("mapModuleSystemSnapshotToViewModel", () => {
   });
 
   it("handles empty, partial, ready, error and notBootstrapped states", () => {
-    const empty = mapModuleSystemSnapshotToViewModel(snapshot({
-      status: "empty",
-      modulesDiscovered: 0,
-      modulesValid: 0,
-      modulesResolved: 0,
-      modulesLoaded: 0,
-      modules: [],
-      warnings: [],
-      errors: [],
-      diagnostics: []
-    }));
+    const empty = mapModuleSystemSnapshotToViewModel(
+      snapshot({
+        status: "empty",
+        modulesDiscovered: 0,
+        modulesValid: 0,
+        modulesResolved: 0,
+        modulesLoaded: 0,
+        modules: [],
+        warnings: [],
+        errors: [],
+        diagnostics: []
+      })
+    );
     const partial = mapModuleSystemSnapshotToViewModel(snapshot({ status: "partial" }));
-    const ready = mapModuleSystemSnapshotToViewModel(snapshot({ status: "ready", warnings: [], errors: [] }));
-    const error = mapModuleSystemSnapshotToViewModel(snapshot({ status: "error", errors: [{ code: "ERR", message: "Failed", source: "snapshot" }] }));
-    const notBootstrapped = mapModuleSystemSnapshotToViewModel(snapshot({ status: "notBootstrapped" }));
+    const ready = mapModuleSystemSnapshotToViewModel(
+      snapshot({ status: "ready", warnings: [], errors: [] })
+    );
+    const error = mapModuleSystemSnapshotToViewModel(
+      snapshot({
+        status: "error",
+        errors: [{ code: "ERR", message: "Failed", source: "snapshot" }]
+      })
+    );
+    const notBootstrapped = mapModuleSystemSnapshotToViewModel(
+      snapshot({ status: "notBootstrapped" })
+    );
 
-    expect(empty).toMatchObject({ status: "empty", statusLabel: "Empty", isEmpty: true, hasModules: false, hasErrors: false });
+    expect(empty).toMatchObject({
+      status: "empty",
+      statusLabel: "Empty",
+      isEmpty: true,
+      hasModules: false,
+      hasErrors: false
+    });
     expect(partial.statusLabel).toBe("Partial");
     expect(ready.statusLabel).toBe("Ready");
     expect(error).toMatchObject({ statusLabel: "Error", hasErrors: true });
     expect(notBootstrapped.statusLabel).toBe("Not Bootstrapped");
   });
-
 
   it("sanitizes mixed diagnostics and falls back to title case labels", () => {
     const diagnostics = sanitizeModuleDiagnostics([
@@ -370,9 +452,27 @@ describe("mapModuleSystemSnapshotToViewModel", () => {
     ]);
 
     expect(diagnostics).toEqual([
-      { code: "MODULE_DIAGNOSTIC", message: "Diagnostic", severity: "info", source: "snapshot", details: "diagnostic-detail" },
-      { code: "MODULE_WARNING_CUSTOM", message: "Warning", severity: "warning", source: "snapshot", details: undefined },
-      { code: "MODULE_ERROR_CUSTOM", message: "Error", severity: "error", source: "snapshot", details: undefined }
+      {
+        code: "MODULE_DIAGNOSTIC",
+        message: "Diagnostic",
+        severity: "info",
+        source: "snapshot",
+        details: "diagnostic-detail"
+      },
+      {
+        code: "MODULE_WARNING_CUSTOM",
+        message: "Warning",
+        severity: "warning",
+        source: "snapshot",
+        details: undefined
+      },
+      {
+        code: "MODULE_ERROR_CUSTOM",
+        message: "Error",
+        severity: "error",
+        source: "snapshot",
+        details: undefined
+      }
     ]);
     expect(Object.isFrozen(diagnostics)).toBe(true);
     expect(moduleDependencyStatusLabel("customStatus" as never)).toBe("Custom Status");
@@ -385,8 +485,10 @@ describe("mapModuleSystemSnapshotToViewModel", () => {
     expect(Object.isFrozen(viewModel.modules)).toBe(true);
     expect(Object.isFrozen(viewModel.modules[0])).toBe(true);
     expect(Object.isFrozen(viewModel.modules[0]?.dependencies)).toBe(true);
-    expect(() => ((viewModel.modules as unknown as unknown[]).push({}))).toThrow();
-    expect(() => ((viewModel.modules[0] as unknown as { name: string }).name = "mutated")).toThrow();
+    expect(() => (viewModel.modules as unknown as unknown[]).push({})).toThrow();
+    expect(
+      () => ((viewModel.modules[0] as unknown as { name: string }).name = "mutated")
+    ).toThrow();
     expect(moduleSnapshot.modules[0]?.name).toBe("Admin Module Sample");
   });
 });

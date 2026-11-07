@@ -9,6 +9,8 @@ O Admin Shell e a primeira interface visual do Veltryx OS em `apps/admin`. Ele f
 - Layout base com sidebar, header e area principal de conteudo.
 - Dashboard inicial conectado ao Kernel Status Adapter.
 - Tela `/modules` conectada exclusivamente ao Admin Module System Adapter.
+- Composition root do host em `apps/admin/lib/host-kernel.ts`, com catálogo
+  explícito de manifests e catálogo padrão vazio.
 - Rotas operacionais iniciais: `/health`, `/status` e `/diagnostics`.
 - Cards de status para Kernel, bootstrap, modulos descobertos, modulos resolvidos, modulos carregados, Service Registry, Metadata Registry, Runtime e Environment.
 - Tratamento controlado para falhas de bootstrap do Kernel.
@@ -20,11 +22,17 @@ Este shell nao implementa autenticacao, autorizacao, banco, API, Prisma, Redis, 
 
 ## Fonte de dados
 
-Os dados exibidos sao produzidos pelo `@veltryx/kernel` por meio de `VeltryxKernel.status().snapshot()`.
+Os dados de status exibidos são produzidos pelo `@veltryx/kernel` por meio de
+`VeltryxKernel.status().snapshot()`. A tela `/modules` consome
+`kernel.modules().snapshot()` pelo Admin Module System Adapter. Ambos os
+caminhos usam a composição explícita do host quando criam um Kernel padrão.
 
 `apps/admin/lib/kernel-status-adapter.ts` apenas executa o lifecycle server-side e consome o snapshot publico. `apps/admin/lib/kernel-status.ts` transforma esse snapshot em view model serializavel para os componentes React.
 
 O Admin Shell nao deve inferir estado interno do Kernel quando o snapshot publico ja fornece a informacao.
+
+O Admin não acessa classes internas de Discovery, Resolver, Loader ou Registry;
+contagens, warnings e erros vêm dos snapshots públicos.
 
 As rotas `/health`, `/status` e `/diagnostics` tambem consomem esse mesmo snapshot publico por meio do adapter.
 

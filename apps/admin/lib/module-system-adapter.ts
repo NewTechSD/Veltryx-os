@@ -1,4 +1,6 @@
-import { VeltryxKernel } from "@veltryx/kernel";
+import { createBootstrapContext } from "@veltryx/kernel";
+import { createAdminHostKernel } from "./host-kernel";
+import type { HostModuleRegistration } from "./host-module-catalog";
 import {
   createModuleSystemAdapterError,
   mapModuleDiagnosticToViewModel,
@@ -34,6 +36,7 @@ interface ModuleSystemKernelAdapter {
 
 export interface ModuleSystemAdapterOptions {
   readonly createKernel?: () => ModuleSystemKernelAdapter;
+  readonly registrations?: readonly HostModuleRegistration[];
   readonly environment?: string;
   readonly now?: () => Date;
   readonly includeTechnicalDetails?: boolean;
@@ -47,8 +50,17 @@ export async function getModuleSystemViewModel(
   const generatedAt = (options.now ?? (() => new Date()))().toISOString();
 
   try {
-    const kernel = options.createKernel?.() ?? new VeltryxKernel();
-    const snapshot = await kernel.modules().snapshot();
+    const injectedKernel = options.createKernel?.();
+    let snapshot: AdminModuleSystemSnapshot;
+    if (injectedKernel) {
+      snapshot = await injectedKernel.modules().snapshot();
+    } else {
+      const kernel = await createAdminHostKernel({ registrations: options.registrations });
+      const context = createBootstrapContext();
+      await kernel.bootstrap(context);
+      await kernel.initialize(context);
+      snapshot = await kernel.modules().snapshot();
+    }
 
     return mapModuleSystemSnapshotToViewModel(snapshot);
   } catch (error) {
@@ -72,7 +84,9 @@ export async function getModuleSystemViewModel(
   }
 }
 
-export function mapModuleSystemSnapshotToViewModel(snapshot: AdminModuleSystemSnapshot): ModuleSystemViewModel {
+export function mapModuleSystemSnapshotToViewModel(
+  snapshot: AdminModuleSystemSnapshot
+): ModuleSystemViewModel {
   const modules = Object.freeze(snapshot.modules.map(mapModuleToCardViewModel));
   const warnings = Object.freeze(snapshot.warnings.map(mapModuleWarningToViewModel));
   const errors = Object.freeze(snapshot.errors.map(mapModuleErrorToViewModel));
@@ -105,7 +119,9 @@ export function mapModuleSystemSnapshotToViewModel(snapshot: AdminModuleSystemSn
 
 export function mapModuleToCardViewModel(module: AdminModulePublicSnapshot): ModuleCardViewModel {
   const dependencies = Object.freeze(module.dependencies.map(mapDependencyToViewModel));
-  const optionalDependencies = Object.freeze(module.optionalDependencies.map(mapDependencyToViewModel));
+  const optionalDependencies = Object.freeze(
+    module.optionalDependencies.map(mapDependencyToViewModel)
+  );
   const warnings = Object.freeze(module.warnings.map(mapModuleWarningToViewModel));
   const errors = Object.freeze(module.errors.map(mapModuleErrorToViewModel));
 
@@ -135,7 +151,9 @@ export function mapModuleToCardViewModel(module: AdminModulePublicSnapshot): Mod
   });
 }
 
-export function mapDependencyToViewModel(dependency: AdminModuleDependencySnapshot): ModuleDependencyViewModel {
+export function mapDependencyToViewModel(
+  dependency: AdminModuleDependencySnapshot
+): ModuleDependencyViewModel {
   return Object.freeze({
     moduleId: dependency.moduleId,
     required: dependency.required,

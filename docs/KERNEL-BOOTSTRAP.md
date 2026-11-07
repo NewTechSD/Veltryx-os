@@ -101,8 +101,11 @@ VeltryxKernel.status().snapshot()
 
 ## Module System no bootstrap
 
-O host admite manifestos por `kernel.modules().register(manifest, source?)`
-antes da inicialização. O `KernelModuleLoader` mantém o staging e executa a
+O host utiliza uma composition root explícita, como
+`apps/admin/lib/host-kernel.ts`, para admitir manifestos por
+`kernel.modules().register(manifest, source?)` antes da inicialização. O
+catálogo padrão é vazio; nenhuma descoberta física é executada. O
+`KernelModuleLoader` mantém o staging e executa a
 pipeline especializada uma única vez por inicialização:
 
 ```text
@@ -118,6 +121,9 @@ O slice operacional cobre somente `discovered -> validated -> resolved ->
 loaded`. Dependências ausentes e ciclos bloqueiam o carregamento e aparecem
 nos reports/snapshots; ausência de candidatos é um snapshot `empty`. Uma
 chamada repetida a `initialize()` não reprocessa nem duplica módulos.
+
+Runtime Bootstrap recebe o snapshot público produzido pelo Module System. O
+Admin não acessa Discovery, Resolver, Loader ou Registry internos.
 
 ## Snapshot publico
 

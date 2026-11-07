@@ -54,21 +54,21 @@ Construir as capacidades de plataforma que transformam metadata em experiencia u
 
 Implementacoes:
 
-| IMP      | Entrega                                             | Objetivo                                                                                                      | RFCs Dependentes                                                     | Prioridade | Complexidade | Status   | Dependencias                           |
-| -------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------- | ------------ | -------- | -------------------------------------- |
-| IMP-0007 | UI Composition                                      | Implementar composicao abstrata de UI por componentes, slots, propriedades, eventos e acoes.                  | RFC-0005, RFC-0006, RFC-0007, RFC-0099                               | Alta       | Alta         | Planned  | IMP-0005, IMP-0006                     |
-| IMP-0008 | Runtime Adapters                                    | Definir e implementar adapters de runtime para traduzir Site Schema e Composition Tree para delivery targets. | RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0099                     | Alta       | Alta         | Blocked  | RFC-0008, IMP-0005, IMP-0006, IMP-0007 |
-| IMP-0009 | Application Model                                   | Implementar modelo de aplicacao gerado por Runtime, metadata e composicao.                                    | RFC-0005, RFC-0006, RFC-0007, RFC-0009, RFC-0099                     | Media      | Alta         | Blocked  | RFC-0009, IMP-0006, IMP-0007           |
-| IMP-0029 | Admin Composition Adapter + Dynamic Screen Renderer | Renderizar Composition Tree somente dentro do Admin, sem constituir adapter de publicacao.                    | RFC-0007, RFC-0099                                                   | Alta       | Alta         | Approved | ADR-0004, TASK-0312                    |
-| IMP-0030 | Dynamic Admin Shell + Navigation/Menu Composition   | Derivar a navegacao interna do Admin de metadata/menu/composition sem implementar adapter de publicacao.      | RFC-0005, RFC-0006, RFC-0007, RFC-0099                               | Alta       | Alta         | Approved | IMP-0029, TASK-0313, ADR-0004          |
-| IMP-0031 | Persistence Layer + Data Access Contracts           | Criar contratos agnosticos, provider in-memory e snapshots publicos sem banco, ORM, driver ou SQL.            | RFC-0001, RFC-0002, RFC-0004, RFC-0005, RFC-0006, RFC-0015, RFC-0099 | Critica    | Alta         | Approved | RFC-0015                               |
-| IMP-0031B | Metadata Registry Persistence Integration           | Usar IPersistenceService como backing store explicito do Metadata Registry, com hidratacao segura.           | RFC-0005, RFC-0015, RFC-0099                                         | Alta       | Alta         | Approved | IMP-0031, TASK-0315                    |
-| IMP-0031C | Configuration Provider Persistence Integration      | Persistir e hidratar explicitamente apenas configuracoes publicas, preservando precedencia e secrets.        | RFC-0002, RFC-0015, RFC-0099                                         | Alta       | Alta         | Approved | IMP-0031, IMP-0031B, TASK-0307         |
-| IMP-0031D | Component Registry Persistence Integration          | Persistir e hidratar definicoes declarativas de componentes sem implementacao visual ou plataforma.         | RFC-0007, RFC-0015, RFC-0099, ADR-0004                               | Alta       | Alta         | Approved | IMP-0031, TASK-0312, TASK-0315         |
-| IMP-0031E | UI Composition Persistence Integration              | Persistir snapshots derivados e controlados sem substituir metadata, components ou composition runtime.     | RFC-0005, RFC-0007, RFC-0015, RFC-0099, ADR-0004                     | Alta       | Alta         | Approved | IMP-0031, TASK-0312, TASK-0315D        |
-| IMP-0031F | Snapshot Retention + Audit Policy                    | Aplicar retencao explicita, checksum deterministico, audit estrutural e reparo de latest.                    | RFC-0005, RFC-0007, RFC-0015, RFC-0099, ADR-0004                     | Alta       | Alta         | Approved | IMP-0031E, TASK-0315E                  |
-| IMP-0032 | API Layer + Runtime API Bridge                         | Criar API v1 read-only com bridge agnostica no Kernel e adapter HTTP inicial no Admin.                    | RFC-0013, RFC-0002, RFC-0006, RFC-0099                                  | Critica    | Alta         | Approved | IMP-0031F, TASK-0315F                  |
-| IMP-0033 | Auth + Tenant Foundation                               | Criar Principal, Auth/Tenant/Workspace Context e bridge transport-agnostic sem login real.              | RFC-0011, RFC-0002, RFC-0004, RFC-0006, RFC-0013, RFC-0099            | Critica    | Alta         | Approved | IMP-0032, TASK-0316                    |
+| IMP       | Entrega                                             | Objetivo                                                                                                      | RFCs Dependentes                                                     | Prioridade | Complexidade | Status   | Dependencias                           |
+| --------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------- | ------------ | -------- | -------------------------------------- |
+| IMP-0007  | UI Composition                                      | Implementar composicao abstrata de UI por componentes, slots, propriedades, eventos e acoes.                  | RFC-0005, RFC-0006, RFC-0007, RFC-0099                               | Alta       | Alta         | Planned  | IMP-0005, IMP-0006                     |
+| IMP-0008  | Runtime Adapters                                    | Definir e implementar adapters de runtime para traduzir Site Schema e Composition Tree para delivery targets. | RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0099                     | Alta       | Alta         | Blocked  | RFC-0008, IMP-0005, IMP-0006, IMP-0007 |
+| IMP-0009  | Application Model                                   | Implementar modelo de aplicacao gerado por Runtime, metadata e composicao.                                    | RFC-0005, RFC-0006, RFC-0007, RFC-0009, RFC-0099                     | Media      | Alta         | Blocked  | RFC-0009, IMP-0006, IMP-0007           |
+| IMP-0029  | Admin Composition Adapter + Dynamic Screen Renderer | Renderizar Composition Tree somente dentro do Admin, sem constituir adapter de publicacao.                    | RFC-0007, RFC-0099                                                   | Alta       | Alta         | Approved | ADR-0004, TASK-0312                    |
+| IMP-0030  | Dynamic Admin Shell + Navigation/Menu Composition   | Derivar a navegacao interna do Admin de metadata/menu/composition sem implementar adapter de publicacao.      | RFC-0005, RFC-0006, RFC-0007, RFC-0099                               | Alta       | Alta         | Approved | IMP-0029, TASK-0313, ADR-0004          |
+| IMP-0031  | Persistence Layer + Data Access Contracts           | Criar contratos agnosticos, provider in-memory e snapshots publicos sem banco, ORM, driver ou SQL.            | RFC-0001, RFC-0002, RFC-0004, RFC-0005, RFC-0006, RFC-0015, RFC-0099 | Critica    | Alta         | Approved | RFC-0015                               |
+| IMP-0031B | Metadata Registry Persistence Integration           | Usar IPersistenceService como backing store explicito do Metadata Registry, com hidratacao segura.            | RFC-0005, RFC-0015, RFC-0099                                         | Alta       | Alta         | Approved | IMP-0031, TASK-0315                    |
+| IMP-0031C | Configuration Provider Persistence Integration      | Persistir e hidratar explicitamente apenas configuracoes publicas, preservando precedencia e secrets.         | RFC-0002, RFC-0015, RFC-0099                                         | Alta       | Alta         | Approved | IMP-0031, IMP-0031B, TASK-0307         |
+| IMP-0031D | Component Registry Persistence Integration          | Persistir e hidratar definicoes declarativas de componentes sem implementacao visual ou plataforma.           | RFC-0007, RFC-0015, RFC-0099, ADR-0004                               | Alta       | Alta         | Approved | IMP-0031, TASK-0312, TASK-0315         |
+| IMP-0031E | UI Composition Persistence Integration              | Persistir snapshots derivados e controlados sem substituir metadata, components ou composition runtime.       | RFC-0005, RFC-0007, RFC-0015, RFC-0099, ADR-0004                     | Alta       | Alta         | Approved | IMP-0031, TASK-0312, TASK-0315D        |
+| IMP-0031F | Snapshot Retention + Audit Policy                   | Aplicar retencao explicita, checksum deterministico, audit estrutural e reparo de latest.                     | RFC-0005, RFC-0007, RFC-0015, RFC-0099, ADR-0004                     | Alta       | Alta         | Approved | IMP-0031E, TASK-0315E                  |
+| IMP-0032  | API Layer + Runtime API Bridge                      | Criar API v1 read-only com bridge agnostica no Kernel e adapter HTTP inicial no Admin.                        | RFC-0013, RFC-0002, RFC-0006, RFC-0099                               | Critica    | Alta         | Approved | IMP-0031F, TASK-0315F                  |
+| IMP-0033  | Auth + Tenant Foundation                            | Criar Principal, Auth/Tenant/Workspace Context e bridge transport-agnostic sem login real.                    | RFC-0011, RFC-0002, RFC-0004, RFC-0006, RFC-0013, RFC-0099           | Critica    | Alta         | Approved | IMP-0032, TASK-0316                    |
 
 ### Fase 3
 
@@ -171,6 +171,21 @@ Listar IMPs, RFCs, ADRs, contratos ou decisoes que precisam existir antes do ini
 Nenhum codigo.
 
 Somente planejamento.
+
+## Reconciliação OS-CORE-PHASE-01 — 2026-11-07
+
+Esta seção registra a consolidação operacional da Platform Foundation sem
+alterar silenciosamente os status históricos das IMPs da tabela acima.
+
+| Entrega      | Escopo                      | Evidência                                                                        | Estado desta fase |
+| ------------ | --------------------------- | -------------------------------------------------------------------------------- | ----------------- |
+| OS-CORE-0001 | Host Module Registration    | `apps/admin/lib/host-kernel.ts`; catálogo explícito e staging antes do bootstrap | Review            |
+| OS-CORE-0002 | Admin & Runtime Integration | adapters Admin, Runtime Bootstrap e `ModuleSystemSnapshot` público               | Review            |
+| OS-CORE-0003 | Documentação e Governança   | `docs/PLATFORM-FOUNDATION.md` e relatório consolidado                            | Review            |
+
+Os estados `Planned` e demais estados históricos de IMPs permanecem preservados
+até uma reconciliação documental própria. A fase termina em `loaded`; não
+autoriza instalação, trust, marketplace ou produção.
 
 ## Entregas Implementadas Recentes
 
