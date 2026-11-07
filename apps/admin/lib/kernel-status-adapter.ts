@@ -5,11 +5,14 @@
   createKernelStatusMetric,
   createKernelStatusSnapshot
 } from "@veltryx/kernel";
+import { createAdminHostKernel } from "./host-kernel";
+import type { HostModuleRegistration } from "./host-module-catalog";
 
 import type { KernelStatusSnapshot } from "./kernel-status-types";
 
 interface KernelStatusAdapterOptions {
   readonly createKernel?: () => VeltryxKernel;
+  readonly registrations?: readonly HostModuleRegistration[];
   readonly environment?: string;
   readonly now?: () => Date;
   readonly includeTechnicalDetails?: boolean;
@@ -23,7 +26,9 @@ export async function getKernelStatusSnapshot(
   const fallbackTimestamp = (options.now ?? (() => new Date()))().toISOString();
 
   try {
-    const kernel = options.createKernel?.() ?? new VeltryxKernel();
+    const kernel =
+      options.createKernel?.() ??
+      (await createAdminHostKernel({ registrations: options.registrations }));
     const context = createBootstrapContext();
 
     await kernel.bootstrap(context);
@@ -39,15 +44,33 @@ export async function getKernelStatusSnapshot(
       bootStatus: "failed",
       bootTimestamp: fallbackTimestamp,
       environment,
-      modulesDiscovered: createKernelStatusMetric("unavailable", "Kernel did not finish bootstrapping."),
-      modulesResolved: createKernelStatusMetric("unavailable", "Kernel did not finish dependency resolution."),
-      modulesLoaded: createKernelStatusMetric("unavailable", "Kernel did not finish module loading status collection."),
-      servicesRegistered: createKernelStatusMetric("unavailable", "Kernel services were not available after bootstrap failure."),
+      modulesDiscovered: createKernelStatusMetric(
+        "unavailable",
+        "Kernel did not finish bootstrapping."
+      ),
+      modulesResolved: createKernelStatusMetric(
+        "unavailable",
+        "Kernel did not finish dependency resolution."
+      ),
+      modulesLoaded: createKernelStatusMetric(
+        "unavailable",
+        "Kernel did not finish module loading status collection."
+      ),
+      servicesRegistered: createKernelStatusMetric(
+        "unavailable",
+        "Kernel services were not available after bootstrap failure."
+      ),
       moduleSystemStatus: {
         status: "unavailable",
         discovered: createKernelStatusMetric("unavailable", "Kernel did not finish bootstrapping."),
-        resolved: createKernelStatusMetric("unavailable", "Kernel did not finish dependency resolution."),
-        loaded: createKernelStatusMetric("unavailable", "Kernel did not finish module loading status collection.")
+        resolved: createKernelStatusMetric(
+          "unavailable",
+          "Kernel did not finish dependency resolution."
+        ),
+        loaded: createKernelStatusMetric(
+          "unavailable",
+          "Kernel did not finish module loading status collection."
+        )
       },
       metadataRegistryStatus: {
         status: "notBootstrapped",

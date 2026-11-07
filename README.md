@@ -6,9 +6,14 @@ This repository is governed by the architecture documents in `docs/`, `rfc/`, an
 
 ## Current Phase
 
-Sprint: SPRINT-0002B First Online Shell.
+Phase: OS-CORE-PHASE-01 — Platform Foundation Operational Consolidation.
 
-Goal: publish the initial Admin Shell preview with Kernel status, health, and diagnostics surfaces, without business rules or enterprise features.
+Goal: connect explicit host manifest registration to the Kernel Module System,
+Runtime snapshots and Admin observability, while keeping the default host
+catalog empty and the platform free of business modules.
+
+Technical readiness is review-ready, not production readiness. See
+`docs/PLATFORM-FOUNDATION.md` and `docs/audits/OS-CORE-PHASE-01-REPORT.md`.
 
 ## Commands
 

@@ -39,9 +39,12 @@ Registry. `register()` apenas valida e admite o manifesto no staging; não
 carrega nem habilita módulos. A execução operacional é idempotente por
 instância do loader e termina em `loaded`.
 
-O host fornece os manifestos selecionados antes de `VeltryxKernel.initialize()`.
-O Kernel não descobre por filesystem, não conhece a estrutura do monorepo e
-não trata `source` como prova de trust ou autorização.
+O host fornece os manifestos selecionados por uma composition root antes de
+`VeltryxKernel.initialize()`. No Admin, essa fronteira está em
+`apps/admin/lib/host-kernel.ts`; o catálogo padrão é vazio e fixtures entram
+somente por registro explícito. O Kernel não descobre por filesystem, não
+conhece a estrutura do monorepo e não trata `source` como prova de trust ou
+autorização.
 
 ## Componentes
 
