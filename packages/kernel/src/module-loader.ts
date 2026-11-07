@@ -5,8 +5,11 @@
   IStructuralEventPublisher,
   ModuleCompatibility,
   ModuleDependency,
+  ModuleDependencyResolutionResult,
   ModuleDescriptor,
+  ModuleDiscoveryResult,
   ModuleLifecycleState,
+  ModuleLoadingResult,
   ModuleManifest,
   ModuleManifestValidationIssue,
   ModuleManifestValidationResult,
@@ -14,11 +17,11 @@
   ModuleVersion
 } from "@veltryx/contracts";
 
-import {
-  MODULE_SYSTEM_STRUCTURAL_EVENTS,
-  normalizeStructuralEventError,
-  publishStructuralEvent
-} from "./core/events/index.js";
+import { KernelModuleDiscovery } from "./module-system/discovery/module-discovery.js";
+import { KernelModuleDescriptor } from "./module-system/discovery/module-descriptor.js";
+import { KernelModuleDiscoveryValidator } from "./module-system/discovery/discovery-validator.js";
+import { KernelModuleDependencyResolver } from "./module-system/resolver/dependency-resolver.js";
+import { KernelResolvedModuleLoader } from "./module-system/loader/module-loader.js";
 import { ModuleSystemSnapshotService } from "./module-system/status/index.js";
 
 const REQUIRED_STRING_FIELDS = ["id", "name", "version"] as const;
@@ -34,8 +37,6 @@ const REQUIRED_ARRAY_FIELDS = [
   "seeds"
 ] as const;
 const COMPATIBILITY_FIELDS = ["kernel", "runtime", "metadata"] as const;
-const MODULE_DISCOVERY_METADATA = { source: "module-system", tags: ["module", "discovery", "structural"] } as const;
-const MODULE_RESOLUTION_METADATA = { source: "module-system", tags: ["module", "resolution", "structural"] } as const;
 
 export class KernelModuleVersion implements ModuleVersion {
   constructor(readonly value: string) {
@@ -125,61 +126,63 @@ export class StubModuleManifestParser extends KernelModuleManifestParser {}
 
 export class KernelModuleLoader implements IModuleLoader {
   private readonly modules = new Map<string, ModuleDescriptor>();
+  private readonly discovery: KernelModuleDiscovery;
+  private readonly resolver: KernelModuleDependencyResolver;
+  private readonly loader: KernelResolvedModuleLoader;
+  private discoveryResult: ModuleDiscoveryResult | undefined;
+  private resolutionResult: ModuleDependencyResolutionResult | undefined;
+  private loadingResult: ModuleLoadingResult | undefined;
+  private pipelineExecuted = false;
+  private pipelineExecution: Promise<void> | undefined;
 
   constructor(
     private readonly parser: IModuleManifestParser = new KernelModuleManifestParser(),
     private readonly structuralEvents?: IStructuralEventPublisher
-  ) {}
+  ) {
+    this.discovery = new KernelModuleDiscovery(
+      undefined,
+      new KernelModuleDiscoveryValidator(this.parser),
+      structuralEvents
+    );
+    this.resolver = new KernelModuleDependencyResolver(undefined, undefined, structuralEvents);
+    this.loader = new KernelResolvedModuleLoader(undefined, undefined, undefined, structuralEvents);
+  }
 
   async discover(): Promise<readonly ModuleDescriptor[]> {
-    const startedAt = new Date();
-    publishStructuralEvent(this.structuralEvents, {
-      eventName: MODULE_SYSTEM_STRUCTURAL_EVENTS.discoveryStarted,
-      eventType: "module",
-      payload: {
-        candidatesCount: 0,
-        startedAt: startedAt.toISOString()
-      },
-      metadata: MODULE_DISCOVERY_METADATA,
-      occurredAt: startedAt
+    if (this.pipelineExecuted) {
+      return [];
+    }
+
+    if (!this.pipelineExecution) {
+      this.pipelineExecution = this.executePipeline();
+    }
+
+    await this.pipelineExecution;
+    return [];
+  }
+
+  private async executePipeline(): Promise<void> {
+    const staged = [...this.modules.values()];
+    const result = this.discovery.discover(staged.map((descriptor) => descriptor.manifest));
+    const stagedById = new Map(staged.map((descriptor) => [descriptor.manifest.id, descriptor]));
+    const valid = result.valid.map((descriptor) => {
+      const stagedDescriptor = stagedById.get(descriptor.manifest.id);
+      return stagedDescriptor
+        ? new KernelModuleDescriptor(descriptor.manifest, descriptor.state, stagedDescriptor.source)
+        : descriptor;
     });
 
-    try {
-      const discovered: readonly ModuleDescriptor[] = [];
-      const completedAt = new Date();
-      publishStructuralEvent(this.structuralEvents, {
-        eventName: MODULE_SYSTEM_STRUCTURAL_EVENTS.discoveryCompleted,
-        eventType: "module",
-        payload: {
-          candidatesCount: 0,
-          validModules: discovered.length,
-          invalidModules: 0,
-          duplicatedModules: 0,
-          completedAt: completedAt.toISOString()
-        },
-        metadata: MODULE_DISCOVERY_METADATA,
-        occurredAt: completedAt
-      });
-
-      return discovered;
-    } catch (error) {
-      const failedAt = new Date();
-      publishStructuralEvent(this.structuralEvents, {
-        eventName: MODULE_SYSTEM_STRUCTURAL_EVENTS.discoveryFailed,
-        eventType: "module",
-        payload: {
-          failedAt: failedAt.toISOString(),
-          error: normalizeStructuralEventError(error)
-        },
-        metadata: MODULE_DISCOVERY_METADATA,
-        occurredAt: failedAt
-      });
-
-      throw error;
-    }
+    this.discoveryResult = { ...result, valid };
+    this.resolutionResult = this.resolver.resolve(valid);
+    this.loadingResult = this.loader.load(this.resolutionResult);
+    this.pipelineExecuted = true;
   }
 
   async register(manifest: ModuleManifest, source?: string): Promise<ModuleDescriptor> {
+    if (this.pipelineExecuted || this.pipelineExecution) {
+      throw new Error("Module registration is closed after pipeline execution");
+    }
+
     const parsed = this.parser.parse(manifest);
 
     if (this.modules.has(parsed.id)) {
@@ -201,52 +204,8 @@ export class KernelModuleLoader implements IModuleLoader {
   }
 
   async resolveDependencies(): Promise<{ readonly order: readonly ModuleDescriptor[] }> {
-    const modules = await this.list();
-    const startedAt = new Date();
-    publishStructuralEvent(this.structuralEvents, {
-      eventName: MODULE_SYSTEM_STRUCTURAL_EVENTS.resolutionStarted,
-      eventType: "module",
-      payload: {
-        modulesCount: modules.length,
-        startedAt: startedAt.toISOString()
-      },
-      metadata: MODULE_RESOLUTION_METADATA,
-      occurredAt: startedAt
-    });
-
-    try {
-      const resolution = { order: modules };
-      const completedAt = new Date();
-      publishStructuralEvent(this.structuralEvents, {
-        eventName: MODULE_SYSTEM_STRUCTURAL_EVENTS.resolutionCompleted,
-        eventType: "module",
-        payload: {
-          modulesCount: modules.length,
-          resolvedModules: resolution.order.length,
-          missingDependencies: 0,
-          cyclesDetected: 0,
-          completedAt: completedAt.toISOString()
-        },
-        metadata: MODULE_RESOLUTION_METADATA,
-        occurredAt: completedAt
-      });
-
-      return resolution;
-    } catch (error) {
-      const failedAt = new Date();
-      publishStructuralEvent(this.structuralEvents, {
-        eventName: MODULE_SYSTEM_STRUCTURAL_EVENTS.resolutionFailed,
-        eventType: "module",
-        payload: {
-          failedAt: failedAt.toISOString(),
-          error: normalizeStructuralEventError(error)
-        },
-        metadata: MODULE_RESOLUTION_METADATA,
-        occurredAt: failedAt
-      });
-
-      throw error;
-    }
+    await this.discover();
+    return { order: this.resolutionResult?.order ?? [] };
   }
 
   async transition(moduleId: string, state: ModuleLifecycleState): Promise<ModuleDescriptor> {
@@ -272,15 +231,16 @@ export class KernelModuleLoader implements IModuleLoader {
 
   async snapshot(): Promise<ModuleSystemSnapshot> {
     return new ModuleSystemSnapshotService({
-      modules: await this.list()
+      modules: await this.list(),
+      discoveryResult: this.discoveryResult,
+      resolutionResult: this.resolutionResult,
+      loadingResult: this.loadingResult,
+      loadedModules: this.loader.getRegistry().list()
     }).snapshot();
   }
 }
 
-function validateCompatibility(
-  candidate: unknown,
-  issues: ModuleManifestValidationIssue[]
-): void {
+function validateCompatibility(candidate: unknown, issues: ModuleManifestValidationIssue[]): void {
   if (!isRecord(candidate)) {
     issues.push({ field: "compatibility", message: "compatibility must be an object" });
     return;
@@ -298,10 +258,7 @@ function validateCompatibility(
   }
 }
 
-function validateDependencies(
-  candidate: unknown,
-  issues: ModuleManifestValidationIssue[]
-): void {
+function validateDependencies(candidate: unknown, issues: ModuleManifestValidationIssue[]): void {
   if (!Array.isArray(candidate)) {
     return;
   }
@@ -344,7 +301,10 @@ function validateStringArray(
 ): void {
   candidate.forEach((item, index) => {
     if (!isNonEmptyString(item)) {
-      issues.push({ field: `${field}.${index}`, message: `${field} entries must be non-empty strings` });
+      issues.push({
+        field: `${field}.${index}`,
+        message: `${field} entries must be non-empty strings`
+      });
     }
   });
 }
@@ -356,5 +316,3 @@ function isRecord(candidate: unknown): candidate is Record<string, unknown> {
 function isNonEmptyString(candidate: unknown): candidate is string {
   return typeof candidate === "string" && candidate.trim().length > 0;
 }
-
-
