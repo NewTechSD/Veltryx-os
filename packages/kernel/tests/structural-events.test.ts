@@ -80,6 +80,10 @@ describe("Kernel structural events", () => {
       KERNEL_STRUCTURAL_EVENTS.bootstrapCompleted,
       MODULE_SYSTEM_STRUCTURAL_EVENTS.discoveryStarted,
       MODULE_SYSTEM_STRUCTURAL_EVENTS.discoveryCompleted,
+      MODULE_SYSTEM_STRUCTURAL_EVENTS.resolutionStarted,
+      MODULE_SYSTEM_STRUCTURAL_EVENTS.resolutionCompleted,
+      MODULE_SYSTEM_STRUCTURAL_EVENTS.loadingStarted,
+      MODULE_SYSTEM_STRUCTURAL_EVENTS.loadingCompleted,
       KERNEL_STRUCTURAL_EVENTS.ready
     ]);
     expect(events[0]).toMatchObject({
@@ -91,7 +95,7 @@ describe("Kernel structural events", () => {
       environment: expect.any(String),
       servicesRegistered: 19
     });
-    expect(events[4]?.payload).toMatchObject({
+    expect(events[8]?.payload).toMatchObject({
       readyAt: expect.any(String),
       bootTimestamp: expect.any(String)
     });
@@ -331,5 +335,3 @@ function validResolution(order: readonly ModuleDescriptor[]): ModuleDependencyRe
     }
   };
 }
-
-

@@ -11,6 +11,16 @@ Esta etapa nao executa modulos, nao chama providers, nao inicializa services, na
 ## Fluxo
 
 ```text
+Host
+  |
+  | IModuleLoader.register(manifest, source?)
+  v
+KernelModuleLoader (staging)
+  |
+  v
+Module Discovery
+  |
+  v
 Dependency Resolver
   |
   v
@@ -22,6 +32,16 @@ Module Registry
   v
 Loading Report
 ```
+
+No bootstrap integrado pelo ADR-0005, `KernelModuleLoader` permanece como a
+fachada pública e orquestra internamente Discovery, Resolution, Loading e
+Registry. `register()` apenas valida e admite o manifesto no staging; não
+carrega nem habilita módulos. A execução operacional é idempotente por
+instância do loader e termina em `loaded`.
+
+O host fornece os manifestos selecionados antes de `VeltryxKernel.initialize()`.
+O Kernel não descobre por filesystem, não conhece a estrutura do monorepo e
+não trata `source` como prova de trust ou autorização.
 
 ## Componentes
 
@@ -108,6 +128,7 @@ O resultado de carregamento contem:
 - Execucao de codigo de modulo.
 - Chamada de providers.
 - Inicializacao de services.
+
 ## Eventos Estruturais
 
 Esta etapa publica eventos estruturais internos por meio do Event Bus em memoria quando um IStructuralEventPublisher e fornecido. A publicacao e isolada e nao altera o resultado funcional da operacao. O catalogo esta em docs/KERNEL-STRUCTURAL-EVENTS.md.
