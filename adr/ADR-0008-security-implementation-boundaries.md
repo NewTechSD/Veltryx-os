@@ -19,7 +19,7 @@ Use a hybrid identity boundary: external IdP for ordinary human authentication, 
 
 Client-provided roles, permissions, user IDs, tenant IDs and workspace IDs are hints only and are never authority. Tenant switching creates a newly validated effective context. Cache keys include principal, tenant, workspace, policy version and revocation state. Cookie-authenticated writes require CSRF protection; login and recovery require rate limiting and enumeration-resistant responses.
 
-RLS is deferred from the first slice but is a production gate: before production, adopt and test RLS or record an explicit security exception with the compensating controls in RFC-0018. Shared-table application filtering alone is not sufficient evidence of production readiness.
+RLS is deferred from the first slice but is a mandatory production gate: before production, implement and validate RLS with end-to-end isolation tests. If an alternative is required, it must be authorized by an approved RFC or RFC successor with security review, justification, compensating controls and measurable criteria. This ADR cannot create that exception. Shared-table application filtering alone is not sufficient evidence of production readiness, and release is blocked without approved RLS or a normatively authorized alternative.
 
 The Admin is a consumer of authorization decisions and public snapshots, never the policy authority. Authentication, authorization, audit and persistence data use separate ownership and redaction rules.
 

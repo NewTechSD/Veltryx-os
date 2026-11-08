@@ -46,7 +46,7 @@ The host composition root injects the provider. Configuration selects `memory` o
 
 This slice may expose the provider for platform-owned data only until OS-SEC-0003 supplies the authoritative effective tenant. Any protected repository path must reject missing scope and must not use a client-supplied `tenantId` as authority. The adapter must include tests proving that an explicit record ID from another tenant cannot be read, updated or deleted.
 
-The first shared-table implementation requires centralized scoped repository construction and a negative test suite. PostgreSQL RLS is not silently assumed; production requires the RLS gate or an approved security exception with compensating controls.
+The first shared-table implementation requires centralized scoped repository construction and a negative test suite. PostgreSQL RLS may remain outside this development slice, but production multi-tenant data is blocked until RLS is implemented and validated with end-to-end isolation tests. A different control is valid only if an approved RFC or RFC successor explicitly authorizes it after security review, with measurable compensating controls; an ADR or informal security exception is insufficient.
 
 ## 6. Transaction and concurrency seam
 

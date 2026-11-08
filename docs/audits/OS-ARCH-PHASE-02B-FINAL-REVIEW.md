@@ -15,17 +15,17 @@ The final recommendations are:
 - Application-owned short Unit of Work, optimistic version locking and no implicit startup migration.
 - Hybrid identity: external IdP for ordinary human authentication, Veltryx-owned mapping/membership/session state, and disabled-by-default local break-glass access.
 - Server-side default-deny RBAC with platform, tenant and workspace scopes.
-- Shared-table tenant baseline with mandatory scoped repositories; RLS deferred from the first slice but required as a production gate or by explicit security exception.
+- Shared-table tenant baseline with mandatory scoped repositories; RLS deferred from the first slice but required and end-to-end tested before production. Any alternative requires an approved RFC or RFC successor.
 
 ## 2. Approval gate by document
 
-| Document | Current state | Recommendation                                                    | Compatibility                                                    | Residual risk                                          | Blockers / conditions                                            | Responsible owner                  |
-| -------- | ------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------ | ---------------------------------------------------------------- | ---------------------------------- |
-| RFC-0018 | Draft         | Keep Draft; move to Review after security/operations cross-review | Compatible with RFC-0015 if no public contract is silently added | Shared-table leakage before RLS or full negative suite | Decide provider, migrations, UoW and production RLS gate         | Architecture Team / Platform owner |
-| RFC-0019 | Draft         | Keep Draft; move to Review after threat-model review              | Preserves RFC-0011 AuthContext/Principal boundary                | IdP outage, break-glass abuse, stale membership cache  | Approve hybrid identity, session controls and contract proposals | Architecture Team / Security owner |
-| ADR-0006 | Draft         | Recommend approval after RFC-0018 Review                          | Keeps database out of Kernel/Contracts                           | Prisma behavior or generated client escaping boundary  | Provider contract suite, pool/secret plan, reversibility plan    | Platform owner                     |
-| ADR-0007 | Draft         | Recommend approval after migration/UoW test plan                  | Does not change current public repository contract               | Failed migration rollback and retry semantics          | Select Prisma Migrate, expand/contract, drift and restore policy | Platform + Operations              |
-| ADR-0008 | Draft         | Recommend approval after threat-model sign-off                    | Preserves RFC-0011 transport-agnostic context                    | Privileged path and cross-tenant enforcement           | Hybrid identity, server-side policy, RLS gate and audit controls | Security owner                     |
+| Document | Current state | Recommendation                                                    | Compatibility                                                    | Residual risk                                          | Blockers / conditions                                                      | Responsible owner                  |
+| -------- | ------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------- | ---------------------------------- |
+| RFC-0018 | Draft         | Keep Draft; move to Review after security/operations cross-review | Compatible with RFC-0015 if no public contract is silently added | Shared-table leakage before RLS or full negative suite | Decide provider, migrations, UoW and mandatory production RLS gate         | Architecture Team / Platform owner |
+| RFC-0019 | Draft         | Keep Draft; move to Review after threat-model review              | Preserves RFC-0011 AuthContext/Principal boundary                | IdP outage, break-glass abuse, stale membership cache  | Approve hybrid identity, session controls and contract proposals           | Architecture Team / Security owner |
+| ADR-0006 | Draft         | Recommend approval after RFC-0018 Review                          | Keeps database out of Kernel/Contracts                           | Prisma behavior or generated client escaping boundary  | Provider contract suite, pool/secret plan, reversibility plan              | Platform owner                     |
+| ADR-0007 | Draft         | Recommend approval after migration/UoW test plan                  | Does not change current public repository contract               | Failed migration rollback and retry semantics          | Select Prisma Migrate, expand/contract, drift and restore policy           | Platform + Operations              |
+| ADR-0008 | Draft         | Recommend approval after threat-model sign-off                    | Preserves RFC-0011 transport-agnostic context                    | Privileged path and cross-tenant enforcement           | Hybrid identity, server-side policy, mandatory RLS gate and audit controls | Security owner                     |
 
 `APPROVED_WITH_NOTES` here means “ready for formal approval”, not “normatively approved”.
 
@@ -42,20 +42,20 @@ The final recommendations are:
 
 ## 4. Threat model
 
-| Threat                        | Mitigation                                                                       | Required negative test                                   | Residual risk                                                |
-| ----------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------ |
-| User spoofing                 | External IdP proof, server-side session lookup, Principal resolution             | Forged user/role claims are ignored                      | IdP compromise remains external dependency                   |
-| Tenant spoofing               | Active membership resolves effective tenant; client hint is non-authoritative    | Request with another tenant ID is denied                 | Requires complete middleware/repository coverage             |
-| Privilege escalation          | Default-deny RBAC, scoped roles, policy version and audit                        | User without action permission receives deny             | Policy model may be incomplete for new resources             |
-| Session fixation              | Rotate opaque session after login/privilege change                               | Old pre-login ID is invalid                              | Cookie deployment configuration must be verified             |
-| CSRF                          | CSRF token/origin policy for cookie-authenticated writes                         | Cross-origin state change is denied                      | API clients may need separate token mode                     |
-| Revoked session reuse         | Server-side revocation and bounded cache TTL                                     | Revoked session cannot access protected route            | Cache invalidation latency must be measured                  |
-| Cross-tenant data leak        | Scoped repositories, deny missing scope, `tenant_id`, negative tests; RLS gate   | Read/update/delete another tenant’s ID is denied         | RLS not in first slice until approved                        |
-| Incorrect cache scope         | Cache key includes principal/tenant/workspace/policy version                     | Same resource under two tenants never shares result      | Future caches may introduce new paths                        |
-| Migration failure/drift       | Controlled Prisma Migrate deploy, checksum/history/drift checks, expand/contract | Drift blocks deploy; failed migration does not start app | Restore/runbook quality must be proven                       |
-| Direct repository bypass      | Application service boundary and code review rule                                | Unauthenticated/direct adapter call is denied            | Internal misuse remains possible without enforcement tooling |
-| Secret leakage                | Secret manager, redaction, sanitized snapshots/errors                            | Logs and snapshots contain no credentials                | Misconfigured external observability remains possible        |
-| Global system privilege abuse | Explicit system principal, non-browser path, audit and allowlist                 | Tenant user cannot invoke system operation               | Break-glass account requires operational monitoring          |
+| Threat                        | Mitigation                                                                                            | Required negative test                                   | Residual risk                                                           |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------- |
+| User spoofing                 | External IdP proof, server-side session lookup, Principal resolution                                  | Forged user/role claims are ignored                      | IdP compromise remains external dependency                              |
+| Tenant spoofing               | Active membership resolves effective tenant; client hint is non-authoritative                         | Request with another tenant ID is denied                 | Requires complete middleware/repository coverage                        |
+| Privilege escalation          | Default-deny RBAC, scoped roles, policy version and audit                                             | User without action permission receives deny             | Policy model may be incomplete for new resources                        |
+| Session fixation              | Rotate opaque session after login/privilege change                                                    | Old pre-login ID is invalid                              | Cookie deployment configuration must be verified                        |
+| CSRF                          | CSRF token/origin policy for cookie-authenticated writes                                              | Cross-origin state change is denied                      | API clients may need separate token mode                                |
+| Revoked session reuse         | Server-side revocation and bounded cache TTL                                                          | Revoked session cannot access protected route            | Cache invalidation latency must be measured                             |
+| Cross-tenant data leak        | Scoped repositories, deny missing scope, `tenant_id`, negative tests; mandatory RLS before production | Read/update/delete another tenant’s ID is denied         | Development/homologation remain non-production until RLS E2E validation |
+| Incorrect cache scope         | Cache key includes principal/tenant/workspace/policy version                                          | Same resource under two tenants never shares result      | Future caches may introduce new paths                                   |
+| Migration failure/drift       | Controlled Prisma Migrate deploy, checksum/history/drift checks, expand/contract                      | Drift blocks deploy; failed migration does not start app | Restore/runbook quality must be proven                                  |
+| Direct repository bypass      | Application service boundary and code review rule                                                     | Unauthenticated/direct adapter call is denied            | Internal misuse remains possible without enforcement tooling            |
+| Secret leakage                | Secret manager, redaction, sanitized snapshots/errors                                                 | Logs and snapshots contain no credentials                | Misconfigured external observability remains possible                   |
+| Global system privilege abuse | Explicit system principal, non-browser path, audit and allowlist                                      | Tenant user cannot invoke system operation               | Break-glass account requires operational monitoring                     |
 
 ## 5. Public contract impact
 
@@ -78,7 +78,7 @@ OS-DATA-0001 may start only after:
 3. The provider contract suite and isolated test database plan exist.
 4. Pool, timeout, secret, health and redaction policies are documented.
 5. No protected tenant data path is enabled without effective server-side scope.
-6. RLS is either adopted and tested or recorded as a production-blocking exception with compensating controls.
+6. RLS is implemented and end-to-end tested before production. If an alternative is proposed, an approved RFC or RFC successor must authorize it with security review, compensating controls and measurable criteria; an ADR or informal exception cannot waive the gate.
 
 The executable specification is [OS-DATA-0001-IMPLEMENTATION-SPEC.md](../plans/OS-DATA-0001-IMPLEMENTATION-SPEC.md).
 

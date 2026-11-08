@@ -34,15 +34,15 @@ The proposals preserve the current boundary:
 
 ## 4. Decision matrix
 
-| Decision        | Recommendation                                       | Alternatives considered                                       | Gate                            |
-| --------------- | ---------------------------------------------------- | ------------------------------------------------------------- | ------------------------------- |
-| Durable store   | PostgreSQL candidate                                 | Other relational, document, per-tenant DB                     | ADR-0006 approval               |
-| Data access     | Infrastructure adapter; Prisma optional              | Thin SQL/query adapter                                        | Contract and operational review |
-| Tenant baseline | Shared relational data with mandatory scoped access  | RLS, schema/database per tenant, hybrid                       | RFC-0018 + RLS ADR review       |
-| Transactions    | Application-owned short Unit of Work                 | Startup/implicit transactions, independent repository commits | ADR-0007 approval               |
-| Identity        | Adapter-neutral authenticated Principal              | External IdP, local credentials, hybrid                       | RFC-0019 security review        |
-| Sessions        | Server-side, opaque, expiring, revocable             | Stateless-only tokens                                         | Security threat model           |
-| Authorization   | Server-side default-deny RBAC with scoped membership | UI-only or client claims                                      | RFC-0019 approval               |
+| Decision        | Recommendation                                       | Alternatives considered                                                   | Gate                            |
+| --------------- | ---------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------- |
+| Durable store   | PostgreSQL candidate                                 | Other relational, document, per-tenant DB                                 | ADR-0006 approval               |
+| Data access     | Infrastructure adapter; Prisma optional              | Thin SQL/query adapter                                                    | Contract and operational review |
+| Tenant baseline | Shared relational data with mandatory scoped access  | RLS required before production; schema/database per tenant as future tier | RFC-0018 + security review      |
+| Transactions    | Application-owned short Unit of Work                 | Startup/implicit transactions, independent repository commits             | ADR-0007 approval               |
+| Identity        | Adapter-neutral authenticated Principal              | External IdP, local credentials, hybrid                                   | RFC-0019 security review        |
+| Sessions        | Server-side, opaque, expiring, revocable             | Stateless-only tokens                                                     | Security threat model           |
+| Authorization   | Server-side default-deny RBAC with scoped membership | UI-only or client claims                                                  | RFC-0019 approval               |
 
 ## 5. Contract impact
 
@@ -53,7 +53,7 @@ The existing persistence snapshot must remain sanitized and aggregate-only. No d
 ## 6. Risks and blockers
 
 - Selecting Prisma before validating migration, transaction and query semantics could create accidental infrastructure coupling.
-- Shared-table tenancy is unsafe without centralized scope enforcement, negative tests and possibly RLS defense in depth.
+- Shared-table tenancy is limited to development/homologation until centralized scope enforcement, negative tests and end-to-end-tested RLS are in place; any alternative requires an approved RFC.
 - Client-provided context can be mistaken for identity unless adapters discard it as authority.
 - Session recovery, CSRF, rate limiting and enumeration controls are security-critical and cannot be deferred until after Admin UI work.
 - Migration rollback may not be symmetric; expand/contract and backup restore must be tested.

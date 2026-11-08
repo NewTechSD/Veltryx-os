@@ -111,6 +111,8 @@ Audit events cover login success/failure, logout, session revocation, recovery, 
 
 Audit records exclude passwords, raw tokens, cookies, secrets and unnecessary personal data. Operational logs, audit trail and backups are separate stores with separate retention and access policies. Integrity protection and retention are specified with the recovery architecture, not inferred from application logs.
 
+Database-level tenant defense is governed by RFC-0018. Application authorization and scoped repositories are mandatory in every environment, but they do not authorize production multi-tenant data by themselves. Production requires implemented and end-to-end-tested PostgreSQL RLS, or an alternative explicitly authorized by an approved RFC with security review and verifiable compensating controls. No ADR or operational exception may override that requirement.
+
 ## 10. Integration boundaries
 
 ```text

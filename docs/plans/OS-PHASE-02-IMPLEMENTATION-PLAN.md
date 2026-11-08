@@ -63,7 +63,7 @@ Governance decision gate
 
 ### OS-SEC-0003 — Isolamento multi-tenant
 
-**Dependências:** OS-SEC-0001, OS-SEC-0002, OS-DATA-0002; decisão de isolamento application-layer, database policy/RLS ou combinação.  
+**Dependências:** OS-SEC-0001, OS-SEC-0002, OS-DATA-0002; decisão de isolamento application-layer e RLS obrigatória antes da produção. Uma alternativa exige RFC aprovada, revisão de segurança e critérios verificáveis.
 **Arquivos previstos:** tenant membership, scoped repository/unit of work, middleware/adapters de contexto e testes; sem espalhar filtros manuais por módulos.  
 **Testes:** leitura/escrita cross-tenant, workspace de outro tenant, ids forjados, joins/relatórios, jobs assíncronos, cache e eventos preservando escopo.  
 **Riscos:** consulta sem filtro, cache global, contexto perdido em tarefas assíncronas, tenant default usado em operação privilegiada.  
