@@ -72,6 +72,8 @@ The decision input is `principal + effective tenant + workspace + resource + act
 
 Tenant selection is a validated server operation. The effective tenant comes from active membership, not a request field. All protected reads, writes, caches, jobs and events preserve that scope. Platform-global permissions are separately named and audited.
 
+Application-scoped repositories are mandatory for development and homologation, with negative cross-tenant tests. They are not sufficient for production multi-tenant data: PostgreSQL RLS must be implemented and validated end-to-end before production. A different production control requires explicit authorization in an approved RFC or RFC successor with security review, compensating controls and measurable acceptance criteria; an ADR or operational exception cannot replace that approval.
+
 ## 6. Audit, backup and recovery
 
 Audit trail records authentication, session, membership, authorization and administrative events with actor, scope, resource/action, request/correlation IDs, result, policy version and timestamp. Sensitive values are redacted. Operational logs, audit records and backups are separate.

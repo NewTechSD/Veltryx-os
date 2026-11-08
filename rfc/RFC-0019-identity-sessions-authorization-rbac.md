@@ -29,7 +29,13 @@ Goals:
 - audit authentication and authorization decisions without sensitive payloads;
 - prepare MFA integration without implementing MFA in this proposal.
 
-## 3. Identity model
+## 3. Initial identity strategy
+
+The recommended initial strategy is hybrid: an external identity provider is authoritative for interactive human authentication, while Veltryx owns the local user mapping, tenant/workspace memberships, roles and session records. A tightly controlled local credential is reserved for a documented break-glass administrator path, disabled by default and subject to separate audit and rotation. Service principals use a non-browser credential path and are never represented as human browser sessions.
+
+This preserves the option to change identity providers without making the IdP the owner of business tenancy. The external provider proves identity; Veltryx decides whether that identity exists, is active and has membership in the requested scope.
+
+## 4. Identity model
 
 The conceptual model is:
 
@@ -46,7 +52,7 @@ User identity and organization membership are separate. A user may have multiple
 
 Credentials, when locally managed, are stored only as slow password hashes with a current algorithm/version and per-password salt. Plain passwords, reset tokens and session secrets are never logged or included in snapshots. The concrete algorithm and library remain an implementation ADR; the minimum policy is a current memory-hard password hashing scheme with a reviewed work factor and upgrade path.
 
-## 4. Session model
+## 5. Session model
 
 Sessions are server-side records with opaque identifiers, principal, issue time, expiry, revocation state, credential/authentication strength, and audit correlation. Session lookup returns a safe AuthContext; it does not trust serialized roles or tenant values from the browser.
 
@@ -56,7 +62,7 @@ Recovery flows use single-use, short-lived, hashed tokens and uniform responses 
 
 CSRF protection is required for cookie-authenticated state-changing requests. Login and recovery endpoints require rate limiting, abuse telemetry, generic failure responses and bounded work.
 
-## 5. Principal and Execution Context resolution
+## 6. Principal and Execution Context resolution
 
 ```text
 Transport adapter
@@ -71,7 +77,7 @@ The adapter may accept a tenant/workspace request, but the server verifies that 
 
 The existing public shapes remain the compatibility target. If session assurance, membership claims or authorization decisions require new public fields, a versioned contract extension must be proposed separately.
 
-## 6. Authorization and RBAC
+## 7. Authorization and RBAC
 
 The policy tuple is:
 
@@ -93,19 +99,21 @@ Rules:
 
 Resource owners define their protected resources and actions through approved contracts. A module cannot bypass the authorization boundary by accessing another module’s repository or internal service.
 
-## 7. Tenant and workspace authorization
+## 8. Tenant and workspace authorization
 
 Tenant switching is an authorization operation. The server resolves a membership, verifies tenant status, establishes the effective tenant, then verifies workspace membership and status. A missing, suspended or ambiguous membership denies the operation.
 
 Personal accounts and organization accounts must be represented by different ownership relationships. Platform operators may have a global role, but that role must be explicit, audited and unavailable to ordinary tenant roles.
 
-## 8. Audit and privacy
+## 9. Audit and privacy
 
 Audit events cover login success/failure, logout, session revocation, recovery, membership change, role/permission change, tenant switch, authorization allow/deny for sensitive resources and administrative actions. Each event includes actor/principal, effective tenant/workspace, request/correlation IDs, resource/action, result, policy/version and timestamp where applicable.
 
 Audit records exclude passwords, raw tokens, cookies, secrets and unnecessary personal data. Operational logs, audit trail and backups are separate stores with separate retention and access policies. Integrity protection and retention are specified with the recovery architecture, not inferred from application logs.
 
-## 9. Integration boundaries
+Database-level tenant defense is governed by RFC-0018. Application authorization and scoped repositories are mandatory in every environment, but they do not authorize production multi-tenant data by themselves. Production requires implemented and end-to-end-tested PostgreSQL RLS, or an alternative explicitly authorized by an approved RFC with security review and verifiable compensating controls. No ADR or operational exception may override that requirement.
+
+## 10. Integration boundaries
 
 ```text
 Browser / client
@@ -122,19 +130,23 @@ Browser / client
 
 The Kernel exposes contracts and safe snapshots only. Admin renders public read models and never decides authorization. Runtime/application services are responsible for invoking authorization before protected reads or writes.
 
-## 10. Contract impact
+## 11. Contract impact
 
 Existing `Principal`, `AuthSession`, `AuthContext`, tenant/workspace and Execution Context contracts remain the foundation. New public contracts likely required for identity repositories, sessions, memberships, policy decisions and audit events must be versioned through a separate review before implementation. This RFC does not edit `packages/contracts`.
 
-## 11. Alternatives
+## 12. Alternatives
 
-- External identity provider only: lowers password responsibility but requires membership synchronization and a stable federation boundary.
-- Local credentials only: simpler initial deployment but higher credential and recovery responsibility.
-- Hybrid federation plus local break-glass identity: operationally resilient but requires strict audit and privileged controls.
+- External identity provider only: lowers password responsibility but requires membership synchronization and a stable federation boundary; it does not provide a local break-glass path.
+- Local credentials only: simpler deployment control but higher credential, recovery and abuse-prevention responsibility.
+- Hybrid federation plus local break-glass identity: selected for the first architecture slice; it provides operational recovery while keeping ordinary authentication external, at the cost of strict privileged-path controls.
 
-Recommendation: design an adapter-neutral boundary supporting external identity first, with local credentials only if an approved security review accepts the operational burden. Keep MFA as a future factor and do not block the contract model on a specific provider.
+MFA remains a future factor. The session model must retain authentication strength so MFA can be added without changing authorization semantics.
 
-## 12. Acceptance criteria for approval
+## 13. Candidate contract extensions
+
+If implementation crosses package boundaries, prepare versioned proposals for `IIdentityProvider`, `ISessionStore`, `IMembershipRepository`, `IAuthorizationPolicyEvaluator`, `AuthorizationDecision` and security audit event contracts. These are candidate names, not approved interfaces. Existing `Principal`, `AuthSession`, `AuthContext` and Execution Context remain the compatibility foundation.
+
+## 14. Acceptance criteria for approval
 
 - Identity, session and membership authority is explicitly owned.
 - Server-side default-deny authorization is testable.

@@ -22,13 +22,19 @@ RFC-0015 defines an adapter-agnostic persistence boundary and explicitly leaves 
 
 ## Recommendation
 
-Use PostgreSQL as the initial relational candidate and keep the provider boundary in infrastructure. Treat Prisma as an implementation option, not an architectural contract; select it only after validating transaction control, migration ownership, query transparency, connection lifecycle, generated-client boundaries and operational tooling. A thin SQL/query adapter remains the fallback if ORM behavior obscures invariants.
+Select PostgreSQL as the initial durable database and Prisma Client as the first infrastructure adapter, with Prisma Migrate for versioned schema changes. Keep the provider boundary in infrastructure and keep generated clients, migration files and transaction handles out of Contracts and Kernel. A thin SQL/query adapter is the fallback if Prisma fails the required query transparency, RLS/session-variable control, migration review or operational tests.
+
+The host composition root selects the provider. Environment-specific secret injection, pool bounds, connection/statement/transaction timeouts, health checks and redacted diagnostics are mandatory. No database dependency is introduced into Kernel or Contracts.
 
 ## Consequences
 
 Positive: mature transactions, constraints, indexing, backup tooling and future RLS support.  
 Negative: operational database dependency, connection management, migration discipline and higher test setup.  
 Neutral: Kernel and Contracts remain unchanged.
+
+## Reversibility
+
+The decision is reversible while consumers depend only on `IPersistenceService` and contract tests. Reversal requires stopping new writes, validating the replacement adapter against the same suite, migrating or exporting data, and switching the composition root through a controlled deployment. Prisma-specific models must not escape the adapter boundary.
 
 ## Approval conditions
 

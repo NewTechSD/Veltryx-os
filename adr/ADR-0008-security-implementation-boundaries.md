@@ -15,7 +15,11 @@ RFC-0011 deliberately leaves login, sessions, RBAC and tenant enforcement outsid
 
 ## Decision proposal
 
-Place credential/session adapters at the Admin/API application boundary and keep Principal/AuthContext/Execution Context as the Kernel-facing representation. Place authorization evaluation in an application service/policy boundary invoked before protected operations. Place membership and scoped repository enforcement below that boundary, with default deny and explicit system-call handling.
+Use a hybrid identity boundary: external IdP for ordinary human authentication, Veltryx-owned mapping/membership/session state, and a disabled-by-default local break-glass administrator path. Service principals use separate non-browser credentials. Place credential/session adapters at the Admin/API application boundary and keep Principal/AuthContext/Execution Context as the Kernel-facing representation. Place authorization evaluation in an application service/policy boundary invoked before protected operations. Place membership and scoped repository enforcement below that boundary, with default deny and explicit system-call handling.
+
+Client-provided roles, permissions, user IDs, tenant IDs and workspace IDs are hints only and are never authority. Tenant switching creates a newly validated effective context. Cache keys include principal, tenant, workspace, policy version and revocation state. Cookie-authenticated writes require CSRF protection; login and recovery require rate limiting and enumeration-resistant responses.
+
+RLS is deferred from the first slice but is a mandatory production gate: before production, implement and validate RLS with end-to-end isolation tests. If an alternative is required, it must be authorized by an approved RFC or RFC successor with security review, justification, compensating controls and measurable criteria. This ADR cannot create that exception. Shared-table application filtering alone is not sufficient evidence of production readiness, and release is blocked without approved RLS or a normatively authorized alternative.
 
 The Admin is a consumer of authorization decisions and public snapshots, never the policy authority. Authentication, authorization, audit and persistence data use separate ownership and redaction rules.
 
