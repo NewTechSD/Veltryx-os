@@ -15,11 +15,15 @@ The current public repository contract has no transactions, optimistic locking o
 
 ## Decision proposal
 
-Keep migrations as versioned infrastructure artifacts owned by the platform or an explicitly governed module. Execute them through a dedicated deployment operation with checksum and compatibility checks; do not make ordinary application startup implicitly mutate schema.
+Use Prisma Migrate as the initial migration tool, with reviewed and committed migration directories, `prisma migrate deploy` as a dedicated deployment step, migration-history/checksum validation and drift detection. Migration ownership belongs to the platform for platform-owned tables and to a governed module for module-owned tables. No owner may mutate another owner’s schema directly. Use expand/contract for destructive or incompatible changes.
+
+Do not make ordinary application startup implicitly mutate schema. A failed or drifted migration blocks the deployment and produces a sanitized operational diagnostic. Rollback is forward-fix or tested restore/redeploy by default; down migrations are not assumed safe.
 
 Represent transaction ownership in an application/infrastructure port first. A Unit of Work is short-lived, application-owned and atomic. Repositories participate in the current unit rather than opening independent commits. Conflicts produce a structured retryable result; external effects wait for commit or use a future outbox design.
 
 Optimistic locking is the default for mutable records, using a version predicate and explicit conflict outcome. Pessimistic locking is reserved for narrowly justified workflows.
+
+The transaction contract must ensure that all repositories resolved inside one Unit of Work share the same physical transaction. A repository cannot commit independently while the Unit of Work is open. Timeout, cancellation, deadlock and connection loss roll back the complete unit. Retries are permitted only for explicitly idempotent operations and bounded by an idempotency key or equivalent application invariant.
 
 ## Alternatives
 

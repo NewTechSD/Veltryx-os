@@ -75,6 +75,12 @@ The durable adapter must implement the existing repository behavior and document
 
 If transaction or scope capabilities require new public interfaces, they must be introduced by a later contract RFC or a backward-compatible extension reviewed under RFC-0099. An implementation may initially expose them through an application-side internal port, provided no consumer depends on a physical client.
 
+The recommended first adapter is PostgreSQL with Prisma Client in an infrastructure package. Prisma is an implementation choice, not a public contract: generated clients, schema files, migration engine and transaction handles stay outside Contracts and Kernel. A thin SQL/query adapter remains an approved fallback if Prisma cannot satisfy query transparency, RLS/session-variable control, migration review or operational requirements.
+
+The provider is selected by the host composition root through dependency injection. Development, test, staging and production select separate provider configuration and credentials. The Kernel receives only `IPersistenceService`; it never reads `DATABASE_URL`, constructs a client or chooses a physical adapter.
+
+The infrastructure adapter must use bounded connection pooling, connection acquisition timeout, statement timeout, transaction timeout, health/readiness checks and sanitized diagnostics. Credentials come from an environment-specific secret manager or deployment secret, never from source, snapshots, logs or client input.
+
 ## 6. Transactions and Unit of Work
 
 A Unit of Work groups writes that must commit atomically. The boundary belongs to an application service or infrastructure port, not to a UI, controller or individual repository call.
@@ -92,7 +98,9 @@ The first implementation should prefer short application-owned transactions and 
 
 ## 7. Migrations and ownership
 
-Migrations are versioned infrastructure artifacts. Each owned schema area has one owner, an ordered migration history, checksum validation and a documented forward/rollback policy. A module may own its data model only through a governed module migration contract; it may not mutate another owner’s tables directly.
+Migrations are versioned infrastructure artifacts. The recommended tool is Prisma Migrate using reviewed, committed migration directories and `prisma migrate deploy` in a controlled deployment step. Each owned schema area has one owner, an ordered migration history, checksum validation and a documented forward/rollback policy. A module may own its data model only through a governed module migration contract; it may not mutate another owner’s tables directly.
+
+Migration execution is not part of ordinary Kernel startup. Deployment checks the recorded migration history, validates checksums and fails closed on drift or incompatible pending changes. Destructive changes use expand/contract. Rollback is a restore/redeploy procedure unless a migration has a separately tested inverse; application rollback must not assume schema rollback is safe.
 
 Deployment must separate migration execution from application startup unless an approved operational policy explicitly couples them. Incomplete or incompatible migrations must fail closed and report a sanitized diagnostic.
 
@@ -121,7 +129,7 @@ Rules:
 | Database per tenant              | Strongest physical separation    |   Very high | Provisioning, pooling, migrations and restore are expensive           | Reserved for regulated/high-value tenants                               |
 | Hybrid                           | Fits differentiated requirements |        High | Multiple operational paths                                            | Future tiering after baseline evidence                                  |
 
-Recommended initial strategy: shared PostgreSQL database/schema with mandatory application-scoped repositories and `tenant_id`, plus an ADR evaluating RLS as a defense-in-depth control before production. Schema/database isolation remains an evolution path for specific tiers.
+Recommended initial strategy: shared PostgreSQL database/schema with mandatory application-scoped repositories and `tenant_id`. PostgreSQL RLS is not part of the first implementation slice because the current public provider contract does not carry a database session identity and the operational semantics of pooled connections, migrations and privileged jobs require a dedicated design. Before production, RLS must either be adopted through a separate ADR with end-to-end tests or the release must be blocked. Until then, compensating controls are mandatory: scoped repository construction, server-side tenant context, deny-by-default missing scope, centralized query tests, cross-tenant negative tests, restricted database roles and no direct repository access from untrusted adapters. Schema/database isolation remains an evolution path for specific tiers.
 
 ## 10. Security and operational requirements
 
@@ -133,7 +141,11 @@ The adapter must support health checks, bounded connection pools, statement time
 
 The existing in-memory provider remains the contract test adapter. Existing public repository operations and snapshots remain compatible. A future public Unit of Work, scoped repository or concurrency error contract requires explicit versioning and review; this RFC does not silently add those interfaces.
 
-## 12. Acceptance criteria for approval
+## 12. Candidate contract extensions
+
+The first implementation should avoid changing public Contracts. If later consumers require stable cross-layer contracts, propose versioned additions for `IUnitOfWork`, `IConcurrencyConflict`, `IScopedRepository`/effective scope and migration/provider health capabilities. These names are proposals only; no code or public contract is authorized by this RFC Draft.
+
+## 13. Acceptance criteria for approval
 
 - Provider, transaction and tenant boundaries are reviewed by Architecture Team.
 - Contract impact and compatibility are explicitly accepted.
