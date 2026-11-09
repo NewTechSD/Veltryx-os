@@ -6,7 +6,7 @@
 
 ## 1. Executive result
 
-The Phase 2 architecture package is specific enough to enter formal Architecture Review and to prepare OS-DATA-0001. It is not normative approval: RFC-0018, RFC-0019 and ADR-0006–0008 remain `Draft`, and implementation remains blocked until the responsible owner accepts the approval conditions.
+The Phase 2 architecture package is specific enough to enter formal Architecture Review and to prepare OS-DATA-0001. It is not normative approval: RFC-0019, RFC-0020 and ADR-0006–0008 remain `Draft`, and implementation remains blocked until the responsible owner accepts the approval conditions.
 
 The final recommendations are:
 
@@ -21,9 +21,9 @@ The final recommendations are:
 
 | Document | Current state | Recommendation                                                    | Compatibility                                                    | Residual risk                                          | Blockers / conditions                                                      | Responsible owner                  |
 | -------- | ------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------- | ---------------------------------- |
-| RFC-0018 | Draft         | Keep Draft; move to Review after security/operations cross-review | Compatible with RFC-0015 if no public contract is silently added | Shared-table leakage before RLS or full negative suite | Decide provider, migrations, UoW and mandatory production RLS gate         | Architecture Team / Platform owner |
+| RFC-0020 | Draft         | Keep Draft; move to Review after security/operations cross-review | Compatible with RFC-0015 if no public contract is silently added | Shared-table leakage before RLS or full negative suite | Decide provider, migrations, UoW and mandatory production RLS gate         | Architecture Team / Platform owner |
 | RFC-0019 | Draft         | Keep Draft; move to Review after threat-model review              | Preserves RFC-0011 AuthContext/Principal boundary                | IdP outage, break-glass abuse, stale membership cache  | Approve hybrid identity, session controls and contract proposals           | Architecture Team / Security owner |
-| ADR-0006 | Draft         | Recommend approval after RFC-0018 Review                          | Keeps database out of Kernel/Contracts                           | Prisma behavior or generated client escaping boundary  | Provider contract suite, pool/secret plan, reversibility plan              | Platform owner                     |
+| ADR-0006 | Draft         | Recommend approval after RFC-0020 Review                          | Keeps database out of Kernel/Contracts                           | Prisma behavior or generated client escaping boundary  | Provider contract suite, pool/secret plan, reversibility plan              | Platform owner                     |
 | ADR-0007 | Draft         | Recommend approval after migration/UoW test plan                  | Does not change current public repository contract               | Failed migration rollback and retry semantics          | Select Prisma Migrate, expand/contract, drift and restore policy           | Platform + Operations              |
 | ADR-0008 | Draft         | Recommend approval after threat-model sign-off                    | Preserves RFC-0011 transport-agnostic context                    | Privileged path and cross-tenant enforcement           | Hybrid identity, server-side policy, mandatory RLS gate and audit controls | Security owner                     |
 
@@ -73,7 +73,7 @@ Until those proposals are approved, OS-DATA-0001 may use internal infrastructure
 
 OS-DATA-0001 may start only after:
 
-1. RFC-0018 and ADR-0006 are approved or explicitly authorized for implementation.
+1. RFC-0020 and ADR-0006 are approved or explicitly authorized for implementation.
 2. ADR-0007’s migration and transaction conditions are accepted.
 3. The provider contract suite and isolated test database plan exist.
 4. Pool, timeout, secret, health and redaction policies are documented.
@@ -84,11 +84,11 @@ The executable specification is [OS-DATA-0001-IMPLEMENTATION-SPEC.md](../plans/O
 
 ## 7. Files reviewed and changed
 
-Reviewed: `AGENTS.md`, RFC-0099, RFC-0011, RFC-0015, RFC-0018, RFC-0019, ADR-0006–0008, Phase 2 plans/review, Dependency Graph, Implementation Guide, `packages/contracts`, `packages/kernel` persistence/auth/context/API surfaces, `apps/admin` adapters and relevant tests.
+Reviewed: `AGENTS.md`, RFC-0099, RFC-0011, RFC-0015, RFC-0019, RFC-0020, ADR-0006–0008, Phase 2 plans/review, Dependency Graph, Implementation Guide, `packages/contracts`, `packages/kernel` persistence/auth/context/API surfaces, `apps/admin` adapters and relevant tests.
 
 Changed or created in this task:
 
-- RFC-0018, RFC-0019 updated as Drafts;
+- RFC-0019 and RFC-0020 updated as Drafts;
 - ADR-0006, ADR-0007, ADR-0008 updated as Drafts;
 - `docs/plans/OS-PHASE-02-TECHNICAL-SPEC.md` updated;
 - `docs/plans/OS-PHASE-02-DECISION-MATRIX.md` created;

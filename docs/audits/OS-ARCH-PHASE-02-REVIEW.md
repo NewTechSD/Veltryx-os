@@ -14,7 +14,7 @@ The documentation is ready for architectural review. It is not approval of Postg
 
 | Document                                                   | Status and purpose                                               |
 | ---------------------------------------------------------- | ---------------------------------------------------------------- |
-| `rfc/RFC-0018-durable-persistence-transactions-tenancy.md` | Draft; durable provider, transactions, migrations and tenancy    |
+| `rfc/RFC-0020-durable-persistence-transactions-tenancy.md` | Draft; durable provider, transactions, migrations and tenancy    |
 | `rfc/RFC-0019-identity-sessions-authorization-rbac.md`     | Draft; identity, sessions, authorization and RBAC                |
 | `adr/ADR-0006-durable-persistence-adapter.md`              | Draft; PostgreSQL candidate and adapter choice                   |
 | `adr/ADR-0007-migrations-and-transactions.md`              | Draft; migration and transaction implementation boundary         |
@@ -38,7 +38,7 @@ The proposals preserve the current boundary:
 | --------------- | ---------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------- |
 | Durable store   | PostgreSQL candidate                                 | Other relational, document, per-tenant DB                                 | ADR-0006 approval               |
 | Data access     | Infrastructure adapter; Prisma optional              | Thin SQL/query adapter                                                    | Contract and operational review |
-| Tenant baseline | Shared relational data with mandatory scoped access  | RLS required before production; schema/database per tenant as future tier | RFC-0018 + security review      |
+| Tenant baseline | Shared relational data with mandatory scoped access  | RLS required before production; schema/database per tenant as future tier | RFC-0020 + security review      |
 | Transactions    | Application-owned short Unit of Work                 | Startup/implicit transactions, independent repository commits             | ADR-0007 approval               |
 | Identity        | Adapter-neutral authenticated Principal              | External IdP, local credentials, hybrid                                   | RFC-0019 security review        |
 | Sessions        | Server-side, opaque, expiring, revocable             | Stateless-only tokens                                                     | Security threat model           |
@@ -62,7 +62,7 @@ The existing persistence snapshot must remain sanitized and aggregate-only. No d
 
 ## 7. Sequence and first implementation gate
 
-The first implementation should be the durable provider only after RFC-0018 and ADR-0006/0007 review. Its acceptance criteria are recorded in `docs/plans/OS-PHASE-02-TECHNICAL-SPEC.md`: contract compatibility, restart durability, sanitized errors, version conflicts, transaction coverage, scoped access and unchanged public snapshots.
+The first implementation should be the durable provider only after RFC-0020 and ADR-0006/0007 review. Its acceptance criteria are recorded in `docs/plans/OS-PHASE-02-TECHNICAL-SPEC.md`: contract compatibility, restart durability, sanitized errors, version conflicts, transaction coverage, scoped access and unchanged public snapshots.
 
 Identity and Admin work must not be scheduled as a substitute for server-side authorization. Tenant membership and policy evaluation must precede sensitive Admin integration.
 

@@ -5,7 +5,7 @@ Version: 0.1
 Type: ADR  
 Owner: Architecture Team  
 Reviewers: Architecture Review  
-Depends On: RFC-0015, RFC-0018, RFC-0099  
+Depends On: RFC-0015, RFC-0020, RFC-0099
 Related To: RFC-0011, ADR-0007  
 Supersedes: None
 
@@ -38,4 +38,4 @@ The decision is reversible while consumers depend only on `IPersistenceService` 
 
 ## Approval conditions
 
-Approve only after RFC-0018 review, provider contract tests, security review, migration strategy and environment/secret plan are accepted. This Draft does not authorize installation or implementation.
+Approve only after RFC-0020 review, provider contract tests, security review, migration strategy and environment/secret plan are accepted. This Draft does not authorize installation or implementation.

@@ -1,6 +1,6 @@
 # OS-DATA-0001 — Durable Persistence Implementation Specification
 
-**Status:** Draft; executable only after RFC-0018 and ADR-0006 approval  
+**Status:** Draft; executable only after RFC-0020 and ADR-0006 approval
 **Scope:** first durable provider slice  
 **Out of scope:** authentication, RBAC, physical schema committed by this review, Admin UI, production deployment
 

@@ -1,4 +1,4 @@
-# RFC-0018: Durable Persistence, Transactions & Tenant Isolation
+# RFC-0020: Durable Persistence, Transactions & Tenant Isolation
 
 Status: Draft  
 Version: 0.1  
@@ -124,7 +124,7 @@ Rules:
 | Strategy                         | Security                         |  Complexity | Operations                                                            | Recommendation                                                          |
 | -------------------------------- | -------------------------------- | ----------: | --------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | Shared tables + `tenant_id`      | Depends on every query and tests |  Low/medium | Lowest cost, simplest migrations                                      | Baseline only with centralized scoped repositories and defense in depth |
-| Shared database + PostgreSQL RLS | Strong database backstop         | Medium/high | Requires session variables, policy testing and operational discipline | Recommended evolution for sensitive shared data                         |
+| Shared database + PostgreSQL RLS | Strong database backstop         | Medium/high | Requires session variables, policy testing and operational discipline | Required before production multi-tenant data                            |
 | Schema per tenant                | Stronger boundary                |        High | Migration fan-out and backup complexity                               | Reserved for selected isolation tiers                                   |
 | Database per tenant              | Strongest physical separation    |   Very high | Provisioning, pooling, migrations and restore are expensive           | Reserved for regulated/high-value tenants                               |
 | Hybrid                           | Fits differentiated requirements |        High | Multiple operational paths                                            | Future tiering after baseline evidence                                  |

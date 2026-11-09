@@ -6,7 +6,7 @@ Type: ADR
 Owner: Architecture Team  
 Reviewers: Architecture Review  
 Depends On: RFC-0011, RFC-0019, RFC-0099  
-Related To: RFC-0013, RFC-0018  
+Related To: RFC-0013, RFC-0020
 Supersedes: None
 
 ## Context
