@@ -1,7 +1,7 @@
 # OS Phase 02 — Technical Specification
 
 **Status:** Draft / implementation-ready after RFC and ADR approval  
-**Basis:** RFC-0011, RFC-0015, proposed RFC-0018, proposed RFC-0019, ADR-0006–0008  
+**Basis:** RFC-0011, RFC-0015, proposed RFC-0019, proposed RFC-0020, ADR-0006–0008
 **Scope:** durable persistence, identity, sessions, authorization, tenancy and audit; no production implementation in this task.
 
 ## 1. Target flow
@@ -82,7 +82,7 @@ Backups require encryption, retention, access control, restore verification and 
 
 ## 7. Implementation sequence
 
-1. Approve RFC-0018/RFC-0019 and ADR-0006–0008.
+1. Approve RFC-0019/RFC-0020 and ADR-0006–0008.
 2. Define/version any required public contracts and contract tests.
 3. Implement durable provider behind the existing boundary.
 4. Implement migration and Unit of Work infrastructure.

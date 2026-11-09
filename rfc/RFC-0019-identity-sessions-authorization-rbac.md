@@ -6,7 +6,7 @@ Type: Architectural RFC
 Owner: Architecture Team  
 Reviewers: Architecture Review  
 Depends On: RFC-0001, RFC-0002, RFC-0004, RFC-0006, RFC-0011, RFC-0013, RFC-0099  
-Related To: RFC-0018, ADR-0008  
+Related To: RFC-0020, ADR-0008
 Supersedes: None
 
 ## 1. Summary
@@ -111,7 +111,7 @@ Audit events cover login success/failure, logout, session revocation, recovery, 
 
 Audit records exclude passwords, raw tokens, cookies, secrets and unnecessary personal data. Operational logs, audit trail and backups are separate stores with separate retention and access policies. Integrity protection and retention are specified with the recovery architecture, not inferred from application logs.
 
-Database-level tenant defense is governed by RFC-0018. Application authorization and scoped repositories are mandatory in every environment, but they do not authorize production multi-tenant data by themselves. Production requires implemented and end-to-end-tested PostgreSQL RLS, or an alternative explicitly authorized by an approved RFC with security review and verifiable compensating controls. No ADR or operational exception may override that requirement.
+Database-level tenant defense is governed by RFC-0020. Application authorization and scoped repositories are mandatory in every environment, but they do not authorize production multi-tenant data by themselves. Production requires implemented and end-to-end-tested PostgreSQL RLS, or an alternative explicitly authorized by an approved RFC with security review and verifiable compensating controls. No ADR or operational exception may override that requirement.
 
 ## 10. Integration boundaries
 

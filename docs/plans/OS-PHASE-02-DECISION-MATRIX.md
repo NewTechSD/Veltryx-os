@@ -36,8 +36,8 @@
 ## 3. Dependencies
 
 ```text
-RFC-0018 -> ADR-0006 -> OS-DATA-0001
-RFC-0018 -> ADR-0007 -> OS-DATA-0002
+RFC-0020 -> ADR-0006 -> OS-DATA-0001
+RFC-0020 -> ADR-0007 -> OS-DATA-0002
 RFC-0019 -> ADR-0008 -> OS-SEC-0001
 OS-SEC-0001 -> OS-SEC-0002 -> OS-SEC-0003
 OS-DATA-0002 + OS-SEC-0003 -> OS-SEC-0004
@@ -48,7 +48,7 @@ No implementation task may consume an unapproved public contract. If `IUnitOfWor
 
 ## 4. Approval checklist
 
-- [ ] RFC-0018 reviewed for persistence and tenancy.
+- [ ] RFC-0020 reviewed for persistence and tenancy.
 - [ ] RFC-0019 reviewed for identity and authorization.
 - [ ] ADR-0006 accepts or rejects PostgreSQL + Prisma.
 - [ ] ADR-0007 accepts migration and Unit of Work semantics.
