@@ -21,7 +21,7 @@ This is evidence of a **declaration and authorization to prepare a designation r
 | --- | --- |
 | Proposed role | Architecture Owner — Veltryx OS |
 | Declaring person | Project responsible who issued the declaration above |
-| Full name / stable identifier for repository governance | **PENDING_VERIFICATION** — not inferred from chat account metadata, Git author or repository ownership |
+| Full name / stable identifier for repository governance | **Breno Henrique da Silva Santos** — explicitly supplied by the declaring person in the project conversation; independent identity/authority verification and repository-facing ratification remain **PENDING** |
 | Capacity claimed | Project responsible / authority to propose own appointment |
 | Date of declaration | 2026-11-10 |
 | Original declaration | Project conversation, 2026-11-10 (transcribed verbatim in §1) |
@@ -49,7 +49,8 @@ This role does not remove the required independent or specially designated revie
 - [x] Express declaration to assume the Architecture Owner role has been provided.
 - [x] The scope is limited to the Architecture Owner appointment.
 - [x] Responsibilities were checked against RFC-0099 §10.
-- [ ] Name and durable identification of the declaring person verified in a suitable repository governance record.
+- [x] Name for the proposed appointment explicitly supplied by the declaring person: **Breno Henrique da Silva Santos**.
+- [ ] Independent verification of the declarant's identity/authority in a suitable repository governance record.
 - [ ] Capacity/authority for the designation corroborated with a verifiable reference.
 - [ ] Role accumulation and potential conflicts assessed.
 - [ ] Ratification or acceptance recorded with date, accountable person and verifiable reference.
